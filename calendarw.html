@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Villa Tullia - Calendar</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+
+<!-- Font Awesome for WhatsApp icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  body { font-family: 'Roboto', sans-serif; background-color: #fafafa; margin:0; }
+  header {
+    background: linear-gradient(90deg, #2b3a42, #1f2a30);
+    padding: 1rem 0;
+  }
+  header .brand { font-family: 'Great Vibes', cursive; font-size: 2.2rem; color: #f8b500; }
+  header a.nav-link { color: #fff; margin:0 0.5rem; font-weight:500; }
+  header a.nav-link.active, header a.nav-link:hover { color: #f8b500; }
+
+  .page-title { text-align:center; margin:2rem 0 1rem; }
+  .page-title h1 { font-family: 'Great Vibes', cursive; font-size: 3rem; color:#2b3a42; }
+  .page-title p { color:#555; max-width:700px; margin:0.5rem auto; }
+
+  #calendar { max-width: 900px; margin: 2rem auto; background:#fff; padding:1rem; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+
+  .modal-header { background:#2b3a42; color:#fff; }
+  .btn-whatsapp { background:#25d366; color:#fff; }
+  .btn-whatsapp:hover { background:#1ebe5d; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="d-flex flex-wrap justify-content-center align-items-center">
+  <a href="index.html" class="brand me-auto">Villa Tullia</a>
+  <ul class="nav">
+    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+    <li class="nav-item"><a class="nav-link" href="index.html#gallery">Gallery</a></li>
+    <li class="nav-item"><a class="nav-link" href="index.html#reviews">Reviews</a></li>
+    <li class="nav-item"><a class="nav-link active" href="calendar.html">Calendar</a></li>
+    <li class="nav-item"><a class="nav-link" href="index.html#contact">Contact</a></li>
+  </ul>
+</header>
+
+<!-- PAGE TITLE & INSTRUCTION -->
+<section class="page-title">
+  <h1 style="font-size:4rem; font-weight:500; z-index:1;">Villa Tullia – Availability & Booking</h1>
+  <p>We rent weekly from <strong>Saturday to Saturday</strong>. Free weeks are shown in <span style="color:green;font-weight:bold;">green</span>. Tap on a free week to inquire directly via the form or WhatsApp.</p>
+</section>
+
+<!-- CALENDAR -->
+<div id="calendar"></div>
+
+<!-- BOOKING MODAL -->
+<div class="modal fade" id="bookingModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="inquiryForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Inquire About This Week</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p id="weekSelected" style="font-weight:bold;"></p>
+          <div class="mb-3">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea class="form-control" name="message" rows="3">I want to book this week.</textarea>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <a id="whatsappBtn" href="#" target="_blank" class="btn btn-whatsapp d-flex align-items-center gap-2">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+          </a>
+          <button type="submit" class="btn btn-primary">Send Inquiry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+
+<script>
+  emailjs.init('NAnj61jyQGbQpCOGZ'); // your EmailJS public key
+
+document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar');
+
+  const bookedWeeks = [{ start: '2025-08-23', end:'2025-08-30', title:'Booked', color:'#ff4d4d' }];
+  const availableWeeks = [{ start:'2025-08-30', end:'2025-09-06', title:'Available', color:'green', price:800 }];
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    height:'auto',
+    events: [...bookedWeeks, ...availableWeeks],
+    eventContent: function(arg) {
+	  if (arg.event.title === 'Available') {
+		return { 
+		  html: `<div style="text-align:center;">
+				   ${arg.event.title}<br>
+				   <strong>$${arg.event.extendedProps.price}/week</strong>
+				 </div>` 
+		};
+	  } else {
+		return { 
+		  html: `<div style="text-align:center;">${arg.event.title}</div>` 
+		};
+	  }
+	},
+    eventClick: function(info) {
+      if(info.event.title!=='Available') return;
+      const start = info.event.start;
+      const end = new Date(start);
+      end.setDate(start.getDate()+7);
+      const weekText = `${start.toDateString()} → ${end.toDateString()}`;
+      document.getElementById('weekSelected').textContent = `You selected: ${weekText}`;
+      document.getElementById('whatsappBtn').href = `https://wa.me/393466733267?text=${encodeURIComponent('Hi! I want to book Villa Tullia for the week '+weekText)}`;
+      const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+      modal.show();
+    },
+    headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth' }
+  });
+
+  calendar.render();
+
+  // EmailJS form
+  document.getElementById('inquiryForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    emailjs.sendForm('service_23f9v79','template_gy72qch',this)
+      .then(()=> {
+        alert('Inquiry sent! We will contact you soon.');
+        this.reset();
+        bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+      }, (err)=> {
+        alert('Failed to send inquiry.');
+        console.error(err);
+      });
+  });
+
+});
+</script>
+
+</body>
+</html>

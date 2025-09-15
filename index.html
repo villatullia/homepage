@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Villa Tullia Padenghe</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+	
+	/* Apply cursive font to all main headings (h1, h2, .section-title) */
+	h1, h2, .section-title {
+	  font-family: 'Great Vibes', cursive;
+	  text-align: center;
+	  margin-bottom: 1rem;
+	}
+
+	/* Responsive font sizes using clamp() */
+	h1 {
+	  font-size: clamp(2.5rem, 6vw, 5rem); /* min 2.5rem, max 5rem */
+	}
+
+	h2, .section-title {
+	  font-size: clamp(1.8rem, 4vw, 3rem); /* min 1.8rem, max 3rem */
+	}
+      /* ------------------------------
+         Theme Colors & Fonts
+      ------------------------------ */
+      :root {
+        --primary-golden: #f8b500;
+        --secondary-teal: #2b3a42;
+        --accent-cream: #fceabb;
+        --text-dark: #444;
+        --text-light: #fff;
+      }
+
+      body {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-dark);
+        background-color: var(--accent-cream);
+      }
+
+      /* ------------------------------
+         Header
+      ------------------------------ */
+      header {
+        background: linear-gradient(90deg, var(--secondary-teal), #1f2a30);
+        padding: 1rem 0;
+      }
+
+      header a.nav-link {
+        color: var(--text-light);
+        font-weight: 500;
+        margin: 0 0.5rem;
+      }
+
+      header a.nav-link:hover, header a.nav-link.active {
+        color: var(--primary-golden);
+      }
+
+      header .brand {
+        font-family: 'Great Vibes', cursive;
+        font-size: 2.2rem;
+        color: var(--primary-golden);
+      }
+
+      /* ------------------------------
+         Hero Section
+      ------------------------------ */
+      .hero {
+        position: relative;
+        background: url('imgs/lake-garda.jpg') center/cover no-repeat;
+        color: var(--text-light);
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 0 1rem;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+      }
+
+      .hero h1 {
+        font-family: 'Great Vibes', cursive;
+        font-size: 4rem;
+        z-index: 1;
+      }
+
+      .hero p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        z-index: 1;
+      }
+
+      .hero .btn {
+        z-index: 1;
+        border-radius: 25px;
+        font-weight: 500;
+        padding: 0.8rem 2rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary-golden);
+        color: var(--text-dark);
+        border: none;
+      }
+
+      .btn-primary:hover {
+        background-color: #e0a400;
+        color: var(--text-light);
+      }
+
+      .btn-success {
+        background-color: #25D366;
+        border: none;
+      }
+
+      .btn-success:hover {
+        background-color: #1ebe5c;
+      }
+
+      /* ------------------------------
+         Reviews Section
+      ------------------------------ */
+      #reviews {
+        padding: 60px 20px;
+        background: var(--accent-cream);
+        text-align: center;
+      }
+
+      #reviews h2 {
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        color: var(--secondary-teal);
+      }
+
+      .review-carousel {
+        position: relative;
+        max-width: 700px;
+        margin: 0 auto;
+        height: 160px;
+      }
+
+      .review {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        opacity: 0;
+        transform: translateX(20px);
+        transition: opacity 1s ease, transform 1s ease;
+      }
+
+      .review.active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .review p {
+        font-size: 1.2rem;
+        font-style: italic;
+        margin-bottom: 10px;
+        color: var(--text-dark);
+      }
+
+      .review span {
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      .rating-badges {
+        display:flex;
+        justify-content:center;
+        gap:20px;
+        flex-wrap: wrap;
+        margin-bottom:40px;
+      }
+
+      .rating-badge {
+        padding:12px 20px;
+        border-radius:12px;
+        text-align:center;
+        min-width:150px;
+        font-weight: 500;
+      }
+
+      .booking-badge {
+        background:#003580;
+        color:white;
+      }
+
+      .google-badge {
+        background:#4285F4;
+        color:white;
+      }
+
+      /* ------------------------------
+         Gallery Carousel
+      ------------------------------ */
+      #demoCarousel {
+        max-width: 1000px;
+        margin: 50px auto;
+      }
+
+      .carousel-item img {
+        height: 80vh;
+        width: 100%;
+        object-fit: cover;
+      }
+
+      .carousel-caption {
+        background-color: rgba(0,0,0,0.4);
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+
+      /* ------------------------------
+         Floating Buttons
+      ------------------------------ */
+      .floating-buttons {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 9999;
+      }
+
+      .floating-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .floating-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+      }
+
+      .floating-btn.whatsapp {
+        background-color: #25D366;
+      }
+
+      .floating-btn.calendar {
+        background-color: var(--primary-golden);
+      }
+
+      /* ------------------------------
+         Map / Directions
+      ------------------------------ */
+      #map-directions {
+        padding:60px 20px;
+        text-align:center;
+        background:#fff;
+      }
+
+      #map-directions h2 {
+        font-size:2rem;
+        margin-bottom:20px;
+        color: var(--secondary-teal);
+      }
+
+      #map-directions p {
+        font-size:1.1rem;
+        margin-bottom:30px;
+        color: #555;
+      }
+
+      #map-directions iframe {
+        border-radius:12px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.1);
+      }
+
+      #map-directions a {
+        display:inline-block;
+        margin-top:25px;
+        padding:12px 25px;
+        background: var(--primary-golden);
+        color: var(--text-dark);
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:bold;
+        box-shadow:0 4px 12px rgba(0,0,0,0.2);
+      }
+
+      #map-directions a:hover {
+        background: #e0a400;
+        color: var(--text-light);
+      }
+
+      /* ------------------------------
+         Footer
+      ------------------------------ */
+      footer {
+        background: var(--secondary-teal);
+        color: var(--text-light);
+        padding: 20px 0;
+      }
+	  
+	  /* Highlights Section */
+	.highlights-section {
+	  background-color: #f9f9f9;
+	}
+
+	.highlights-section .section-title {
+	  font-family: 'Great Vibes', cursive;
+	  font-size: 2.8rem;
+	  color: var(--primary-golden);
+	}
+
+	.highlight-title {
+	  font-size: 1.8rem;
+	  color: var(--secondary-teal);
+	  margin-bottom: 1rem;
+	}
+
+	.highlight-text {
+	  font-size: 1.1rem;
+	  line-height: 1.6;
+	  color: #333;
+	}
+	
+	/* Video Section */
+	.video-section {
+	  background: #fff;
+	}
+
+	.video-container {
+	  position: relative;
+	  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+	  height: 0;
+	  overflow: hidden;
+	  border-radius: 10px;
+	  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+	}
+
+	.video-container iframe {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 100%;
+	}
+	</style>
+  </head>
+
+  <body>
+    
+	
+	<!-- HEADER -->
+    <header class="d-flex flex-wrap justify-content-center align-items-center">
+      <a href="/" class="brand me-auto">Villa Tullia</a>
+      <ul class="nav">
+        <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Gallery</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Reviews</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Calendar</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+      </ul>
+    </header>
+
+    <!-- HERO SECTION -->
+	<section class="hero">
+	  <h1 style="font-size:7rem; font-weight:500; z-index:1;">Villa Tullia</h1>
+	  <h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; z-index:1; margin-bottom:1rem;">Your Home on the majestic Garda Lake</h2>
+	  <br>
+	  <div class="d-flex gap-3">
+		<a href="calendarw.html" class="btn btn-primary btn-lg">Check Our Calendar</a>
+		<a href="https://wa.me/393466733267?text=Hello%20I%20am%20interested%20in%20your%20villa" target="_blank" class="btn btn-success btn-lg">Chat on WhatsApp</a>
+	  </div>
+	</section>
+
+	<!-- HIGHLIGHTS SECTION -->
+	<section class="highlights-section py-5">
+	  <div class="container">
+		<h2 class="text-center mb-5 display-4 display-md-3" style="font-family: 'Great Vibes', cursive;">
+		  Why Choose Villa Tullia
+		</h2>
+
+		<!-- Row 1 -->
+		<div class="row align-items-center mb-5">
+		  <div class="col-md-6">
+			<img src="imgs/Foto/lake.jpg" alt="Lake view" class="img-fluid rounded shadow">
+		  </div>
+		  <div class="col-md-6">
+			<h3 class="display-6 display-md-5 mb-3" style="font-family: 'Great Vibes', cursive;">
+			  Breathtaking Lake View
+			</h3>
+			<p class="lead">
+			  From sunrise to sunset, the villa offers an uninterrupted panorama of the lake, 
+          where colors change with the hours of the day. Enjoy your morning coffee as 
+          mist rises off the water, or sip a glass of local wine while the sun sets behind 
+          the hills. It’s the kind of view you never get tired of.
+			</p>
+		  </div>
+		</div>
+
+		<!-- Row 2 -->
+		<div class="row align-items-center mb-5 flex-md-row-reverse">
+		  <div class="col-md-6">
+			<img src="imgs/Foto/interiors.jpg" alt="Cozy interior" class="img-fluid rounded shadow">
+		  </div>
+		  <div class="col-md-6">
+			<h3 class="display-6 display-md-5 mb-3" style="font-family: 'Great Vibes', cursive;">
+			  Cozy Interiors
+			</h3>
+			<p class="lead">
+			  Step inside and feel instantly at home. Villa Tullia’s interiors combine warmth 
+          and elegance: soft lighting, comfortable furniture, and thoughtful details 
+          designed for relaxation. Whether you’re gathered with family for dinner or 
+          curled up with a book by the fireplace, every corner invites you to slow down.
+			</p>
+		  </div>
+		</div>
+
+		<!-- Row 3 -->
+		<div class="row align-items-center mb-5">
+		  <div class="col-md-6">
+			<img src="imgs/Foto/bbq.jpg" alt="BBQ area" class="img-fluid rounded shadow">
+		  </div>
+		  <div class="col-md-6">
+			<h3 class="display-6 display-md-5 mb-3" style="font-family: 'Great Vibes', cursive;">
+			  BBQ & Outdoor Dining
+			</h3>
+			<p class="lead">
+			  Gather your loved ones and fire up the grill. The villa’s outdoor BBQ area is 
+          perfect for long summer evenings filled with laughter, delicious food, and 
+          the scent of herbs from the garden. Dining al fresco beneath the stars is 
+          an experience you’ll treasure long after your stay.
+			</p>
+		  </div>
+		</div>
+
+		<!-- Row 4 -->
+		<div class="row align-items-center mb-5 flex-md-row-reverse">
+		  <div class="col-md-6">
+			<img src="imgs/Foto/garden.jpg" alt="Private garden" class="img-fluid rounded shadow">
+		  </div>
+		  <div class="col-md-6">
+			<h3 class="display-6 display-md-5 mb-3" style="font-family: 'Great Vibes', cursive;">
+			  Private Garden
+			</h3>
+			<p class="lead">
+			  Escape to your own green sanctuary. The villa’s private garden is both 
+          peaceful and inviting — a place where you can sunbathe, read under a shady tree, 
+          or simply breathe in the fresh air. It’s the perfect balance of privacy 
+          and beauty, designed to make your holiday truly restful.
+			</p>
+		  </div>
+		</div>
+	  </div>
+	</section>
+
+
+
+<!-- VIDEO SECTION -->
+<section class="video-section py-5 text-center" style="background:#fceabb;">
+  <div class="container">
+    <h2 class="section-title mb-4" style="color:var(--secondary-teal);">
+      Experience Villa Tullia
+    </h2>
+    <div class="video-container">
+      <iframe 
+        src="https://www.youtube.com/embed/cHdfWdWICYc?rel=0&showinfo=0" 
+        title="Villa Tullia Drone Video"
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</section>
+
+
+	<!-- GALLERY CAROUSEL -->
+	<section id="gallery" style="background:#f3e2b3; padding:60px 20px; text-align:center;">
+	<h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; z-index:1; margin-bottom:1rem;">Photo Gallery</h2>
+	<div id="demoCarousel" class="carousel slide" data-bs-ride="carousel" style="background:#f3e2b3; padding:50px 0;">
+	  <div class="carousel-indicators">
+		<button type="button" data-bs-target="#demoCarousel" data-bs-slide-to="0" class="active"></button>
+		<button type="button" data-bs-target="#demoCarousel" data-bs-slide-to="1"></button>
+		<button type="button" data-bs-target="#demoCarousel" data-bs-slide-to="2"></button>
+	  </div>
+	  <div class="carousel-inner">
+		<div class="carousel-item active">
+		  <img src="imgs/flowers.jpg" class="d-block w-100" alt="Slide 1" style="height:80vh; object-fit:cover;">
+		  <div class="carousel-caption d-none d-md-block" style="background:rgba(0,0,0,0.4); padding:1rem; border-radius:0.5rem;">
+			<h5>Cozy Interiors</h5>
+			<p>Enjoy a warm and stylish living space.</p>
+		  </div>
+		</div>
+		<div class="carousel-item">
+		  <img src="imgs/flowers.jpg" class="d-block w-100" alt="Slide 2" style="height:80vh; object-fit:cover;">
+		  <div class="carousel-caption d-none d-md-block" style="background:rgba(0,0,0,0.4); padding:1rem; border-radius:0.5rem;">
+			<h5>Beautiful View</h5>
+			<p>Wake up to a panoramic sunrise every morning.</p>
+		  </div>
+		</div>
+		<div class="carousel-item">
+		  <img src="imgs/flowers.jpg" class="d-block w-100" alt="Slide 3" style="height:80vh; object-fit:cover;">
+		  <div class="carousel-caption d-none d-md-block" style="background:rgba(0,0,0,0.4); padding:1rem; border-radius:0.5rem;">
+			<h5>Outdoor Fun</h5>
+			<p>Relax in our private garden and pool area.</p>
+		  </div>
+		</div>
+	  </div>
+	  <button class="carousel-control-prev" type="button" data-bs-target="#demoCarousel" data-bs-slide="prev">
+		<span class="carousel-control-prev-icon"></span>
+		<span class="visually-hidden">Previous</span>
+	  </button>
+	  <button class="carousel-control-next" type="button" data-bs-target="#demoCarousel" data-bs-slide="next">
+		<span class="carousel-control-next-icon"></span>
+		<span class="visually-hidden">Next</span>
+	  </button>
+	</div>
+	</section>
+    <!-- Floating Buttons -->
+    <div class="floating-buttons">
+      <a href="https://wa.me/393466733267" target="_blank" class="floating-btn whatsapp">
+        <img src="https://img.icons8.com/color/48/000000/whatsapp.png" style="width:28px;height:28px;">
+      </a>
+      <a href="calendarw.html" class="floating-btn calendar">
+        <img src="https://img.icons8.com/ios-glyphs/30/ffffff/calendar.png" style="width:28px;height:28px;">
+      </a>
+    </div>
+
+    <!-- REVIEWS -->
+<section id="reviews" style="background:#fff8e7; padding:60px 20px; text-align:center;">
+  <h2 style="font-size:2.5rem; margin-bottom:40px; color:var(--secondary-teal);">What they say about Villa Tullia</h2>
+
+  <div class="rating-badges" style="display:flex; justify-content:center; gap:20px; flex-wrap: wrap; margin-bottom:40px;">
+    <div class="rating-badge booking-badge">
+      <strong>Booking.com</strong><br>9.2/10
+    </div>
+    <div class="rating-badge google-badge">
+      <strong>Google Reviews</strong><br>4.9/5
+    </div>
+  </div>
+
+  <div class="review-carousel carousel slide" data-bs-ride="carousel" id="reviewCarousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <div class="card mx-auto p-4" style="max-width:600px; border-radius:12px; background:#fdf5e6; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+          <p style="font-size:1.2rem; font-style:italic; margin-bottom:10px;">"Absolutely stunning villa, the pool was a dream! ⭐⭐⭐⭐⭐"</p>
+          <span style="font-size:0.9rem; color:#555;">- Anna, Booking.com</span>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card mx-auto p-4" style="max-width:600px; border-radius:12px; background:#fdf5e6; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+          <p style="font-size:1.2rem; font-style:italic; margin-bottom:10px;">"The perfect holiday spot, quiet and beautiful surroundings. ⭐⭐⭐⭐⭐"</p>
+          <span style="font-size:0.9rem; color:#555;">- Marco, Google Reviews</span>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card mx-auto p-4" style="max-width:600px; border-radius:12px; background:#fdf5e6; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+          <p style="font-size:1.2rem; font-style:italic; margin-bottom:10px;">"Lovely host and very clean place, highly recommended! ⭐⭐⭐⭐☆"</p>
+          <span style="font-size:0.9rem; color:#555;">- Sophie, Booking.com</span>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card mx-auto p-4" style="max-width:600px; border-radius:12px; background:#fdf5e6; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+          <p style="font-size:1.2rem; font-style:italic; margin-bottom:10px;">"We had the best family holiday here, thank you Villa Tullia! ⭐⭐⭐⭐⭐"</p>
+          <span style="font-size:0.9rem; color:#555;">- John, Google Reviews</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#reviewCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#reviewCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</section>
+    <!-- MAP / DIRECTIONS -->
+    <section id="map-directions">
+      	<h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; z-index:1; margin-bottom:1rem;">Find Villa Tullia</h2>
+      <p>See where we are located on Lake Garda and get directions to reach us easily.</p>
+      <div style="max-width:900px; margin:0 auto; height:400px;">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2795.6982512891313!2d10.501718975176894!3d45.51615262997243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47828ffe052378ff%3A0xa534fdf73ebd9d89!2sVilla%20Tullia%20Padenghe!5e0!3m2!1sen!2sit!4v1755509380586!5m2!1sen!2sit" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+      </div>
+      <a href="https://www.google.com/maps/dir/?api=1&destination=Villa+Tullia+Lake+Garda" target="_blank">
+        Get Directions
+      </a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="text-center">
+      © 2025 Alex Pellegrini. All rights reserved.
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <script>
+      // Review Carousel JS
+      let currentReview = 0;
+      const reviews = document.querySelectorAll(".review");
+      const totalReviews = reviews.length;
+
+      function showNextReview() {
+        reviews[currentReview].classList.remove("active");
+        currentReview = (currentReview + 1) % totalReviews;
+        reviews[currentReview].classList.add("active");
+      }
+
+      setInterval(showNextReview, 5000);
+    </script>
+  </body>
+</html>
