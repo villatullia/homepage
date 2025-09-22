@@ -71,7 +71,10 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <p id="weekSelected" style="font-weight:bold;"></p>
+          <div class="mb-3">
+            <label class="form-label">Selected Week</label>
+            <input id="weekSelected" type="text" class="form-control" name="weekSelected" required readonly>
+          </div>
           <div class="mb-3">
             <label class="form-label">Your Name</label>
             <input type="text" class="form-control" name="name" required>
@@ -134,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const end = new Date(start);
       end.setDate(start.getDate()+7);
       const weekText = `${start.toDateString()} → ${end.toDateString()}`;
-      document.getElementById('weekSelected').textContent = `You selected: ${weekText}`;
+      document.getElementById('weekSelected').value = `${weekText}`;
       document.getElementById('whatsappBtn').href = `https://wa.me/393466733267?text=${encodeURIComponent('Hi! I want to book Villa Tullia for the week '+weekText)}`;
       const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
       modal.show();
