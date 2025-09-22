@@ -378,15 +378,45 @@
     </header>
 
     <!-- HERO SECTION -->
-	<section class="hero">
-	  <h1 style="font-size:7rem; font-weight:500; z-index:1;">Villa Tullia</h1>
-	  <h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; z-index:1; margin-bottom:1rem;">Your Home on the majestic Garda Lake</h2>
-	  <br>
-	  <div class="d-flex gap-3">
-		<a href="calendarw.html" class="btn btn-primary btn-lg">Check Our Calendar</a>
-		<a href="https://wa.me/393466733267?text=Hello%20I%20am%20interested%20in%20your%20villa" target="_blank" class="btn btn-success btn-lg">Chat on WhatsApp</a>
-	  </div>
-	</section>
+<section class="hero d-flex flex-column justify-content-center align-items-center text-center text-light">
+  <div class="overlay"></div>
+  <div class="hero-content">
+    <h1 class="display-1 fw-bold">Villa Tullia</h1>
+    <h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; margin-bottom:1rem;">
+      Your Home on the Majestic Garda Lake
+    </h2>
+    <div class="d-flex gap-3 justify-content-center mt-3">
+      <a href="calendarw.html" class="btn btn-primary btn-lg">Check Our Calendar</a>
+      <a href="https://wa.me/393466733267?text=Hello%20I%20am%20interested%20in%20your%20villa" target="_blank" class="btn btn-success btn-lg">
+        Chat on WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    background: url('imgs/Foto/veranda3.jpg') no-repeat center center/cover;
+    height: 100vh; /* full screen */
+    color: #fff;
+  }
+
+  .hero .overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0); /* dark overlay for readability */
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    padding: 0 1rem;
+  }
+</style>
+
 
 	<!-- HIGHLIGHTS SECTION -->
 	<section class="highlights-section py-5">
