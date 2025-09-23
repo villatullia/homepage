@@ -549,9 +549,11 @@
 
 
 	<!-- GALLERY CAROUSEL -->
-<section id="gallery" style="background:#f3e2b3; padding:60px 20px; text-align:center;">
-  <h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; margin-bottom:1rem;">Photo Gallery</h2>
-  <div id="demoCarousel" class="carousel slide" data-bs-ride="carousel" style="background:#333333; padding:50px 0;">
+<!-- GALLERY CAROUSEL -->
+<section id="gallery" style="background:#333333; padding:60px 20px; text-align:center;">
+  <h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; margin-bottom:1rem; color:#fff;">Photo Gallery</h2>
+  
+  <div id="demoCarousel" class="carousel slide" data-bs-ride="carousel" style="padding:30px 0;">
     
     <!-- Indicators -->
     <div class="carousel-indicators" id="carousel-indicators"></div>
@@ -571,8 +573,35 @@
   </div>
 </section>
 
+<style>
+  #demoCarousel .carousel-item img {
+    width: auto;           /* Let width scale naturally */
+    max-width: 90%;        /* Fit inside container */
+    height: auto;          /* Preserve aspect ratio */
+    max-height: 60vh;      /* Limit very tall images */
+    margin: 0 auto;        /* Center horizontally */
+    display: block;
+    border-radius: 8px;
+  }
+
+  #demoCarousel .carousel-caption {
+    background: rgba(0,0,0,0.4);
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    #demoCarousel {
+      padding: 20px 0;
+    }
+    #demoCarousel .carousel-caption {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+
 <script>
-  // List of photos
   const photos = [
     "basement.jpg","basement2.jpg","basement3.jpg","bbq.jpg","bbq2.jpg","chimney.jpg",
     "interiors.jpg","living.jpg","living2.jpg","sunbedsgarden.jpg",
@@ -587,7 +616,6 @@
     "sofas.jpg"
   ];
 
-  // Auto-generate captions from filenames
   function makeCaption(filename) {
     const name = filename.split(".")[0];
     const captions = {
@@ -649,10 +677,9 @@
     item.className = "carousel-item" + (index === 0 ? " active" : "");
     item.innerHTML = `
       <img src="imgs/Foto/${file}" 
-     class="d-block mx-auto" 
-     alt="${title}" 
-     style="max-height:80vh; width:auto; object-fit:contain; background:#000;">
-      <div class="carousel-caption d-none d-md-block" style="background:rgba(0,0,0,0.4); padding:1rem; border-radius:0.5rem;">
+           class="d-block mx-auto img-fluid" 
+           alt="${title}">
+      <div class="carousel-caption d-none d-md-block">
         <h5>${title}</h5>
         <p>${text}</p>
       </div>
@@ -660,6 +687,8 @@
     inner.appendChild(item);
   });
 </script>
+
+
 
     <!-- Floating Buttons -->
     <div class="floating-buttons">
