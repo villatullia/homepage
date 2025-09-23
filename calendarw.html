@@ -36,25 +36,53 @@
   .modal-header { background:#2b3a42; color:#fff; }
   .btn-whatsapp { background:#25d366; color:#fff; }
   .btn-whatsapp:hover { background:#1ebe5d; }
+  
+  .navbar-toggler {
+  border: none;
+}
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' 
+  xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.9)' 
+  stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header class="d-flex flex-wrap justify-content-center align-items-center">
-  <a href="index.html" class="brand me-auto">Villa Tullia</a>
-  <ul class="nav">
-    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-    <li class="nav-item"><a class="nav-link" href="index.html#gallery">Gallery</a></li>
-    <li class="nav-item"><a class="nav-link" href="index.html#reviews">Reviews</a></li>
-    <li class="nav-item"><a class="nav-link active" href="calendar.html">Calendar</a></li>
-    <li class="nav-item"><a class="nav-link" href="index.html#contact">Contact</a></li>
-  </ul>
-</header>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #2b3a42, #1f2a30);">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a href="index.html" class="navbar-brand brand" style="font-family: 'Great Vibes', cursive; font-size: 2.2rem; color: #f8b500;">
+      Villa Tullia
+    </a>
+
+    <!-- Toggler button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsing nav links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#gallery">Gallery</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#reviews">Reviews</a></li>
+        <li class="nav-item"><a class="nav-link active" href="calendar.html">Calendar</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
 
 <!-- PAGE TITLE & INSTRUCTION -->
 <section class="page-title">
-  <h1 style="font-size:4rem; font-weight:500; z-index:1;">Villa Tullia – Availability & Booking</h1>
+  <h1 style="font-size:4rem; font-weight:500; z-index:1;">Villa Tullia – Availability</h1>
   <p>We rent weekly from <strong>Saturday to Saturday</strong>. Free weeks are shown in <span style="color:green;font-weight:bold;">green</span>. Tap on a free week to inquire directly via the form or WhatsApp.</p>
 </section>
 
@@ -88,12 +116,14 @@
             <textarea class="form-control" name="message" rows="3">I want to book this week.</textarea>
           </div>
         </div>
-        <div class="modal-footer d-flex justify-content-between">
-          <a id="whatsappBtn" href="#" target="_blank" class="btn btn-whatsapp d-flex align-items-center gap-2">
-            <i class="fab fa-whatsapp"></i> WhatsApp
-          </a>
-          <button type="submit" class="btn btn-primary">Send Inquiry</button>
-        </div>
+		<div class="modal-footer d-flex flex-column align-items-center">
+		  <button type="submit" class="btn btn-primary mb-2">Send Inquiry</button>
+		  <span class="my-1">or</span>
+		  <a id="whatsappBtn" href="#" target="_blank" 
+			 class="btn btn-whatsapp d-flex align-items-center gap-2">
+			<i class="fab fa-whatsapp"></i> WhatsApp
+		  </a>
+		</div>
       </form>
     </div>
   </div>
