@@ -549,32 +549,32 @@
 
 
 	<!-- GALLERY CAROUSEL -->
-<!-- GALLERY CAROUSEL -->
+<!-- GALLERY GRID -->
 <section id="gallery" style="background:#333333; padding:60px 20px; text-align:center;">
   <h2 style="font-family: 'Great Vibes', cursive; font-size:3rem; margin-bottom:1rem; color:#fff;">Photo Gallery</h2>
-  <div id="demoCarousel" class="carousel slide" data-bs-ride="carousel" style="padding:50px 0;">
 
-    <!-- Indicators -->
-    <div class="carousel-indicators" id="carousel-indicators"></div>
-
-    <!-- Slides -->
-    <div class="carousel-inner" id="carousel-inner"></div>
-
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#demoCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#demoCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+  <div class="container">
+    <div class="row g-3" id="gallery-grid"></div>
   </div>
 </section>
 
 <!-- GLightbox CSS & JS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+
+<style>
+  #gallery-grid img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  #gallery-grid img:hover {
+    transform: scale(1.05);
+  }
+</style>
 
 <script>
   const photos = [
@@ -594,77 +594,62 @@
   function makeCaption(filename) {
     const name = filename.split(".")[0];
     const captions = {
-      basement: ["Cozy Basement", "A cool retreat for warm days."],
-      basement2: ["Basement Lounge", "Extra space for games or relaxation."],
-      basement3: ["Entertainment Basement", "Perfect for cozy evenings."],
-      bbq: ["BBQ Area", "Grill with friends outdoors."],
-      bbq2: ["Outdoor Kitchen", "Fully equipped for summer dining."],
-      chimney: ["Rustic Chimney", "Warm and charming fireplace corner."],
-      interiors: ["Elegant Interiors", "Modern style with a cozy touch."],
-      living: ["Living Room", "Bright and spacious with natural light."],
-      living2: ["Relaxing Space", "Comfortable sofas for gatherings."],
-      sunbedsgarden: ["Garden Sunbeds", "Relax under the sun."],
-      veranda: ["Shady Veranda", "Perfect for coffee or reading."],
-      veranda2: ["Garden Veranda", "Open-air space to enjoy the view."],
-      veranda3: ["Large Veranda", "Ideal for outdoor dining."],
-      bathroom1: ["Bathroom 1", "Modern and clean design."],
-      bathroom2: ["Bathroom 2", "Stylish and functional."],
-      bathroom3: ["Bathroom 3", "Bright and relaxing."],
-      bathroom4: ["Bathroom 4", "Simple and elegant."],
-      bathroom5: ["Bathroom 5", "Perfect for a refreshing start."],
-      dining: ["Dining Area", "Enjoy meals together in style."],
-      flower: ["Flower Detail", "Nature’s touch indoors."],
-      flower2: ["Garden Flowers", "Bright and colorful blossoms."],
-      garden: ["Private Garden", "Peaceful and green retreat."],
-      garden2: ["Garden View", "Full of charm and tranquility."],
-      lake: ["Lake View", "Wake up to breathtaking scenery."],
-      kids: ["Kids' Room", "A fun space for children."],
-      kids2: ["Playful Room", "Comfort and joy for the little ones."],
-      kids3: ["Cozy Kids’ Room", "Safe and welcoming environment."],
-      kitchen: ["Kitchen", "Fully equipped for your meals."],
-      kitchen2: ["Modern Kitchen", "Cook in style and comfort."],
-      kitchen3: ["Family Kitchen", "Bright space for cooking together."],
-      pool: ["Swimming Pool", "Dive in and cool off."],
-      pool2: ["Poolside Relaxation", "Enjoy sun and water."],
-      room1: ["Bedroom 1", "Comfortable and inviting."],
-      room12: ["Spacious Bedroom", "Perfect for restful nights."],
-      room2: ["Bedroom 2", "Cozy and quiet retreat."],
-      sofas: ["Sofa Area", "Relax with family or friends."]
+    basement: ["Cozy Basement", "A cool retreat for warm days."],
+    basement2: ["Basement Lounge", "Extra space for games or relaxation."],
+    basement3: ["Entertainment Basement", "Perfect for cozy evenings."],
+    bbq: ["BBQ Area", "Grill with friends outdoors."],
+    bbq2: ["Outdoor Kitchen", "Fully equipped for summer dining."],
+    chimney: ["Rustic Chimney", "Warm and charming fireplace corner."],
+    interiors: ["Elegant Interiors", "Modern style with a cozy touch."],
+    living: ["Living Room", "Bright and spacious with natural light."],
+    living2: ["Relaxing Space", "Comfortable sofas for gatherings."],
+    sunbedsgarden: ["Garden Sunbeds", "Relax under the sun."],
+    veranda: ["Shady Veranda", "Perfect for coffee or reading."],
+    veranda2: ["Garden Veranda", "Open-air space to enjoy the view."],
+    veranda3: ["Large Veranda", "Ideal for outdoor dining."],
+    bathroom1: ["Bathroom 1", "Modern and clean design."],
+    bathroom2: ["Bathroom 2", "Stylish and functional."],
+    bathroom3: ["Bathroom 3", "Bright and relaxing."],
+    bathroom4: ["Bathroom 4", "Simple and elegant."],
+    bathroom5: ["Bathroom 5", "Perfect for a refreshing start."],
+    dining: ["Dining Area", "Enjoy meals together in style."],
+    flower: ["Flower Detail", "Nature’s touch indoors."],
+    flower2: ["Garden Flowers", "Bright and colorful blossoms."],
+    garden: ["Private Garden", "Peaceful and green retreat."],
+    garden2: ["Garden View", "Full of charm and tranquility."],
+    lake: ["Lake View", "Wake up to breathtaking scenery."],
+    kids: ["Kids' Room", "A fun space for children."],
+    kids2: ["Playful Room", "Comfort and joy for the little ones."],
+    kids3: ["Cozy Kids’ Room", "Safe and welcoming environment."],
+    kitchen: ["Kitchen", "Fully equipped for your meals."],
+    kitchen2: ["Modern Kitchen", "Cook in style and comfort."],
+    kitchen3: ["Family Kitchen", "Bright space for cooking together."],
+    pool: ["Swimming Pool", "Dive in and cool off."],
+    pool2: ["Poolside Relaxation", "Enjoy sun and water."],
+    room1: ["Bedroom 1", "Comfortable and inviting."],
+    room12: ["Spacious Bedroom", "Perfect for restful nights."],
+    room2: ["Bedroom 2", "Cozy and quiet retreat."],
+    sofas: ["Sofa Area", "Relax with family or friends."]
     };
     return captions[name] || ["Villa Tullia", "A special corner of our home."];
   }
 
-  const indicators = document.getElementById("carousel-indicators");
-  const inner = document.getElementById("carousel-inner");
-
-  photos.forEach((file, index) => {
-    // Indicators
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.bsTarget = "#demoCarousel";
-    button.dataset.bsSlideTo = index;
-    if (index === 0) button.classList.add("active");
-    indicators.appendChild(button);
-
-    // Slide with GLightbox
+  const grid = document.getElementById("gallery-grid");
+  photos.forEach(file => {
     const [title, text] = makeCaption(file);
-    const item = document.createElement("div");
-    item.className = "carousel-item" + (index === 0 ? " active" : "");
-    item.innerHTML = `
+    const col = document.createElement("div");
+    col.className = "col-6 col-md-4 col-lg-3"; // responsive grid
+    col.innerHTML = `
       <a href="imgs/Foto/${file}" class="glightbox" data-gallery="villa-gallery" data-title="${title}" data-description="${text}">
-        <img src="imgs/Foto/${file}" class="d-block mx-auto" alt="${title}" style="max-height:80vh; width:auto; object-fit:contain;">
+        <img src="imgs/Foto/${file}" alt="${title}">
       </a>
-      <div class="carousel-caption d-none d-md-block" style="background:rgba(0,0,0,0.4); padding:1rem; border-radius:0.5rem;">
-        <h5>${title}</h5>
-        <p>${text}</p>
-      </div>
     `;
-    inner.appendChild(item);
+    grid.appendChild(col);
   });
 
-  // Initialize GLightbox
-  const lightbox = GLightbox({ selector: '.glightbox' });
+  GLightbox({ selector: '.glightbox' });
 </script>
+
 
 
 
