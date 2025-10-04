@@ -206,6 +206,38 @@
         background:#4285F4;
         color:white;
       }
+	  /* Ensure review cards are responsive */
+  .review-carousel .card {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 12px;
+    background: #fdf5e6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    word-wrap: break-word; /* wrap long text */
+  }
+
+  /* Small screens: add horizontal padding inside the card */
+  @media (max-width: 576px) {
+    .review-carousel .card {
+      padding: 1rem;
+    }
+  }
+
+  .review-carousel p {
+    font-size: 1.1rem;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+  }
+
+  .review-carousel span {
+    font-size: 0.9rem;
+    color: #555;
+    display: block;
+    text-align: right;
+  }
 
       /* ------------------------------
          Gallery Carousel
