@@ -142,7 +142,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	<!-- AVAILABILITIES  -->
   const bookedWeeks = [{ start: '2025-08-23', end:'2025-08-30', title:'Booked', color:'#ff4d4d' }];
-  const availableWeeks = [{ start:'2025-08-30', end:'2025-09-06', title:'Available', color:'green', price:800 }];
+  const availableWeeks = [
+  // May 2026
+  { start:'2026-05-02', end:'2026-05-09', title:'Available', color:'green', price:'€800' },
+  { start:'2026-05-09', end:'2026-05-16', title:'Available', color:'green', price:'€800' },
+  { start:'2026-05-16', end:'2026-05-23', title:'Available', color:'green', price:'€800' },
+  { start:'2026-05-23', end:'2026-05-30', title:'Available', color:'green', price:'€800' },
+
+  // June 2026
+  { start:'2026-05-30', end:'2026-06-06', title:'Available', color:'green', price:'€800' },
+  { start:'2026-06-06', end:'2026-06-13', title:'Available', color:'green', price:'€800' },
+  { start:'2026-06-13', end:'2026-06-20', title:'Available', color:'green', price:'€800' },
+  { start:'2026-06-20', end:'2026-06-27', title:'Available', color:'green', price:'€800' },
+  { start:'2026-06-27', end:'2026-07-04', title:'Available', color:'green', price:'€800' },
+
+  // July 2026
+  { start:'2026-07-04', end:'2026-07-11', title:'Available', color:'green', price:'€800' },
+  { start:'2026-07-11', end:'2026-07-18', title:'Available', color:'green', price:'€800' },
+  { start:'2026-07-18', end:'2026-07-25', title:'Available', color:'green', price:'€800' },
+  { start:'2026-07-25', end:'2026-08-01', title:'Available', color:'green', price:'€800' },
+
+  // August 2026
+  { start:'2026-08-01', end:'2026-08-08', title:'Available', color:'green', price:'€800' },
+  { start:'2026-08-08', end:'2026-08-15', title:'Available', color:'green', price:'€800' },
+  { start:'2026-08-15', end:'2026-08-22', title:'Available', color:'green', price:'€800' },
+  { start:'2026-08-22', end:'2026-08-29', title:'Available', color:'green', price:'€800' },
+  { start:'2026-08-29', end:'2026-09-05', title:'Available', color:'green', price:'€800' },
+
+  // September 2026
+  { start:'2026-09-05', end:'2026-09-12', title:'Available', color:'green', price:'€800' },
+  { start:'2026-09-12', end:'2026-09-19', title:'Available', color:'green', price:'€800' },
+  { start:'2026-09-19', end:'2026-09-26', title:'Available', color:'green', price:'€800' },
+  { start:'2026-09-26', end:'2026-10-03', title:'Available', color:'green', price:'€800' },
+
+  // October 2026
+  { start:'2026-10-03', end:'2026-10-10', title:'Available', color:'green', price:'€800' },
+  { start:'2026-10-10', end:'2026-10-17', title:'Available', color:'green', price:'€800' },
+  { start:'2026-10-17', end:'2026-10-24', title:'Available', color:'green', price:'€800' },
+  { start:'2026-10-24', end:'2026-10-31', title:'Available', color:'green', price:'€800' }
+];
+
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
@@ -153,7 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		return { 
 		  html: `<div style="text-align:center;">
 				   ${arg.event.title}<br>
-				   <strong>$${arg.event.extendedProps.price}/week</strong>
+				   <!-- <strong>$${arg.event.extendedProps.price}/week</strong> -->
+				   <strong><br></strong>
 				 </div>` 
 		};
 	  } else {
