@@ -194,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
+	initialDate: '2026-05-01',
     height:'auto',
     events: [...bookedWeeks, ...availableWeeks],
     eventContent: function(arg) {
