@@ -3,7 +3,8 @@ name: Sync booking calendars
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"
+    # Offset from the busiest top-of-hour schedule slots. GitHub Actions uses UTC.
+    - cron: "7,22,37,52 * * * *"
 
 permissions:
   contents: write
