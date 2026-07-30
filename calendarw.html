@@ -16,7 +16,8 @@
     .hero { padding:67px 7vw 60px; text-align:center; background:var(--sand); }.eyebrow { color:var(--terracotta); font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; }.hero h1,.card-title { font-family:"Playfair Display",serif; }.hero h1 { margin:14px 0; font-size:clamp(2.7rem,5.5vw,4.6rem); line-height:1.05; }.hero p { max-width:630px; margin:auto; color:#586561; line-height:1.65; }
     .booking-area { max-width:1170px; margin:auto; padding:48px 25px 82px; display:grid; grid-template-columns:minmax(0,1fr) 300px; align-items:start; gap:28px; }.picker-card { overflow:hidden; background:#fff; border:1px solid var(--line); box-shadow:0 12px 38px rgba(24,54,50,.08); }.picker-head { padding:23px 25px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }.picker-head strong { display:block; font:600 1.35rem "Playfair Display",serif; }.picker-head span { display:block; margin-top:3px; color:#64716d; font-size:.77rem; }.month-control { display:flex; gap:7px; }.month-control button { display:grid; place-items:center; width:36px; height:36px; border:1px solid var(--line); background:#fff; color:var(--forest); cursor:pointer; transition:.2s; }.month-control button:hover:not(:disabled) { background:var(--forest); color:#fff; }.month-control button:disabled { opacity:.35; cursor:not-allowed; }.weeks { padding:14px; display:grid; gap:10px; }.week { display:grid; grid-template-columns:88px 1fr auto; gap:18px; align-items:center; width:100%; padding:14px; border:1px solid var(--line); background:#fff; color:var(--ink); text-align:left; font:inherit; }.week.available { cursor:pointer; }.week.available:hover,.week.selected { border-color:var(--available); background:#f3f8f4; }.week.selected { box-shadow:inset 3px 0 var(--available); }.week.reserved,.week.past { opacity:.62; background:#faf8f5; }.week-date { color:var(--forest); font:700 .72rem/1.35 "DM Sans",sans-serif; letter-spacing:.06em; text-transform:uppercase; }.week-date b { display:block; font:600 1.24rem/1.05 "Playfair Display",serif; letter-spacing:0; text-transform:none; }.week-info strong { display:block; font:600 1.12rem "Playfair Display",serif; }.week-info span { display:block; margin-top:2px; color:#66726e; font-size:.78rem; }.status { padding:6px 8px; font-size:.62rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; white-space:nowrap; }.status.available { color:#fff; background:var(--available); }.status.reserved { color:#fff; background:var(--reserved); }.status.past { color:#65716d; background:#e6e8e2; }.empty-month { padding:45px 25px; color:#66726e; text-align:center; font-size:.9rem; }.info-panel { position:sticky; top:20px; padding:29px; color:#fff; background:var(--ink); }.info-panel h2 { margin:0 0 12px; font:600 1.95rem/1.1 "Playfair Display",serif; }.info-panel p { margin:0; color:#d7e0dc; font-size:.9rem; line-height:1.65; }.steps { margin:26px 0 22px; padding:0; list-style:none; counter-reset:steps; }.steps li { position:relative; min-height:39px; padding:3px 0 0 38px; color:#e6ede9; font-size:.82rem; }.steps li:before { content:counter(steps); counter-increment:steps; position:absolute; left:0; top:0; display:grid; place-items:center; width:25px; height:25px; border:1px solid rgba(255,255,255,.55); border-radius:50%; color:#fff; font-size:.7rem; font-weight:700; }.selection { margin-top:23px; padding:16px; background:#fff; color:var(--ink); }.selection-label { display:block; margin-bottom:4px; color:#6d7774; font-size:.65rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }.selection-date { min-height:24px; font:600 1rem/1.35 "Playfair Display",serif; }.selection-empty { color:#6d7774; font:400 .82rem "DM Sans",sans-serif; }.inquire { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:46px; margin-top:12px; border:0; background:var(--terracotta); color:white; cursor:pointer; font:700 .71rem "DM Sans",sans-serif; letter-spacing:.1em; text-transform:uppercase; transition:background .2s, transform .2s; }.inquire:disabled { cursor:not-allowed; background:#aeb8b2; }.inquire:not(:disabled):hover { background:#a95f43; transform:translateY(-1px); }.calendar-note { margin-top:17px; color:#d7e0dc; font-size:.72rem; line-height:1.5; }.first-available { display:inline-flex; gap:8px; align-items:center; margin-top:22px; padding:10px 14px; color:var(--forest); background:#fff; font-size:.79rem; font-weight:700; }.email-form { margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,.2); }.email-form label { display:block; margin:11px 0 5px; color:#d7e0dc; font-size:.69rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }.email-form input,.email-form textarea { width:100%; padding:10px; border:0; border-radius:0; background:#f7f5f0; color:var(--ink); font:inherit; font-size:.82rem; }.email-form textarea { min-height:72px; resize:vertical; }.email-button { width:100%; margin-top:12px; padding:13px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font:700 .7rem "DM Sans",sans-serif; letter-spacing:.09em; text-transform:uppercase; }.email-button:hover { background:#fff; color:var(--ink); }.email-status { min-height:19px; margin-top:8px!important; font-size:.74rem!important; }.site-footer { padding:30px 7vw; display:flex; justify-content:space-between; gap:20px; background:#112b27; color:#d7e0dc; font-size:.77rem; }.site-footer a { color:#fff; text-decoration:none; }.footer-links { display:flex; gap:18px; }
     .flow-kicker { margin-bottom:9px; color:#e7b89f; font-size:.65rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }.flow-steps { display:grid; gap:2px; margin:24px 0 20px; }.flow-step { position:relative; display:grid; grid-template-columns:29px 1fr; gap:10px; align-items:center; min-height:46px; padding:7px 8px; color:#9eafaa; transition:.25s; }.flow-step:not(:last-child):after { content:""; position:absolute; left:21px; top:38px; height:18px; border-left:1px solid rgba(255,255,255,.24); }.flow-step > span { display:grid; place-items:center; width:27px; height:27px; border:1px solid rgba(255,255,255,.36); border-radius:50%; font-size:.7rem; font-weight:700; }.flow-step b,.flow-step small { display:block; }.flow-step b { font-size:.78rem; letter-spacing:.02em; }.flow-step small { margin-top:2px; font-size:.67rem; }.flow-step.active { color:#fff; background:rgba(255,255,255,.08); }.flow-step.active > span { border-color:#e7b89f; color:var(--ink); background:#e7b89f; }.flow-step.done { color:#dce9e4; }.flow-step.done > span { border-color:var(--available); background:var(--available); color:#fff; font-size:0; }.flow-step.done > span:after { content:"\F26E"; font-family:"bootstrap-icons"; font-size:.75rem; }.flow-prompt { padding:12px 0 2px; color:#d7e0dc; font-size:.78rem; line-height:1.45; }.continue-button { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:48px; margin-top:12px; border:1px solid #e7b89f; background:#e7b89f; color:var(--ink); cursor:pointer; font:700 .7rem "DM Sans",sans-serif; letter-spacing:.1em; text-transform:uppercase; transition:.2s; }.continue-button:disabled { cursor:not-allowed; border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.1); color:#9eafaa; }.continue-button:not(:disabled):hover { background:#fff; border-color:#fff; transform:translateY(-1px); }.continue-button.is-complete { cursor:default; background:transparent; border-color:rgba(255,255,255,.36); color:#d7e0dc; }.contact-choices { margin-top:19px; padding-top:19px; border-top:1px solid rgba(255,255,255,.2); }.contact-title { margin:0 0 4px!important; color:#fff!important; font:600 1.08rem "Playfair Display",serif!important; }.contact-copy { font-size:.77rem!important; }.email-toggle { width:100%; margin-top:10px; padding:12px; border:1px solid rgba(255,255,255,.5); background:transparent; color:#fff; cursor:pointer; font:700 .69rem "DM Sans",sans-serif; letter-spacing:.09em; text-transform:uppercase; }.email-toggle:hover { border-color:#fff; background:rgba(255,255,255,.08); }.contact-choices[hidden],.email-form[hidden] { display:none; }
-    @media (max-width:820px) { .booking-area { grid-template-columns:1fr; padding:32px 16px 60px; }.info-panel { position:static; padding:24px; }.site-nav { padding:0 6vw; }.hero { padding:53px 6vw 48px; }.picker-head { padding:18px 16px; }.week { grid-template-columns:76px 1fr; gap:12px; padding:12px; }.status { grid-column:2; justify-self:start; }.weeks { padding:10px; } }
+    .info-panel { overflow:hidden; padding:0; color:var(--ink); background:#fff; border:1px solid var(--line); box-shadow:0 12px 38px rgba(24,54,50,.08); }.info-panel h2 { margin:0 0 9px; color:var(--ink); font:600 1.8rem/1.1 "Playfair Display",serif; }.info-panel p { color:#60706b; }.flow-progress { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 19px; border-bottom:1px solid var(--line); background:#f7f4ed; }.flow-count { color:var(--forest); font-size:.66rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }.flow-dots { display:flex; gap:5px; }.flow-dots i { display:block; width:7px; height:7px; border-radius:50%; background:#d4d9d3; transition:.25s; }.flow-dots i.is-active { width:20px; border-radius:8px; background:var(--terracotta); }.flow-dots i.is-done { background:var(--available); }.flow-window { overflow:hidden; }.flow-track { display:flex; width:400%; transition:transform .42s cubic-bezier(.22,.8,.25,1); }.flow-slide { flex:0 0 25%; min-width:0; padding:25px 23px 22px; }.flow-kicker { margin-bottom:8px; color:var(--terracotta); font-size:.64rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }.slide-copy { margin:0; font-size:.82rem!important; line-height:1.55!important; }.month-choices { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:20px; }.month-choice { min-height:57px; padding:9px; border:1px solid var(--line); background:#fff; color:var(--ink); text-align:left; cursor:pointer; font:inherit; transition:.2s; }.month-choice:hover,.month-choice.is-current { border-color:var(--forest); background:#f1f7f3; }.month-choice:disabled { cursor:not-allowed; opacity:.43; }.month-choice strong,.month-choice small { display:block; }.month-choice strong { font:600 .88rem "Playfair Display",serif; }.month-choice small { margin-top:2px; color:#6d7a75; font-size:.65rem; }.slider-back { margin-top:18px; padding:0; border:0; background:transparent; color:var(--forest); cursor:pointer; font:700 .68rem "DM Sans",sans-serif; letter-spacing:.08em; text-transform:uppercase; }.slider-back i { margin-right:4px; }.selection { margin-top:18px; padding:15px; border:1px solid var(--line); background:#f7f4ed; color:var(--ink); }.selection-label { display:block; margin-bottom:4px; color:#6d7774; font-size:.65rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }.selection-date { min-height:24px; font:600 1rem/1.35 "Playfair Display",serif; }.selection-empty { color:#6d7774; font:400 .82rem "DM Sans",sans-serif; }.continue-button,.inquire,.email-toggle,.email-button { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:46px; cursor:pointer; font:700 .69rem "DM Sans",sans-serif; letter-spacing:.09em; text-transform:uppercase; transition:.2s; }.continue-button { margin-top:12px; border:0; background:var(--terracotta); color:#fff; }.continue-button:hover,.inquire:hover { background:#aa6042; transform:translateY(-1px); }.inquire { margin-top:18px; border:0; background:#25a765; color:#fff; }.email-toggle { margin-top:9px; border:1px solid var(--forest); background:#fff; color:var(--forest); }.email-toggle:hover { background:#eef5f0; }.email-form { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }.email-form label { display:block; margin:11px 0 5px; color:#586762; font-size:.69rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }.email-form input,.email-form textarea { width:100%; padding:10px; border:1px solid var(--line); border-radius:0; background:#f7f5f0; color:var(--ink); font:inherit; font-size:.82rem; }.email-form textarea { min-height:72px; resize:vertical; }.email-button { margin-top:12px; border:0; background:var(--forest); color:#fff; }.email-button:hover { background:var(--ink); }.email-status { min-height:19px; margin-top:8px!important; font-size:.74rem!important; }.calendar-note { margin:0; padding:12px 23px; border-top:1px solid var(--line); color:#687671!important; font-size:.7rem!important; line-height:1.45!important; }.info-panel [hidden] { display:none; }
+    @media (max-width:820px) { .booking-area { grid-template-columns:1fr; padding:32px 16px 60px; }.info-panel { position:static; }.site-nav { padding:0 6vw; }.hero { padding:53px 6vw 48px; }.picker-head { padding:18px 16px; }.week { grid-template-columns:76px 1fr; gap:12px; padding:12px; }.status { grid-column:2; justify-self:start; }.weeks { padding:10px; }.flow-slide { padding:23px 19px 20px; } }
   </style>
 </head>
 <body>
@@ -36,24 +37,12 @@
       <div id="weeks" class="weeks"></div>
     </section>
     <aside class="info-panel" id="bookingFlow">
-      <div class="flow-kicker">Your direct booking</div>
-      <h2>Plan your stay.</h2>
-      <p>Three simple steps, with a real person at the other end to confirm everything personally.</p>
-      <div class="flow-steps" aria-label="Booking steps">
-        <div id="flowStep1" class="flow-step active"><span>1</span><div><b>Choose your week</b><small>Pick a green date</small></div></div>
-        <div id="flowStep2" class="flow-step"><span>2</span><div><b>Confirm your dates</b><small>Review your seven nights</small></div></div>
-        <div id="flowStep3" class="flow-step"><span>3</span><div><b>Send an enquiry</b><small>WhatsApp or email</small></div></div>
-      </div>
-      <p id="flowPrompt" class="flow-prompt">Step 1: choose a green week in the calendar to begin.</p>
-      <div class="selection"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div></div>
-      <button id="continueButton" class="continue-button" type="button" disabled>Continue to enquiry <i class="bi bi-arrow-right"></i></button>
-      <div id="contactChoices" class="contact-choices" hidden>
-        <p class="contact-title">You are all set.</p>
-        <p class="contact-copy">Choose the way you would like to get in touch. We will confirm availability and the next steps personally.</p>
-        <button id="inquireButton" class="inquire" type="button" disabled><i class="bi bi-whatsapp"></i>Enquire on WhatsApp</button>
-        <button id="emailToggle" class="email-toggle" type="button"><i class="bi bi-envelope"></i> Send an email instead</button>
-      </div>
-      <form id="emailEnquiry" class="email-form" hidden>
+      <div class="flow-progress"><span id="flowCount" class="flow-count">Step 1 of 4</span><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></span></div>
+      <div class="flow-window"><div id="flowTrack" class="flow-track">
+        <section class="flow-slide"><div class="flow-kicker">Your direct booking</div><h2>When would you like to stay?</h2><p class="slide-copy">First, choose a month. We will then show you its available Saturday-to-Saturday weeks.</p><div id="monthChoices" class="month-choices"></div></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 2 · Pick a week</div><h2>Choose a green week.</h2><p class="slide-copy">The calendar is showing your month. Each green option is a complete seven-night stay.</p><button id="backToMonths" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change month</button></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 3 · Confirm dates</div><h2>Does this look right?</h2><p class="slide-copy">We will use these exact dates in your enquiry.</p><div class="selection"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div></div><button id="continueButton" class="continue-button" type="button">Yes, continue <i class="bi bi-arrow-right"></i></button><button id="changeWeek" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Pick another week</button></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 4 · Get in touch</div><h2>Almost there.</h2><p class="slide-copy">Send a quick message and we will confirm availability and the next steps personally.</p><button id="inquireButton" class="inquire" type="button"><i class="bi bi-whatsapp"></i> Enquire on WhatsApp</button><button id="emailToggle" class="email-toggle" type="button"><i class="bi bi-envelope"></i> Send an email instead</button><form id="emailEnquiry" class="email-form" hidden>
         <label for="emailWeek">Preferred week</label><input id="emailWeek" name="weekSelected" value="General enquiry" readonly>
         <label for="guestName">Your name</label><input id="guestName" name="name" required autocomplete="name">
         <label for="guestEmail">Email address</label><input id="guestEmail" type="email" name="email" required autocomplete="email">
@@ -61,6 +50,8 @@
         <button class="email-button" type="submit"><i class="bi bi-envelope"></i> Send email enquiry</button>
         <p id="emailStatus" class="email-status"></p>
       </form>
+        <button id="changeDates" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change selected week</button></section>
+      </div></div>
       <p class="calendar-note">Availability is confirmed when we reply to your enquiry.</p>
       <p id="syncStatus" class="calendar-note">Checking live calendar…</p>
     </aside>
@@ -105,12 +96,15 @@
       const selectionDate = document.getElementById('selectionDate');
       const inquireButton = document.getElementById('inquireButton');
       const continueButton = document.getElementById('continueButton');
-      const contactChoices = document.getElementById('contactChoices');
       const emailToggle = document.getElementById('emailToggle');
-      const flowPrompt = document.getElementById('flowPrompt');
-      const flowStep1 = document.getElementById('flowStep1');
-      const flowStep2 = document.getElementById('flowStep2');
-      const flowStep3 = document.getElementById('flowStep3');
+      const flowTrack = document.getElementById('flowTrack');
+      const flowCount = document.getElementById('flowCount');
+      const flowDots = [...document.querySelectorAll('#flowDots i')];
+      const monthChoices = document.getElementById('monthChoices');
+      const bookingFlow = document.getElementById('bookingFlow');
+      const backToMonths = document.getElementById('backToMonths');
+      const changeWeek = document.getElementById('changeWeek');
+      const changeDates = document.getElementById('changeDates');
       const previousButton = document.getElementById('previousMonth');
       const nextButton = document.getElementById('nextMonth');
       const syncStatus = document.getElementById('syncStatus');
@@ -118,24 +112,58 @@
       const emailWeek = document.getElementById('emailWeek');
       const emailForm = document.getElementById('emailEnquiry');
       const emailStatus = document.getElementById('emailStatus');
+      let activeFlowStep = 0;
 
       const monthOffset = (amount) => new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + amount, 1);
+      const scrollToFlow = () => {
+        if (window.matchMedia('(max-width:820px)').matches) bookingFlow.scrollIntoView({ behavior:'smooth', block:'start' });
+      };
+      const scrollToCalendar = () => {
+        if (window.matchMedia('(max-width:820px)').matches) document.querySelector('.picker-card').scrollIntoView({ behavior:'smooth', block:'start' });
+      };
+      const setFlowStep = (step, shouldScroll = false) => {
+        activeFlowStep = step;
+        flowTrack.style.transform = `translateX(-${step * 25}%)`;
+        flowCount.textContent = `Step ${step + 1} of 4`;
+        flowDots.forEach((dot, index) => {
+          dot.classList.toggle('is-active', index === step);
+          dot.classList.toggle('is-done', index < step);
+        });
+        if (shouldScroll) scrollToFlow();
+      };
       const setSelectedWeek = (week) => {
         selectedWeek = week;
         selectionDate.textContent = `${formatDate(week.start)} – ${formatDate(new Date(week.end - oneDay))}`;
         emailWeek.value = selectionDate.textContent;
         selectionDate.classList.remove('selection-empty');
-        inquireButton.disabled = false;
-        continueButton.disabled = false;
-        continueButton.classList.remove('is-complete');
-        continueButton.innerHTML = 'Continue to enquiry <i class="bi bi-arrow-right"></i>';
-        contactChoices.hidden = true;
         emailForm.hidden = true;
-        flowStep1.classList.remove('active'); flowStep1.classList.add('done');
-        flowStep2.classList.add('active'); flowStep2.classList.remove('done');
-        flowStep3.classList.remove('active', 'done');
-        flowPrompt.textContent = 'Lovely choice. Step 2: confirm these dates to continue.';
         renderWeeks();
+        setFlowStep(2, true);
+      };
+      const renderMonthChoices = () => {
+        const months = new Map();
+        inventory.forEach((week) => {
+          const month = new Date(week.start.getFullYear(), week.start.getMonth(), 1);
+          const key = `${month.getFullYear()}-${month.getMonth()}`;
+          if (!months.has(key)) months.set(key, month);
+        });
+        monthChoices.innerHTML = '';
+        [...months.values()].forEach((month) => {
+          const monthWeeks = inventory.filter((week) => week.start.getFullYear() === month.getFullYear() && week.start.getMonth() === month.getMonth());
+          const openCount = monthWeeks.filter((week) => week.status === 'available' && week.start >= today).length;
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = `month-choice${month.getTime() === visibleMonth.getTime() ? ' is-current' : ''}`;
+          button.disabled = openCount === 0;
+          button.innerHTML = `<strong>${formatDate(month, { month:'short', year:'numeric' })}</strong><small>${openCount ? `${openCount} open ${openCount === 1 ? 'week' : 'weeks'}` : 'No open weeks'}</small>`;
+          button.addEventListener('click', () => {
+            visibleMonth = month;
+            renderWeeks();
+            setFlowStep(1);
+            scrollToCalendar();
+          });
+          monthChoices.appendChild(button);
+        });
       };
       const renderWeeks = () => {
         const earliestOpenWeek = inventory.find((week) => week.status === 'available' && week.start >= today);
@@ -143,6 +171,7 @@
         monthTitle.textContent = formatDate(visibleMonth, { month:'long', year:'numeric' });
         previousButton.disabled = visibleMonth <= firstMonth;
         nextButton.disabled = visibleMonth >= lastMonth;
+        renderMonthChoices();
         const thisMonth = inventory.filter((week) => week.start.getFullYear() === visibleMonth.getFullYear() && week.start.getMonth() === visibleMonth.getMonth());
         if (!thisMonth.length) { weeksElement.innerHTML = '<p class="empty-month">There are no Saturday check-ins listed for this month.</p>'; return; }
         weeksElement.innerHTML = '';
@@ -159,17 +188,14 @@
           weeksElement.appendChild(card);
         });
       };
-      previousButton.addEventListener('click', () => { visibleMonth = monthOffset(-1); renderWeeks(); });
-      nextButton.addEventListener('click', () => { visibleMonth = monthOffset(1); renderWeeks(); });
+      previousButton.addEventListener('click', () => { visibleMonth = monthOffset(-1); renderWeeks(); setFlowStep(1); });
+      nextButton.addEventListener('click', () => { visibleMonth = monthOffset(1); renderWeeks(); setFlowStep(1); });
+      backToMonths.addEventListener('click', () => setFlowStep(0, true));
+      changeWeek.addEventListener('click', () => { setFlowStep(1); scrollToCalendar(); });
+      changeDates.addEventListener('click', () => { setFlowStep(1); scrollToCalendar(); });
       continueButton.addEventListener('click', () => {
         if (!selectedWeek) return;
-        contactChoices.hidden = false;
-        continueButton.disabled = true;
-        continueButton.classList.add('is-complete');
-        continueButton.innerHTML = '<i class="bi bi-check2"></i> Dates confirmed';
-        flowStep2.classList.remove('active'); flowStep2.classList.add('done');
-        flowStep3.classList.add('active');
-        flowPrompt.textContent = 'Step 3: send your enquiry in the way that feels easiest.';
+        setFlowStep(3);
       });
       emailToggle.addEventListener('click', () => {
         emailForm.hidden = false;
