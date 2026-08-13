@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - fastify@5.11.0
+onlyBuiltDependencies:
+  - esbuild

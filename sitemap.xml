@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://villatullia.com/index.html</loc>
+    <loc>https://villatullia.it/</loc>
+    <lastmod>2026-08-02</lastmod>
+    <image:image><image:loc>https://villatullia.it/imgs/Foto/veranda3.webp</image:loc><image:title>Villa Tullia Lake Garda veranda</image:title></image:image>
+    <image:image><image:loc>https://villatullia.it/imgs/Foto/lake.webp</image:loc><image:title>Lake Garda view from Villa Tullia</image:title></image:image>
+    <image:image><image:loc>https://villatullia.it/imgs/Foto/pool.webp</image:loc><image:title>Swimming pool at Villa Tullia</image:title></image:image>
+    <image:image><image:loc>https://villatullia.it/imgs/Foto/living.webp</image:loc><image:title>Villa Tullia living room</image:title></image:image>
   </url>
-  <url>
-    <loc>https://villatullia.com/calendarw.html</loc>
-  </url>
+  <url><loc>https://villatullia.it/calendarw.html</loc><lastmod>2026-08-02</lastmod></url>
 </urlset>

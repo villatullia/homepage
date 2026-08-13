@@ -1,0 +1,36 @@
+services:
+  app:
+    ports:
+      - "127.0.0.1:3100:3000"
+    depends_on:
+      mailpit:
+        condition: service_started
+
+  documenso:
+    ports:
+      - "127.0.0.1:3101:3000"
+    depends_on:
+      mailpit:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "1.50"
+          memory: 2G
+
+  mailpit:
+    image: axllent/mailpit:v1.30.0
+    restart: unless-stopped
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - "127.0.0.1:3102:8025"
+    networks: [public, private]
+
+volumes:
+  mailpit_data:

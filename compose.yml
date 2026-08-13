@@ -1,0 +1,107 @@
+name: villa-tullia
+
+services:
+  app:
+    build:
+      context: .
+    restart: unless-stopped
+    env_file: ${VILLA_ENV_FILE:-.env.production}
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_PATH: /app/data/private/villa.sqlite
+      STORAGE_PATH: /app/storage
+      DOCUMENSO_BASE_URL: http://documenso:3000/api/v2
+    volumes:
+      - app_database:/app/data/private
+      - app_storage:/app/storage
+      - app_backups:/app/backups
+    depends_on:
+      documenso:
+        condition: service_started
+    networks: [public, private]
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-villatullia.it}
+      SIGN_DOMAIN: ${SIGN_DOMAIN:-sign.villatullia.it}
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+      documenso:
+        condition: service_started
+    networks: [public]
+
+  documenso:
+    image: documenso/documenso:${DOCUMENSO_VERSION:-v2.15.0}
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      NEXTAUTH_SECRET: ${DOCUMENSO_NEXTAUTH_SECRET:?Set DOCUMENSO_NEXTAUTH_SECRET}
+      NEXT_PRIVATE_ENCRYPTION_KEY: ${DOCUMENSO_ENCRYPTION_KEY:?Set DOCUMENSO_ENCRYPTION_KEY}
+      NEXT_PRIVATE_ENCRYPTION_SECONDARY_KEY: ${DOCUMENSO_ENCRYPTION_SECONDARY_KEY:?Set DOCUMENSO_ENCRYPTION_SECONDARY_KEY}
+      NEXT_PUBLIC_WEBAPP_URL: https://${SIGN_DOMAIN:-sign.villatullia.it}
+      NEXT_PRIVATE_INTERNAL_WEBAPP_URL: http://documenso:3000
+      NEXT_PRIVATE_DATABASE_URL: postgresql://documenso:${DOCUMENSO_POSTGRES_PASSWORD:?Set DOCUMENSO_POSTGRES_PASSWORD}@documenso_database:5432/documenso
+      NEXT_PRIVATE_DIRECT_DATABASE_URL: postgresql://documenso:${DOCUMENSO_POSTGRES_PASSWORD:?Set DOCUMENSO_POSTGRES_PASSWORD}@documenso_database:5432/documenso
+      NEXT_PRIVATE_SMTP_TRANSPORT: smtp-auth
+      NEXT_PRIVATE_SMTP_HOST: ${SMTP_HOST:?Set SMTP_HOST}
+      NEXT_PRIVATE_SMTP_PORT: ${SMTP_PORT:-587}
+      NEXT_PRIVATE_SMTP_USERNAME: ${SMTP_USER:?Set SMTP_USER}
+      NEXT_PRIVATE_SMTP_PASSWORD: ${SMTP_PASSWORD:?Set SMTP_PASSWORD}
+      NEXT_PRIVATE_SMTP_SECURE: ${SMTP_SECURE:-false}
+      NEXT_PRIVATE_SMTP_FROM_NAME: ${DOCUMENSO_SMTP_FROM_NAME:-Villa Tullia Signatures}
+      NEXT_PRIVATE_SMTP_FROM_ADDRESS: ${DOCUMENSO_SMTP_FROM_ADDRESS:?Set DOCUMENSO_SMTP_FROM_ADDRESS}
+      NEXT_PRIVATE_SIGNING_TRANSPORT: local
+      NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH: /opt/documenso/cert.p12
+      NEXT_PRIVATE_SIGNING_PASSPHRASE: ${DOCUMENSO_SIGNING_PASSPHRASE:?Set DOCUMENSO_SIGNING_PASSPHRASE}
+      NEXT_PUBLIC_UPLOAD_TRANSPORT: database
+      NEXT_PRIVATE_JOBS_PROVIDER: local
+      DOCUMENSO_DISABLE_TELEMETRY: "true"
+      NEXT_PUBLIC_DISABLE_SIGNUP: ${DOCUMENSO_DISABLE_SIGNUP:-false}
+    volumes:
+      - ./deploy/secrets/documenso-cert.p12:/opt/documenso/cert.p12:ro
+    depends_on:
+      documenso_database:
+        condition: service_healthy
+    networks: [public, private]
+
+  documenso_database:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: documenso
+      POSTGRES_PASSWORD: ${DOCUMENSO_POSTGRES_PASSWORD:?Set DOCUMENSO_POSTGRES_PASSWORD}
+      POSTGRES_DB: documenso
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U documenso -d documenso"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - documenso_database:/var/lib/postgresql/data
+    networks: [private]
+
+volumes:
+  app_database:
+  app_storage:
+  app_backups:
+  documenso_database:
+  caddy_data:
+  caddy_config:
+
+networks:
+  public:
+  private:
+    internal: true

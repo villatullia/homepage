@@ -1,0 +1,21 @@
+{% extends "base.njk" %}
+{% block body %}
+<main class="login-shell">
+  <div class="card">
+    <div class="eyebrow">Private area</div>
+    <h1>Welcome back.</h1>
+    <p class="muted">Sign in to manage enquiries, agreements and payments.</p>
+    {% if error %}<p class="notice error">{{ error }}</p>{% endif %}
+    {% if noAdministrator %}
+      <p class="notice warn">The first administrator has not been created yet. Complete the one-time server setup, then return here to sign in.</p>
+    {% else %}
+      <form method="post" action="/admin/login">
+        <input type="hidden" name="returnTo" value="{{ returnTo }}">
+        <div><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="username"></div>
+        <div><label for="password">Password</label><input id="password" name="password" type="password" required autocomplete="current-password"></div>
+        <button class="button terracotta" type="submit">Sign in securely</button>
+      </form>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

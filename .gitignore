@@ -1,0 +1,26 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+!deploy/.env.production.example
+storage/**
+!storage/.gitkeep
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+tmp/
+output/
+data/private/
+backups/
+deploy/secrets/
+.env.production
+documenso-data/
+postgres-data/
+
+# Original photographs are local working assets, not website deliverables.
+imgs/huge/

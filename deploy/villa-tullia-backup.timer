@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Villa Tullia backup daily
+
+[Timer]
+OnCalendar=*-*-* 03:17:00
+RandomizedDelaySec=45m
+Persistent=true
+Unit=villa-tullia-backup.service
+
+[Install]
+WantedBy=timers.target

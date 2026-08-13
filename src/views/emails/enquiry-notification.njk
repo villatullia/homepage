@@ -1,0 +1,13 @@
+{% extends "_layout.njk" %}{% block content %}
+<h1 style="font:26px Georgia,serif">New website enquiry</h1>
+<p><strong>{{ guestName }}</strong> submitted enquiry <strong>{{ reference }}</strong>.</p>
+<table style="width:100%;border-collapse:collapse;margin:18px 0">
+  <tr><td style="padding:7px 0;color:#687671">Email</td><td style="padding:7px 0"><a href="mailto:{{ guestEmail }}">{{ guestEmail }}</a></td></tr>
+  <tr><td style="padding:7px 0;color:#687671">Phone</td><td style="padding:7px 0">{{ phone }}</td></tr>
+  <tr><td style="padding:7px 0;color:#687671">Stay</td><td style="padding:7px 0">{{ checkIn }} — {{ checkOut }}</td></tr>
+  <tr><td style="padding:7px 0;color:#687671">Guests</td><td style="padding:7px 0">{{ guestsCount }}</td></tr>
+</table>
+<p style="white-space:pre-wrap;padding:14px;background:#f4f1ea">{{ message }}</p>
+<p><a href="{{ adminUrl }}" style="display:inline-block;padding:13px 18px;background:#b66b4f;color:white;text-decoration:none">Open enquiry in dashboard</a></p>
+<p style="font-size:12px;color:#687671">Replying to this email will reply directly to the guest.</p>
+{% endblock %}

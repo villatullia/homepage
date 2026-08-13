@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Rental Agreement {{booking.reference}}</title>
+  <style>
+    :root { color-scheme: light; }
+    body { max-width: 760px; margin: 0 auto; padding: 34px; color: #183632; background: #fff; font: 15px/1.58 Arial, sans-serif; }
+    h1, h2 { font-family: Georgia, serif; }
+    h1 { margin: 0; font-size: 30px; }
+    h2 { margin: 28px 0 8px; font-size: 18px; border-bottom: 1px solid #d7d8d2; padding-bottom: 6px; }
+    .eyebrow { color: #b66b4f; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .reference { margin: 5px 0 25px; color: #687671; }
+    .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 22px; padding: 18px; background: #f7f4ed; }
+    .summary div { min-width: 0; }
+    .summary span { display: block; color: #687671; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+    .summary strong { display: block; margin-top: 3px; }
+    p { white-space: pre-line; }
+    .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; margin-top: 34px; }
+    .signature-line { padding-top: 65px; border-bottom: 1px solid #183632; }
+    .small { color: #687671; font-size: 12px; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="eyebrow">Villa Tullia · Padenghe sul Garda</div>
+  <h1>Short-term Rental Agreement</h1>
+  <p class="reference">Booking reference {{booking.reference}} · Agreement version {{agreement.version}}</p>
+
+  <div class="summary">
+    <div><span>Check-in: </span><strong>{{booking.checkInFormatted}}</strong></div>
+    <div><span>Check-out: </span><strong>{{booking.checkOutFormatted}}</strong></div>
+    <div><span>Guests: </span><strong>{{booking.guestsCount}}</strong></div>
+    <div><span>Total rental price: </span><strong>{{money.rentalPrice}}</strong></div>
+    <div><span>Amount currently due: </span><strong>{{money.amountDue}}</strong></div>
+    <div><span>Remaining balance: </span><strong>{{money.remainingBalance}}</strong></div>
+  </div>
+
+  <h2>1. Parties and property</h2>
+  <div class="parties">
+    <div><strong>Owner</strong><p>{{owner.name}}<br>{{owner.address}}<br>{{owner.email}}</p></div>
+    <div><strong>Guest</strong><p>{{guest.legalName}}<br>{{guest.address}}<br>{{guest.email}}<br>{{guest.phone}}</p></div>
+  </div>
+  <p>The Owner agrees to rent to the Guest the holiday property known as <strong>{{property.legalName}}</strong>, located at {{property.address}}, for the dates stated above.</p>
+
+  <h2>2. Occupancy</h2>
+  <p>The reservation is for {{booking.guestsCount}} guest(s). The lead guest is {{guest.legalName}}.{{#if additionalGuests}}
+Additional guests: {{additionalGuests}}.{{/if}}</p>
+
+  <h2>3. Price and payment</h2>
+  <p>The rental price is {{money.rentalPrice}}. The amount currently due is {{money.amountDue}}, payable no later than {{booking.paymentDeadlineFormatted}}. The remaining balance is {{money.remainingBalance}}. The security deposit is {{money.securityDeposit}}. Tourist tax is {{money.touristTax}}.</p>
+  <p>Payments are processed through Stripe. Card information is handled by Stripe and is not stored by Villa Tullia.</p>
+
+  <h2>4. Cancellation</h2>
+  <p>{{booking.cancellationTerms}}</p>
+
+  <h2>5. Special conditions</h2>
+  <p>{{booking.specialConditions}}</p>
+
+  <h2>6. Agreement</h2>
+  <p>By signing, both parties confirm that the information above is accurate and that they accept the terms of this agreement. Any later amendment must be recorded in a new agreement version accepted by both parties.</p>
+
+  <div class="signature-grid">
+    <div><div class="signature-line"></div><p><strong>Owner</strong><br>{{owner.name}}<br><span class="small">Date signed</span></p></div>
+    <div><div class="signature-line"></div><p><strong>Guest</strong><br>{{guest.legalName}}<br><span class="small">Date signed</span></p></div>
+  </div>
+</body>
+</html>

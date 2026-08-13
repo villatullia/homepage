@@ -1,0 +1,11 @@
+{% extends "base.njk" %}
+{% block body %}
+<main>
+  <div class="page-head"><div><div class="eyebrow">{{ enquiry.reference }}</div><h1>{{ enquiry.full_name }}</h1><p>Received {{ enquiry.created_at }}</p></div><a class="button secondary" href="/admin">Back to dashboard</a></div>
+  <div class="grid">
+    <section class="card"><h2>Enquiry details</h2><dl><dt>Status</dt><dd><span class="status {{ enquiry.status }}">{{ enquiry.status }}</span></dd><dt>Email</dt><dd><a href="mailto:{{ enquiry.email }}">{{ enquiry.email }}</a></dd><dt>Phone</dt><dd>{{ enquiry.phone or 'Not supplied' }}</dd><dt>Requested stay</dt><dd>{{ enquiry.requested_check_in or 'Flexible' }} — {{ enquiry.requested_check_out or 'Flexible' }}</dd><dt>Guests</dt><dd>{{ enquiry.guests_count or 'Not supplied' }}</dd><dt>Source</dt><dd>{{ enquiry.source }}</dd></dl></section>
+    <section class="card"><h2>Message</h2><p style="white-space:pre-wrap">{{ enquiry.message }}</p></section>
+    <section class="card span-2"><h2>Next step</h2>{% if enquiry.status == 'ENQUIRY_NEW' %}<form method="post" action="/admin/enquiries/{{ enquiry.id }}/approve"><input type="hidden" name="_csrf" value="{{ csrf }}"><button class="button terracotta" type="submit">Approve and create booking</button></form>{% elif enquiry.status == 'ENQUIRY_APPROVED' %}<a class="button terracotta" href="/admin/enquiries/{{ enquiry.id }}/create-booking">Create booking</a>{% else %}<p class="muted">This enquiry has already been processed.</p>{% endif %}</section>
+  </div>
+</main>
+{% endblock %}

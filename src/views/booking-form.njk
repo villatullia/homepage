@@ -1,0 +1,37 @@
+{% extends "base.njk" %}
+{% block body %}
+<main>
+  <div class="page-head"><div><div class="eyebrow">{% if isEdit %}Draft booking{% else %}New booking{% endif %}</div><h1>{{ title }}</h1><p>Amounts are entered in euros and stored safely as cents.</p></div><a class="button secondary" href="{% if booking %}/admin/bookings/{{ booking.id }}{% else %}/admin{% endif %}">Cancel</a></div>
+  <form class="stack" method="post" action="{{ action }}">
+    <input type="hidden" name="_csrf" value="{{ csrf }}">
+    <section class="card"><h2>Lead guest</h2><div class="form-grid">
+      <div class="field"><label for="legalName">Full legal name</label><input id="legalName" name="legalName" value="{{ values.legalName }}" required></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" value="{{ values.email }}" required></div>
+      <div class="field"><label for="phone">Phone</label><input id="phone" name="phone" value="{{ values.phone }}" required></div>
+      <div class="field"><label for="country">Country</label><input id="country" name="country" value="{{ values.country }}" required></div>
+      <div class="field wide"><label for="addressLine1">Address</label><input id="addressLine1" name="addressLine1" value="{{ values.addressLine1 }}" required></div>
+      <div class="field wide"><label for="addressLine2">Address line 2</label><input id="addressLine2" name="addressLine2" value="{{ values.addressLine2 }}"></div>
+      <div class="field"><label for="postalCode">Postal code</label><input id="postalCode" name="postalCode" value="{{ values.postalCode }}" required></div>
+      <div class="field"><label for="city">City</label><input id="city" name="city" value="{{ values.city }}" required></div>
+      <div class="field"><label for="region">Region/state</label><input id="region" name="region" value="{{ values.region }}"></div>
+    </div></section>
+    <section class="card"><h2>Stay</h2><div class="form-grid">
+      <div class="field"><label for="checkIn">Check-in</label><input id="checkIn" name="checkIn" type="date" value="{{ values.checkIn }}" required></div>
+      <div class="field"><label for="checkOut">Check-out</label><input id="checkOut" name="checkOut" type="date" value="{{ values.checkOut }}" required></div>
+      <div class="field"><label for="guestsCount">Number of guests</label><input id="guestsCount" name="guestsCount" type="number" min="1" max="8" value="{{ values.guestsCount }}" required></div>
+      <div class="field wide"><label for="additionalGuests">Additional guest names, one per line</label><textarea id="additionalGuests" name="additionalGuests">{{ values.additionalGuests }}</textarea></div>
+    </div></section>
+    <section class="card"><h2>Price and deadlines</h2><div class="money-grid">
+      <div class="field"><label for="rentalPrice">Rental price</label><input id="rentalPrice" name="rentalPrice" inputmode="decimal" value="{{ values.rentalPrice }}" required></div>
+      <div class="field"><label for="amountDue">Amount currently due</label><input id="amountDue" name="amountDue" inputmode="decimal" value="{{ values.amountDue }}" required></div>
+      <div class="field"><label for="remainingBalance">Remaining balance</label><input id="remainingBalance" name="remainingBalance" inputmode="decimal" value="{{ values.remainingBalance }}" required></div>
+      <div class="field"><label for="securityDeposit">Security deposit</label><input id="securityDeposit" name="securityDeposit" inputmode="decimal" value="{{ values.securityDeposit }}" required></div>
+      <div class="field"><label for="touristTax">Tourist tax</label><input id="touristTax" name="touristTax" inputmode="decimal" value="{{ values.touristTax }}" required></div>
+      <div class="field"><label for="currency">Currency</label><input id="currency" name="currency" value="{{ values.currency }}" maxlength="3" required></div>
+      <div class="field"><label for="paymentDeadline">Payment deadline</label><input id="paymentDeadline" name="paymentDeadline" type="date" value="{{ values.paymentDeadline }}" required></div>
+    </div></section>
+    <section class="card"><h2>Terms</h2><div class="form-grid"><div class="field wide"><label for="cancellationTerms">Cancellation terms</label><textarea id="cancellationTerms" name="cancellationTerms" required>{{ values.cancellationTerms }}</textarea></div><div class="field wide"><label for="specialConditions">Special conditions</label><textarea id="specialConditions" name="specialConditions">{{ values.specialConditions }}</textarea></div></div></section>
+    <div><button class="button terracotta" type="submit">{% if isEdit %}Save draft{% else %}Create booking{% endif %}</button></div>
+  </form>
+</main>
+{% endblock %}

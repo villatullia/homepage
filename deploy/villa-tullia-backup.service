@@ -1,0 +1,12 @@
+[Unit]
+Description=Villa Tullia booking data backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/villa-tullia
+ExecStart=/opt/villa-tullia/deploy/backup.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

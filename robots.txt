@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /booking/
+Disallow: /payment/
+Disallow: /mock-pay/
+Disallow: /webhooks/
 
-Sitemap: https://villatullia.com/sitemap.xml
+Sitemap: https://villatullia.it/sitemap.xml

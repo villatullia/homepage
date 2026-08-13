@@ -1,0 +1,36 @@
+{% extends "base.njk" %}
+{% block body %}
+<main>
+  <div class="page-head"><div><div class="eyebrow">Overview</div><h1>Bookings and enquiries</h1><p>Every action below is recorded in the booking audit trail.</p></div><a class="button terracotta" href="/admin/bookings/new">Create booking</a></div>
+  <div class="grid">
+    <section class="card span-2">
+      <div class="page-head"><div><div class="eyebrow">Direct website performance</div><h2 style="margin-top:5px">What direct bookings are earning</h2></div><div class="muted">Booking.com comparison: {{ directPerformance.benchmarkPercent }}%</div></div>
+      <div class="metrics">
+        <div class="metric"><span>Website enquiries</span><strong>{{ directPerformance.enquiries }}</strong></div>
+        <div class="metric"><span>Converted bookings</span><strong>{{ directPerformance.bookings }}</strong></div>
+        <div class="metric"><span>Conversion rate</span><strong>{{ directPerformance.conversionRate }}%</strong></div>
+        <div class="metric"><span>Confirmed weeks</span><strong>{{ directPerformance.confirmedWeeks }}</strong></div>
+        <div class="metric"><span>Confirmed rental revenue</span><strong>{{ directPerformance.confirmedRevenueFormatted }}</strong></div>
+        <div class="metric highlight"><span>Estimated Booking.com fees avoided</span><strong>{{ directPerformance.estimatedCommissionAvoidedFormatted }}</strong></div>
+      </div>
+      {% if directPerformance.seasons.length %}<div class="table-wrap" style="margin-top:18px"><table><thead><tr><th>Season</th><th>Confirmed weeks</th><th>Rental revenue</th><th>Estimated fees avoided</th></tr></thead><tbody>{% for season in directPerformance.seasons %}<tr><td>{{ season.year }}</td><td>{{ season.bookings }}</td><td>{{ season.revenueFormatted }}</td><td>{{ season.estimatedCommissionAvoidedFormatted }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+      <p class="muted" style="margin-bottom:0">Estimate uses confirmed website-sourced bookings and rental price only. Security deposits and tourist tax are excluded. Card-processing costs are not yet deducted.</p>
+    </section>
+    <section class="card">
+      <div class="page-head"><div><h2>Enquiries</h2></div><form method="get" action="/admin"><input type="hidden" name="bookingStatus" value="{{ bookingStatus }}"><select name="enquiryStatus" onchange="this.form.submit()"><option value="ALL">All statuses</option>{% for status in enquiryStatuses %}<option value="{{ status }}" {% if status == enquiryStatus %}selected{% endif %}>{{ status }}</option>{% endfor %}</select></form></div>
+      <p class="muted">Every website email enquiry is saved here immediately. Click its reference to review it; you also receive an owner notification by email.</p>
+      <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Guest</th><th>Dates</th><th>Status</th></tr></thead><tbody>
+        {% for enquiry in enquiries %}<tr><td><a href="/admin/enquiries/{{ enquiry.id }}">{{ enquiry.reference }}</a><br><small class="muted">{{ enquiry.created_at | truncate(10, true, '') }}</small></td><td>{{ enquiry.full_name }}<br><small>{{ enquiry.email }}</small></td><td>{{ enquiry.requested_check_in or 'Flexible' }}{% if enquiry.requested_check_out %}<br>{{ enquiry.requested_check_out }}{% endif %}</td><td><span class="status {{ enquiry.status }}">{{ enquiry.status }}</span></td></tr>{% else %}<tr><td colspan="4" class="muted">No enquiries match this filter.</td></tr>{% endfor %}
+      </tbody></table></div>
+    </section>
+    <section class="card">
+      <div class="page-head"><div><h2>Bookings</h2></div><form method="get" action="/admin"><input type="hidden" name="enquiryStatus" value="{{ enquiryStatus }}"><select name="bookingStatus" onchange="this.form.submit()"><option value="ALL">All statuses</option>{% for status in bookingStatuses %}<option value="{{ status }}" {% if status == bookingStatus %}selected{% endif %}>{{ status }}</option>{% endfor %}</select></form></div>
+      <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Guest</th><th>Stay</th><th>Status</th></tr></thead><tbody>
+        {% for booking in bookings %}<tr><td><a href="/admin/bookings/{{ booking.id }}">{{ booking.reference }}</a></td><td>{{ booking.guest_name }}</td><td>{{ booking.check_in }}<br>{{ booking.check_out }}</td><td><span class="status {{ booking.status }}">{{ booking.status }}</span></td></tr>{% else %}<tr><td colspan="4" class="muted">No bookings match this filter.</td></tr>{% endfor %}
+      </tbody></table></div>
+    </section>
+    {% if icalFeedUrl %}<section class="card span-2"><h2>Calendar export</h2><p class="muted">Paste this private iCal link into Airbnb, Booking.com, Vrbo or another calendar importer. It exports blocked dates only and contains no guest information.</p><label for="icalFeedUrl">Private iCal URL</label><input id="icalFeedUrl" value="{{ icalFeedUrl }}" readonly onfocus="this.select()"><p class="muted">Treat this link like a password. Anyone with it can see which dates are unavailable.</p></section>{% endif %}
+  </div>
+  <p class="muted" style="margin-top:18px">Signing: {{ signingProvider }} · Payments: {{ paymentProvider }}</p>
+</main>
+{% endblock %}

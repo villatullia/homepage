@@ -1,0 +1,94 @@
+import { afterEach, describe, expect, it } from 'vitest';
+import { buildApp } from '../src/app.js';
+import { acquireDateHold } from '../src/db.js';
+import { createBooking } from '../src/services/booking.js';
+import { createTestContext } from './helpers.js';
+import { validBooking } from './helpers.js';
+
+const cleanup: Array<() => Promise<void> | void> = [];
+afterEach(async () => {
+  for (const close of cleanup.splice(0)) await close();
+});
+
+describe('public HTTP surface', () => {
+  it('serves the site and accepts a valid enquiry without exposing private files', async () => {
+    const context = createTestContext();
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => {
+      await app.close();
+      context.close();
+    });
+
+    expect((await app.inject({ method: 'GET', url: '/' })).statusCode).toBe(200);
+    expect((await app.inject({ method: 'GET', url: '/privacy.html' })).statusCode).toBe(200);
+    expect((await app.inject({ method: 'GET', url: '/favicon.svg' })).statusCode).toBe(200);
+    expect((await app.inject({ method: 'GET', url: '/.env.example' })).statusCode).toBe(404);
+    expect((await app.inject({ method: 'GET', url: '/src/config.ts' })).statusCode).toBe(404);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/enquiries',
+      payload: {
+        name: 'Ada Lovelace',
+        email: 'ada@example.test',
+        phone: '+39 333 123 4567',
+        message: 'Please let me know if these dates are available.',
+        checkIn: '2027-06-10',
+        checkOut: '2027-06-17',
+        guestsCount: 2,
+        website: '',
+      },
+    });
+    expect(response.statusCode).toBe(201);
+    expect(response.json()).toMatchObject({ ok: true });
+    expect((context.db.prepare('SELECT COUNT(*) AS count FROM enquiries').get() as { count: number }).count).toBe(1);
+    expect(
+      context.db.prepare("SELECT recipient, status FROM email_deliveries WHERE template_key = 'enquiry-notification'").get(),
+    ).toEqual({ recipient: context.config.OWNER_EMAIL, status: 'PREVIEWED' });
+  });
+
+  it('exports active date blocks as a private iCal feed without guest data', async () => {
+    const context = createTestContext();
+    const { booking } = createBooking(context.db, context.config, validBooking());
+    acquireDateHold(context.db, booking, 72);
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => {
+      await app.close();
+      context.close();
+    });
+
+    expect((await app.inject({ method: 'GET', url: '/calendar/wrong-token/villa-tullia.ics' })).statusCode).toBe(404);
+    const response = await app.inject({
+      method: 'GET',
+      url: `/calendar/${context.config.ICAL_FEED_TOKEN}/villa-tullia.ics`,
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['content-type']).toContain('text/calendar');
+    expect(response.body).toContain('DTSTART;VALUE=DATE:20270610');
+    expect(response.body).toContain('DTEND;VALUE=DATE:20270617');
+    expect(response.body).toContain('SUMMARY:Villa Tullia - Unavailable');
+    expect(response.body).not.toContain('Ada Lovelace');
+    expect(response.body).not.toContain(booking.reference);
+  });
+
+  it('silently discards honeypot submissions', async () => {
+    const context = createTestContext();
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => {
+      await app.close();
+      context.close();
+    });
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/enquiries',
+      payload: {
+        name: 'Spam Bot',
+        email: 'bot@example.test',
+        message: 'Buy things now',
+        website: 'https://spam.example',
+      },
+    });
+    expect(response.statusCode).toBe(202);
+    expect((context.db.prepare('SELECT COUNT(*) AS count FROM enquiries').get() as { count: number }).count).toBe(0);
+  });
+});

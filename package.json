@@ -1,0 +1,50 @@
+{
+  "name": "villa-tullia-booking",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/src/server.js",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "admin:create": "tsx scripts/create-admin.ts",
+    "jobs": "tsx scripts/run-jobs.ts",
+    "backup": "tsx scripts/backup.ts",
+    "agreement:sample": "tsx scripts/render-sample-agreement.ts"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/formbody": "^8.0.2",
+    "@fastify/helmet": "^13.0.2",
+    "@fastify/rate-limit": "^10.3.0",
+    "@fastify/static": "^10.1.2",
+    "@fastify/view": "^11.1.1",
+    "fastify": "^5.11.0",
+    "fastify-raw-body": "^5.0.0",
+    "handlebars": "^4.7.8",
+    "html-to-text": "^9.0.5",
+    "nodemailer": "^9.0.3",
+    "nunjucks": "^3.2.4",
+    "pdfkit": "^0.17.1",
+    "stripe": "^18.4.0",
+    "zod": "^4.0.14"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "^9.0.4",
+    "@types/node": "^24.1.0",
+    "@types/nodemailer": "^6.4.17",
+    "@types/nunjucks": "^3.2.6",
+    "@types/pdfkit": "^0.17.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
