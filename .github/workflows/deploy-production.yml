@@ -44,4 +44,4 @@ jobs:
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-        run: ssh "$DEPLOY_USER@$DEPLOY_HOST" 'cd /opt/villa-tullia && ./deploy/update-production.sh'
+        run: ssh "$DEPLOY_USER@$DEPLOY_HOST" 'cd /opt/villa-tullia && sh ./deploy/update-production.sh'

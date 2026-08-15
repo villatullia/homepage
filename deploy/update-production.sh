@@ -20,7 +20,7 @@ if ! flock -n 9; then
   exit 1
 fi
 
-./deploy/backup.sh
+sh ./deploy/backup.sh
 git fetch origin main
 git checkout main
 git merge --ff-only origin/main
