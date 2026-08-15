@@ -18,6 +18,7 @@ output/
 data/private/
 backups/
 deploy/secrets/
+.deploy.lock
 .env.production
 documenso-data/
 postgres-data/
