@@ -14,13 +14,13 @@ import {
 import { sha256, verifyPassword } from '../lib/crypto.js';
 import { formatMoney, nowIso, parseMoneyToMinor } from '../lib/format.js';
 import { bookingStatuses } from '../domain/status.js';
-import type { AgreementRow, BookingRow } from '../types.js';
+import type { AgreementRow, BookingRow, PaymentRow } from '../types.js';
 import { bookingViewModel } from '../view-models.js';
 import { createBooking, updateDraftBooking, type BookingInput } from '../services/booking.js';
 import { generateAgreement } from '../services/agreement.js';
 import type { SignatureProvider } from '../services/signature.js';
 import type { PaymentProvider } from '../services/payment.js';
-import { createPaymentRequest } from '../services/payment.js';
+import { confirmBankTransfer, createPaymentRequest } from '../services/payment.js';
 import type { EmailService } from '../services/email.js';
 import {
   cancelBookingWorkflow,
@@ -355,6 +355,14 @@ export async function registerAdminRoutes(app: FastifyInstance, deps: AdminRoute
     const payment = await createPaymentRequest(db, paymentProvider, id, agreement.id, purpose);
     await email.sendPaymentRequest(id, payment);
     return reply.redirect(`/admin/bookings/${encodeURIComponent(id)}?message=${encodeURIComponent('Payment request ready')}`);
+  });
+
+  app.post('/admin/bookings/:id/payment/:paymentId/confirm-bank-transfer', { preHandler: [auth, csrf] }, async (request, reply) => {
+    const { id, paymentId } = request.params as { id: string; paymentId: string };
+    const payment = db.prepare('SELECT * FROM payments WHERE id = ? AND booking_id = ?').get(paymentId, id) as PaymentRow | undefined;
+    if (!payment) throw new Error('Payment not found');
+    if (confirmBankTransfer(db, payment, adminFromRequest(request).id)) await email.sendConfirmation(id, payment.id);
+    return reply.redirect(`/admin/bookings/${encodeURIComponent(id)}?message=${encodeURIComponent('Bank transfer confirmed')}`);
   });
 
   app.post('/admin/bookings/:id/cancel', { preHandler: [auth, csrf] }, async (request, reply) => {

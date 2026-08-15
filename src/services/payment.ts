@@ -175,10 +175,49 @@ export function markPaymentProcessing(db: Database, payment: PaymentRow, payment
   });
 }
 
+export function selectCardPayment(db: Database, payment: PaymentRow): void {
+  if (!['PENDING', 'PROCESSING', 'FAILED'].includes(payment.status)) throw new Error('This payment can no longer be changed');
+  db.prepare(`
+    UPDATE payments SET payment_method = 'CARD', status = 'PENDING', failure_code = NULL, failure_message = NULL,
+      updated_at = ? WHERE id = ?
+  `).run(nowIso(), payment.id);
+}
+
+export function selectBankTransfer(db: Database, payment: PaymentRow): void {
+  if (!['PENDING', 'PROCESSING', 'FAILED'].includes(payment.status)) throw new Error('This payment can no longer be changed');
+  withImmediateTransaction(db, () => {
+    const timestamp = nowIso();
+    db.prepare(`
+      UPDATE payments SET payment_method = 'BANK_TRANSFER', status = 'PROCESSING', bank_transfer_selected_at = ?,
+        failure_code = NULL, failure_message = NULL, updated_at = ? WHERE id = ?
+    `).run(timestamp, timestamp, payment.id);
+    const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(payment.booking_id) as unknown as BookingRow;
+    if (payment.purpose === 'INITIAL' && ['AWAITING_PAYMENT', 'PAYMENT_FAILED'].includes(booking.status)) {
+      transitionBooking(db, booking.id, 'PAYMENT_PROCESSING', { type: 'GUEST' }, 'BANK_TRANSFER_SELECTED', { paymentId: payment.id });
+    } else {
+      db.prepare(`INSERT INTO booking_events
+        (id, booking_id, actor_type, event_type, details_json, created_at)
+        VALUES (?, ?, 'GUEST', 'BANK_TRANSFER_SELECTED', ?, ?)
+      `).run(randomUUID(), booking.id, JSON.stringify({ paymentId: payment.id, purpose: payment.purpose }), timestamp);
+    }
+  });
+}
+
+export function confirmBankTransfer(db: Database, payment: PaymentRow, adminId: string): boolean {
+  if (payment.payment_method !== 'BANK_TRANSFER') throw new Error('This payment is not awaiting a bank transfer');
+  const changed = markPaymentSucceeded(db, payment, {}, { type: 'ADMIN', id: adminId });
+  if (changed) {
+    const timestamp = nowIso();
+    db.prepare('UPDATE payments SET bank_transfer_confirmed_at = ?, updated_at = ? WHERE id = ?').run(timestamp, timestamp, payment.id);
+  }
+  return changed;
+}
+
 export function markPaymentSucceeded(
   db: Database,
   payment: PaymentRow,
   details: { paymentIntentId?: string; chargeId?: string },
+  actor: { type: 'ADMIN' | 'PAYMENT_PROVIDER'; id?: string } = { type: 'PAYMENT_PROVIDER' },
 ): boolean {
   return withImmediateTransaction(db, () => {
     const current = db.prepare('SELECT * FROM payments WHERE id = ?').get(payment.id) as unknown as PaymentRow;
@@ -193,7 +232,7 @@ export function markPaymentSucceeded(
       if (!['AWAITING_PAYMENT', 'PAYMENT_PROCESSING', 'PAYMENT_FAILED'].includes(booking.status)) {
         throw new Error(`Cannot confirm booking from ${booking.status}`);
       }
-      transitionBooking(db, booking.id, 'CONFIRMED', { type: 'PAYMENT_PROVIDER' }, 'PAYMENT_SUCCEEDED', { paymentId: payment.id });
+      transitionBooking(db, booking.id, 'CONFIRMED', actor, 'PAYMENT_SUCCEEDED', { paymentId: payment.id, method: current.payment_method });
       confirmDateBlock(db, booking.id);
       if (booking.remaining_balance_minor > 0) {
         const runAt = Math.max(Math.floor(Date.now() / 1000) + 60, Math.floor(new Date(`${balanceDueDate(booking.check_in)}T09:00:00+02:00`).getTime() / 1000));
@@ -206,8 +245,8 @@ export function markPaymentSucceeded(
     } else {
       db.prepare(`INSERT INTO booking_events
         (id, booking_id, actor_type, event_type, details_json, created_at)
-        VALUES (?, ?, 'PAYMENT_PROVIDER', 'BALANCE_PAYMENT_SUCCEEDED', ?, ?)
-      `).run(randomUUID(), booking.id, JSON.stringify({ paymentId: payment.id }), timestamp);
+        VALUES (?, ?, ?, 'BALANCE_PAYMENT_SUCCEEDED', ?, ?)
+      `).run(randomUUID(), booking.id, actor.type, JSON.stringify({ paymentId: payment.id, method: current.payment_method }), timestamp);
     }
     return true;
   });

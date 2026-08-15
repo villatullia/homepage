@@ -18,6 +18,10 @@ const config = loadConfig({
   OWNER_ADDRESS: 'Via del Lago 1, 25080 Padenghe sul Garda, Italy',
   PROPERTY_LEGAL_NAME: 'Villa Tullia',
   PROPERTY_ADDRESS: 'Via del Lago 10, 25080 Padenghe sul Garda, Italy',
+  BANK_TRANSFER_ENABLED: 'true',
+  BANK_ACCOUNT_HOLDER: 'Visintin Nicoletta e Visintin Giornada',
+  BANK_NAME: 'Cassa Rurale Rotaliana Val di Non e Giovo',
+  BANK_IBAN: 'IT84I0828235340000030360007',
 });
 const db = openDatabase(config);
 try {

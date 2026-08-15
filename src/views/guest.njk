@@ -1,3 +1,53 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ title }} | Villa Tullia</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f4f1ea;color:#183632;font:15px/1.55 Arial,sans-serif}.hero{padding:32px max(22px,7vw);color:white;background:#183632}.hero a{color:white;text-decoration:none;font:24px Georgia,serif}.shell{width:min(720px,calc(100% - 28px));margin:36px auto 70px}.card{padding:26px;background:white;border:1px solid #d9ddd6;box-shadow:0 10px 28px rgba(24,54,50,.07)}h1,h2{font-family:Georgia,serif}h1{font-size:34px}.eyebrow{color:#b66b4f;font-size:11px;font-weight:bold;letter-spacing:.13em;text-transform:uppercase}.status{display:inline-block;padding:6px 9px;background:#e8eee9;font-size:11px;font-weight:bold;letter-spacing:.06em}.details{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}.details div{padding:14px;background:#f7f4ed}.details span{display:block;color:#687671;font-size:10px;text-transform:uppercase;letter-spacing:.07em}.details strong{display:block;margin-top:4px}.button{display:inline-block;padding:13px 18px;background:#b66b4f;color:white;text-decoration:none;font-weight:bold}.button.secondary{border:1px solid #24584f;background:white;color:#24584f}.actions{display:flex;flex-wrap:wrap;gap:10px}.muted{color:#687671;font-size:13px}@media(max-width:560px){.details{grid-template-columns:1fr}.card{padding:20px}}
-</style></head><body><div class="hero"><a href="/">Villa Tullia</a></div><main class="shell"><div class="card"><div class="eyebrow">Secure booking page</div><h1>{{ booking.reference }}</h1><p>Hello {{ booking.guestName }}. This page contains the current verified status of your booking.</p><p><span class="status">{{ booking.status }}</span></p><div class="details"><div><span>Check-in</span><strong>{{ booking.checkIn }}</strong></div><div><span>Check-out</span><strong>{{ booking.checkOut }}</strong></div><div><span>Initial payment</span><strong>{{ booking.amount }}</strong></div><div><span>Initial deadline</span><strong>{{ booking.paymentDeadline }}</strong></div>{% if booking.hasBalance %}<div><span>Remaining balance</span><strong>{{ booking.remainingBalance }}</strong></div><div><span>Balance due</span><strong>{{ booking.balanceDue }}</strong></div>{% endif %}</div><div class="actions">{% if payment and payment.status == 'PENDING' and payment.checkout_url %}<a class="button" href="{{ payment.checkout_url }}">Pay {{ payment.label }} · {{ payment.amountFormatted }}</a>{% endif %}{% if agreement and agreement.signed_pdf_path %}<a class="button secondary" href="/booking/{{ token }}/agreement">Download signed agreement</a>{% endif %}</div>{% if booking.status == 'CONFIRMED' %}<h2>Your stay is confirmed.</h2>{% if booking.hasBalance and not booking.balancePaid %}<p>Your initial payment was verified. The remaining balance is due {{ booking.balanceDue }}.</p>{% else %}<p>All required payments have been verified. We look forward to welcoming you.</p>{% endif %}{% elif booking.status == 'PAYMENT_PROCESSING' %}<p>Payment is processing. This page will update when the payment provider confirms the result.</p>{% elif booking.status == 'PAYMENT_FAILED' %}<p>The last payment did not succeed. Please use the current secure payment link or contact Villa Tullia.</p>{% endif %}<p class="muted">For your privacy, do not forward this secure page. Villa Tullia never asks for card details by email or WhatsApp.</p></div></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>{{ title }} | Villa Tullia</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f4f1ea;color:#183632;font:15px/1.55 Arial,sans-serif}.hero{padding:32px max(22px,7vw);color:white;background:#183632}.hero a{color:white;text-decoration:none;font:24px Georgia,serif}.shell{width:min(720px,calc(100% - 28px));margin:36px auto 70px}.card{padding:26px;background:white;border:1px solid #d9ddd6;box-shadow:0 10px 28px rgba(24,54,50,.07)}h1,h2{font-family:Georgia,serif}h1{font-size:34px}.eyebrow{color:#b66b4f;font-size:11px;font-weight:bold;letter-spacing:.13em;text-transform:uppercase}.status{display:inline-block;padding:6px 9px;background:#e8eee9;font-size:11px;font-weight:bold;letter-spacing:.06em}.details{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}.details div{padding:14px;background:#f7f4ed}.details span,.bank-details span{display:block;color:#687671;font-size:10px;text-transform:uppercase;letter-spacing:.07em}.details strong,.bank-details strong{display:block;margin-top:4px}.button{display:inline-block;border:0;padding:13px 18px;background:#b66b4f;color:white;text-decoration:none;font:inherit;font-weight:bold;cursor:pointer}.button.secondary{border:1px solid #24584f;background:white;color:#24584f}.actions{display:flex;flex-wrap:wrap;gap:10px}.actions form{margin:0}.payment-choice{margin:24px 0;padding-top:20px;border-top:1px solid #d9ddd6}.bank-details{margin-top:18px;padding:16px;background:#f7f4ed}.muted{color:#687671;font-size:13px}@media(max-width:560px){.details{grid-template-columns:1fr}.card{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="hero"><a href="/">Villa Tullia</a></div>
+  <main class="shell"><div class="card">
+    <div class="eyebrow">Secure booking page</div>
+    <h1>{{ booking.reference }}</h1>
+    <p>Hello {{ booking.guestName }}. This page contains the current verified status of your booking.</p>
+    <p><span class="status">{{ booking.status }}</span></p>
+    <div class="details">
+      <div><span>Check-in</span><strong>{{ booking.checkIn }}</strong></div>
+      <div><span>Check-out</span><strong>{{ booking.checkOut }}</strong></div>
+      <div><span>Initial payment</span><strong>{{ booking.amount }}</strong></div>
+      <div><span>Initial deadline</span><strong>{{ booking.paymentDeadline }}</strong></div>
+      {% if booking.hasBalance %}<div><span>Remaining balance</span><strong>{{ booking.remainingBalance }}</strong></div><div><span>Balance due</span><strong>{{ booking.balanceDue }}</strong></div>{% endif %}
+    </div>
+    {% if payment and payment.status in ['PENDING','FAILED','PROCESSING'] %}
+      <section class="payment-choice">
+        <h2>Choose how to pay</h2>
+        <p>Amount due: <strong>{{ payment.amountFormatted }}</strong>. The amount is the same for either method.</p>
+        <div class="actions">
+          {% if payment.checkout_url %}<form method="post" action="/booking/{{ token }}/payment/{{ payment.id }}/card"><button class="button" type="submit">Pay securely by card</button></form>{% endif %}
+          {% if bankTransfer %}<form method="post" action="/booking/{{ token }}/payment/{{ payment.id }}/bank-transfer"><button class="button secondary" type="submit">Pay by bank transfer</button></form>{% endif %}
+        </div>
+        {% if payment.payment_method == 'BANK_TRANSFER' and bankTransfer %}
+          <div class="bank-details">
+            <p>Transfer exactly <strong>{{ payment.amountFormatted }}</strong> using booking reference <strong>{{ bankTransfer.reference }}</strong>.</p>
+            <p><span>Account holder</span><strong>{{ bankTransfer.accountHolder }}</strong></p>
+            {% if bankTransfer.bankName %}<p><span>Bank</span><strong>{{ bankTransfer.bankName }}</strong></p>{% endif %}
+            <p><span>IBAN</span><strong>{{ bankTransfer.iban }}</strong></p>
+            {% if bankTransfer.bic %}<p><span>BIC/SWIFT</span><strong>{{ bankTransfer.bic }}</strong></p>{% endif %}
+            <p class="muted">Your booking is confirmed after Villa Tullia verifies receipt of the transfer.</p>
+          </div>
+        {% endif %}
+      </section>
+    {% endif %}
+    <div class="actions">{% if agreement and agreement.signed_pdf_path %}<a class="button secondary" href="/booking/{{ token }}/agreement">Download signed agreement</a>{% endif %}</div>
+    {% if booking.status == 'CONFIRMED' %}<h2>Your stay is confirmed.</h2>{% if booking.hasBalance and not booking.balancePaid %}<p>Your initial payment was verified. The remaining balance is due {{ booking.balanceDue }}.</p>{% else %}<p>All required payments have been verified. We look forward to welcoming you.</p>{% endif %}
+    {% elif booking.status == 'PAYMENT_PROCESSING' %}<p>Payment is awaiting confirmation. This page will update when receipt is verified.</p>
+    {% elif booking.status == 'PAYMENT_FAILED' %}<p>The last payment did not succeed. Please choose a payment method again or contact Villa Tullia.</p>{% endif %}
+    <p class="muted">For your privacy, do not forward this secure page. Villa Tullia never asks for card details by email or WhatsApp.</p>
+  </div></main>
+</body>
+</html>

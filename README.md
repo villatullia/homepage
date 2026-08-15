@@ -11,6 +11,7 @@ This repository contains the public Villa Tullia website and a self-hosted enqui
 - Versioned Handlebars agreement template, immutable generated PDFs, SHA-256 hashes, preview, and restricted downloads.
 - Swappable signing providers: safe local mock and self-hosted Documenso Community Edition.
 - Swappable payment providers: safe local mock and Stripe Checkout in test mode.
+- Guest choice between card and configured bank transfer, at the same booking amount; bank receipts are confirmed by an administrator.
 - Verified, idempotent Documenso and Stripe webhooks.
 - Secure, random guest status links with no guest account requirement.
 - Reusable email templates, local email previews, SMTP delivery, reminders, and expiry jobs.
@@ -142,6 +143,10 @@ Opening the Stripe success page never confirms a booking. Only a verified Stripe
 
 The current build intentionally accepts only `sk_test_` keys. Enabling real card payments later requires a deliberate code/configuration change and acceptance of Stripe's unavoidable transaction fees.
 
+## Bank transfer activation
+
+Set `BANK_TRANSFER_ENABLED=true` and configure the account holder, IBAN, and optional bank/BIC values. Guests can then choose card or bank transfer on their secure booking page. A bank transfer remains pending until an administrator verifies the bank statement and selects **Confirm receipt**. Do not add a consumer-card surcharge; for ordinary EU consumer debit and credit cards, that surcharge is prohibited.
+
 ## Backups and operations
 
 Create a consistent SQLite backup, Documenso PostgreSQL dump, signed-document archive, and signing-certificate copy with:
@@ -153,6 +158,12 @@ Create a consistent SQLite backup, Documenso PostgreSQL dump, signed-document ar
 Backups contain personal and contractual data. Copy them off the VPS, encrypt them, and remove old copies under an appropriate retention policy. A same-server backup does not protect against VPS loss.
 
 Run the reminder/expiry worker continuously through the main server process (already configured), or manually with `pnpm jobs`. Check health at `/healthz` and review container logs after upgrades. Pin and test new Documenso versions before changing `DOCUMENSO_VERSION`.
+
+## Automatic production deployment
+
+Pushes to `main` run typechecking, tests, and the production build in GitHub Actions. After verification, the production job connects through a dedicated SSH key and runs `deploy/update-production.sh`. The server creates a backup, fast-forwards its checkout, rebuilds only the application container, and verifies `/healthz`.
+
+Configure the `production` GitHub environment with `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, and `DEPLOY_KNOWN_HOSTS`. Keep `.env.production`, databases, document storage, signing certificates, and backups on the server; they must never be committed.
 
 ## Before going live
 

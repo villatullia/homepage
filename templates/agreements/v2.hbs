@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rental Agreement {{booking.reference}}</title></head>
+<body>
+  <h1>RENTAL AGREEMENT</h1>
+  <p>This Rental Agreement is made and executed on {{agreement.date}}, between:</p>
+  <p><strong>{{owner.name}}</strong><br>Resident at {{owner.address}}<br>Email: {{owner.email}}<br>hereinafter referred to as the <strong>"OWNER/LESSOR"</strong> or the FIRST PART, and</p>
+  <p><strong>{{guest.legalName}}</strong><br>Resident at {{guest.address}}<br>Email: {{guest.email}}<br>Phone: {{guest.phone}}<br>hereinafter referred to as the <strong>"LESSEE/TENANT"</strong> or the OTHER PART.</p>
+  <p>Whereas the Owner/Lessor is the owner of the residence known as <strong>{{property.legalName}}</strong>, located at <strong>{{property.address}}</strong>, the Owner/Lessor agrees to let the residence to the Lessee/Tenant on the following terms and conditions.</p>
+  <h2>THIS AGREEMENT WITNESSES AS FOLLOWS</h2>
+  <h2>1. RENTAL PERIOD AND RENT</h2>
+  <p>The rent is {{money.rentalPrice}}, including normal water, electricity and heating consumption. The rental period is from {{booking.checkInFormatted}} to {{booking.checkOutFormatted}}, for {{booking.nights}} night(s), for {{booking.guestsCount}} guest(s).{{#if additionalGuests}} The additional guests are: {{additionalGuests}}.{{/if}}</p>
+  <h2>2. PAYMENT</h2>
+  <p>The amount currently due is {{money.amountDue}}, payable no later than {{booking.paymentDeadlineFormatted}}. Payment may be made by bank transfer or by credit/debit card through the secure Villa Tullia booking page. Both methods are offered at the same booking amount.</p>
+  {{#if money.hasRemainingBalance}}<p>The remaining balance of {{money.remainingBalance}} must be paid no later than {{booking.balanceDueFormatted}}. Amounts paid do not carry interest.</p>{{/if}}
+  {{#if bank.enabled}}<p>Bank transfer details:<br>Account holder: {{bank.accountHolder}}<br>IBAN: {{bank.iban}}<br>Bank: {{bank.name}}{{#if bank.bic}}<br>BIC/SWIFT: {{bank.bic}}{{/if}}<br>Payment reference: {{booking.reference}}</p>{{/if}}
+  <h2>3. CONDITION OF THE PROPERTY</h2>
+  <p>The Lessee/Tenant shall keep the premises in good and tenantable condition. The Lessee/Tenant is responsible for damage caused by the Lessee/Tenant or members of the party and shall pay the reasonable repair or replacement cost. The security deposit is {{money.securityDeposit}}.</p>
+  <h2>4. CANCELLATION</h2>
+  <p>{{booking.cancellationTerms}}</p>
+  <h2>5. PERMITTED USE</h2>
+  <p>The premises shall be used only as temporary residential holiday accommodation and not for any illegal activity, party, event, subletting or other unauthorised purpose.</p>
+  <h2>6. TOURIST TAX AND SPECIAL CONDITIONS</h2>
+  <p>Tourist tax: {{money.touristTax}}.</p><p>{{booking.specialConditions}}</p>
+  <h2>7. ACCEPTANCE</h2>
+  <p>By signing, both parties confirm that the information above is accurate and accept the terms of this agreement. Any amendment must be recorded in a new agreement version accepted by both parties.</p>
+</body></html>

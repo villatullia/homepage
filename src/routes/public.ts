@@ -6,7 +6,7 @@ import { safeEqual, sha256 } from '../lib/crypto.js';
 import { formatDate, formatMoney, nowIso } from '../lib/format.js';
 import { createEnquiry, enquirySchema } from '../services/booking.js';
 import type { EmailService } from '../services/email.js';
-import { balanceDueDate, markPaymentSucceeded } from '../services/payment.js';
+import { balanceDueDate, markPaymentSucceeded, selectBankTransfer, selectCardPayment } from '../services/payment.js';
 import type { PaymentRow } from '../types.js';
 
 interface PublicDependencies {
@@ -141,8 +141,40 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
       payment: payment
         ? { ...payment, amountFormatted: formatMoney(payment.amount_minor, payment.currency), label: payment.purpose === 'BALANCE' ? 'remaining balance' : 'initial payment' }
         : undefined,
+      bankTransfer: config.BANK_TRANSFER_ENABLED && config.BANK_ACCOUNT_HOLDER && config.BANK_IBAN
+        ? {
+            accountHolder: config.BANK_ACCOUNT_HOLDER,
+            bankName: config.BANK_NAME,
+            iban: config.BANK_IBAN,
+            bic: config.BANK_BIC,
+            reference: booking.reference,
+          }
+        : undefined,
       token,
     });
+  });
+
+  app.post('/booking/:token/payment/:paymentId/card', async (request, reply) => {
+    const { token, paymentId } = request.params as { token: string; paymentId: string };
+    const booking = publicBooking(db, token);
+    if (!booking) return reply.code(404).view('guest-error.njk', { title: 'Secure link unavailable' });
+    const payment = db.prepare('SELECT * FROM payments WHERE id = ? AND booking_id = ?').get(paymentId, booking.id) as PaymentRow | undefined;
+    if (!payment?.checkout_url) return reply.code(404).view('guest-error.njk', { title: 'Card payment unavailable' });
+    selectCardPayment(db, payment);
+    return reply.redirect(payment.checkout_url);
+  });
+
+  app.post('/booking/:token/payment/:paymentId/bank-transfer', async (request, reply) => {
+    const { token, paymentId } = request.params as { token: string; paymentId: string };
+    const booking = publicBooking(db, token);
+    if (!booking) return reply.code(404).view('guest-error.njk', { title: 'Secure link unavailable' });
+    if (!config.BANK_TRANSFER_ENABLED || !config.BANK_ACCOUNT_HOLDER || !config.BANK_IBAN) {
+      return reply.code(404).view('guest-error.njk', { title: 'Bank transfer unavailable' });
+    }
+    const payment = db.prepare('SELECT * FROM payments WHERE id = ? AND booking_id = ?').get(paymentId, booking.id) as PaymentRow | undefined;
+    if (!payment) return reply.code(404).view('guest-error.njk', { title: 'Payment unavailable' });
+    selectBankTransfer(db, payment);
+    return reply.redirect(`/booking/${encodeURIComponent(token)}`);
   });
 
   app.get('/booking/:token/agreement', async (request, reply) => {

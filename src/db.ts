@@ -50,15 +50,16 @@ function seedProperty(db: Database, config: AppConfig): void {
 }
 
 function seedAgreementTemplate(db: Database): void {
-  const templatePath = path.resolve(process.cwd(), 'templates/agreements/v1.hbs');
+  const templatePath = path.resolve(process.cwd(), 'templates/agreements/v2.hbs');
   if (!fs.existsSync(templatePath)) return;
   const body = fs.readFileSync(templatePath, 'utf8');
   const hash = sha256(body);
   db.prepare(`
     INSERT INTO agreement_templates (id, version, name, body_template, content_hash, active, created_at)
-    VALUES ('villa-rental-v1', '1.0.0', 'Villa Tullia Rental Agreement', ?, ?, 1, ?)
+    VALUES ('villa-rental-v2', '2.0.0', 'Villa Tullia Rental Agreement', ?, ?, 1, ?)
     ON CONFLICT(version) DO NOTHING
   `).run(body, hash, nowIso());
+  db.prepare("UPDATE agreement_templates SET active = CASE WHEN version = '2.0.0' THEN 1 ELSE 0 END").run();
 }
 
 export function withImmediateTransaction<T>(db: Database, work: () => T): T {

@@ -9,15 +9,18 @@ import type { AppConfig } from '../config.js';
 import { formatDate, formatMoney, nowIso } from '../lib/format.js';
 import { sha256 } from '../lib/crypto.js';
 import type { AgreementRow, BookingRow, GuestRow } from '../types.js';
+import { balanceDueDate } from './payment.js';
 
 interface AgreementContext {
-  agreement: { version: number };
+  agreement: { version: number; date: string };
   booking: {
     reference: string;
     checkInFormatted: string;
     checkOutFormatted: string;
     guestsCount: number;
+    nights: number;
     paymentDeadlineFormatted: string;
+    balanceDueFormatted: string;
     cancellationTerms: string;
     specialConditions: string;
   };
@@ -30,7 +33,9 @@ interface AgreementContext {
     remainingBalance: string;
     securityDeposit: string;
     touristTax: string;
+    hasRemainingBalance: boolean;
   };
+  bank: { enabled: boolean; accountHolder: string; name: string; iban: string; bic: string };
   additionalGuests: string;
 }
 
@@ -49,13 +54,15 @@ export function buildAgreementContext(
     full_name: string;
   }>;
   return {
-    agreement: { version },
+    agreement: { version, date: formatDate(nowIso().slice(0, 10)) },
     booking: {
       reference: booking.reference,
       checkInFormatted: formatDate(booking.check_in),
       checkOutFormatted: formatDate(booking.check_out),
       guestsCount: booking.guests_count,
+      nights: Math.round((new Date(`${booking.check_out}T00:00:00Z`).getTime() - new Date(`${booking.check_in}T00:00:00Z`).getTime()) / 86_400_000),
       paymentDeadlineFormatted: formatDate(booking.payment_deadline),
+      balanceDueFormatted: formatDate(balanceDueDate(booking.check_in)),
       cancellationTerms: booking.cancellation_terms,
       specialConditions: booking.special_conditions || 'No special conditions.',
     },
@@ -75,6 +82,14 @@ export function buildAgreementContext(
       remainingBalance: formatMoney(booking.remaining_balance_minor, booking.currency),
       securityDeposit: formatMoney(booking.security_deposit_minor, booking.currency),
       touristTax: formatMoney(booking.tourist_tax_minor, booking.currency),
+      hasRemainingBalance: booking.remaining_balance_minor > 0,
+    },
+    bank: {
+      enabled: config.BANK_TRANSFER_ENABLED && Boolean(config.BANK_ACCOUNT_HOLDER) && Boolean(config.BANK_IBAN),
+      accountHolder: config.BANK_ACCOUNT_HOLDER,
+      name: config.BANK_NAME,
+      iban: config.BANK_IBAN,
+      bic: config.BANK_BIC,
     },
     additionalGuests: party.map((member) => member.full_name).join(', '),
   };
@@ -101,14 +116,14 @@ async function writePdf(html: string, targetPath: string): Promise<number> {
     stream.on('error', reject);
     document.on('error', reject);
     document.pipe(stream);
-    document.fillColor('#b66b4f').font('Helvetica-Bold').fontSize(9).text('VILLA TULLIA · PADENGHE SUL GARDA', { characterSpacing: 1.2 });
+    document.fillColor('#b66b4f').font('Helvetica-Bold').fontSize(9).text('VILLA TULLIA - PADENGHE SUL GARDA', { characterSpacing: 1.2 });
     document.moveDown(0.6).fillColor('#183632').font('Times-Roman').fontSize(11);
-    const cancellationMarker = '4. CANCELLATION';
-    const cancellationIndex = plainText.indexOf(cancellationMarker);
-    if (cancellationIndex > 0) {
-      document.text(plainText.slice(0, cancellationIndex).trimEnd(), { align: 'left', lineGap: 2 });
+    const conditionsMarker = '3. CONDITION OF THE PROPERTY';
+    const conditionsIndex = plainText.indexOf(conditionsMarker);
+    if (conditionsIndex > 0) {
+      document.text(plainText.slice(0, conditionsIndex).trimEnd(), { align: 'left', lineGap: 2 });
       document.addPage();
-      document.text(plainText.slice(cancellationIndex), { align: 'left', lineGap: 2 });
+      document.text(plainText.slice(conditionsIndex), { align: 'left', lineGap: 2 });
     } else {
       document.text(plainText, { align: 'left', lineGap: 2 });
     }

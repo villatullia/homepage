@@ -121,6 +121,7 @@ export async function registerWebhookRoutes(app: FastifyInstance, deps: WebhookD
       if (event.type === 'checkout.session.completed') {
         const payment = paymentByCheckout(db, object.id);
         if (!payment) throw new Error('Unknown Stripe Checkout Session');
+        db.prepare("UPDATE payments SET payment_method = 'CARD', updated_at = ? WHERE id = ?").run(nowIso(), payment.id);
         if (object.payment_status === 'paid') {
           const changed = markPaymentSucceeded(db, payment, { paymentIntentId: String(object.payment_intent ?? '') || undefined });
           if (changed) await email.sendConfirmation(payment.booking_id, payment.id);
@@ -130,6 +131,7 @@ export async function registerWebhookRoutes(app: FastifyInstance, deps: WebhookD
       } else if (event.type === 'checkout.session.async_payment_succeeded') {
         const payment = paymentByCheckout(db, object.id);
         if (!payment) throw new Error('Unknown Stripe Checkout Session');
+        db.prepare("UPDATE payments SET payment_method = 'CARD', updated_at = ? WHERE id = ?").run(nowIso(), payment.id);
         const changed = markPaymentSucceeded(db, payment, { paymentIntentId: String(object.payment_intent ?? '') || undefined });
         if (changed) await email.sendConfirmation(payment.booking_id, payment.id);
       } else if (event.type === 'checkout.session.async_payment_failed') {

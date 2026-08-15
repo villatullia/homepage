@@ -93,6 +93,9 @@ export interface PaymentRow {
   agreement_id: string;
   agreement_version: number;
   provider: string;
+  payment_method: 'CARD' | 'BANK_TRANSFER' | null;
+  bank_transfer_selected_at: string | null;
+  bank_transfer_confirmed_at: string | null;
   purpose: 'INITIAL' | 'BALANCE';
   due_date: string | null;
   status: string;

@@ -28,6 +28,7 @@ export function bookingViewModel(db: Database, config: AppConfig, booking: Booki
       amountFormatted: formatMoney(payment.amount_minor, payment.currency),
       refundedFormatted: formatMoney(payment.refunded_minor, payment.currency),
       purposeFormatted: payment.purpose === 'BALANCE' ? 'Balance' : 'Initial payment',
+      methodFormatted: payment.payment_method === 'BANK_TRANSFER' ? 'Bank transfer' : payment.payment_method === 'CARD' ? 'Card' : 'Not selected',
       dueDateFormatted: payment.due_date ? formatDate(payment.due_date) : '',
     })),
     events: events.map((event) => ({

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BookingRow, PaymentRow } from '../src/types.js';
 import { createBooking } from '../src/services/booking.js';
 import { generateAgreement } from '../src/services/agreement.js';
-import { createPaymentProvider, markPaymentSucceeded } from '../src/services/payment.js';
+import { confirmBankTransfer, createPaymentProvider, markPaymentSucceeded, selectBankTransfer } from '../src/services/payment.js';
 import { createSignatureProvider, type SignatureProvider } from '../src/services/signature.js';
 import { EmailService } from '../src/services/email.js';
 import { mockGuestSigned, mockOwnerSigned, processDocumensoEvent, sendAgreement } from '../src/services/workflow.js';
@@ -99,6 +99,35 @@ describe('enquiry-to-confirmation workflow', () => {
     const payment = context.db.prepare('SELECT * FROM payments WHERE booking_id = ?').get(booking.id) as unknown as PaymentRow;
     markPaymentSucceeded(context.db, payment, { paymentIntentId: 'mock_full_intent' });
     expect(context.db.prepare("SELECT 1 FROM scheduled_jobs WHERE job_type = 'BALANCE_PAYMENT_REQUEST' AND booking_id = ?").get(booking.id)).toBeUndefined();
+  });
+
+  it('lets a guest select bank transfer and requires administrator confirmation', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ blockedRanges: [] }), { status: 200 })));
+    const context = createTestContext();
+    cleanup.push(context.close);
+    const { booking } = createBooking(context.db, context.config, validBooking());
+    await generateAgreement(context.db, context.config, booking.id);
+    await sendAgreement(context.db, context.config, createSignatureProvider(context.config), booking.id, 'test-admin');
+    mockOwnerSigned(context.db, context.config, booking.id);
+    await mockGuestSigned(
+      context.db,
+      context.config,
+      createPaymentProvider(context.config),
+      new EmailService(context.db, context.config),
+      booking.id,
+    );
+
+    const payment = context.db.prepare('SELECT * FROM payments WHERE booking_id = ?').get(booking.id) as unknown as PaymentRow;
+    selectBankTransfer(context.db, payment);
+    const selected = context.db.prepare('SELECT * FROM payments WHERE id = ?').get(payment.id) as unknown as PaymentRow;
+    expect(selected).toMatchObject({ payment_method: 'BANK_TRANSFER', status: 'PROCESSING' });
+    expect((context.db.prepare('SELECT status FROM bookings WHERE id = ?').get(booking.id) as { status: string }).status).toBe('PAYMENT_PROCESSING');
+
+    expect(confirmBankTransfer(context.db, selected, 'test-admin')).toBe(true);
+    const confirmed = context.db.prepare('SELECT * FROM payments WHERE id = ?').get(payment.id) as unknown as PaymentRow;
+    expect(confirmed.status).toBe('SUCCEEDED');
+    expect(confirmed.bank_transfer_confirmed_at).toBeTruthy();
+    expect((context.db.prepare('SELECT status FROM bookings WHERE id = ?').get(booking.id) as { status: string }).status).toBe('CONFIRMED');
   });
 
   it('fails closed when the external calendar reports a conflict', async () => {
