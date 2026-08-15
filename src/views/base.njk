@@ -24,7 +24,7 @@
   </style>
 </head>
 <body>
-  {% if admin %}<header><a class="brand" href="/admin">Villa Tullia<small>Booking administration</small></a><div class="header-actions"><span class="desktop-only">{{ admin.display_name }}</span><form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="{{ csrf }}"><button class="link-button" type="submit">Sign out</button></form></div></header>{% endif %}
+  {% if admin %}<header><a class="brand" href="/admin">Villa Tullia<small>Booking administration</small></a><div class="header-actions"><a href="/admin/cro">CRO analytics</a><span class="desktop-only">{{ admin.display_name }}</span><form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="{{ csrf }}"><button class="link-button" type="submit">Sign out</button></form></div></header>{% endif %}
   {% block body %}{% endblock %}
 </body>
 </html>

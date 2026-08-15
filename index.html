@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-cro-site="villa-tullia">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -71,9 +71,43 @@
   </main>
   <a class="floating" href="https://wa.me/393466733267?text=Hello%20I%20am%20interested%20in%20Villa%20Tullia" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="bi bi-whatsapp"></i></a>
   <footer><span>© 2026 Villa Tullia · Padenghe sul Garda</span><span class="footer-links"><a href="calendarw.html">Availability</a><a href="calendarw.html#emailEnquiry">Email enquiry</a><a href="privacy.html">Privacy</a><a href="https://wa.me/393466733267" target="_blank" rel="noopener">WhatsApp</a></span></footer>
+  <script>window.CRO_CONFIG={siteId:'villa-tullia',debug:location.hostname==='localhost'||location.hostname==='127.0.0.1'};</script>
+  <script src="/cro.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
   <script>
-    GLightbox({ selector:'.glightbox', touchNavigation:true, loop:true });
+    const lightbox = GLightbox({ selector:'.glightbox', touchNavigation:true, loop:true });
+    lightbox.on('slide_changed', ({ current }) => cro.track('gallery_interacted', { action:'slide_changed', index:(current?.index ?? 0) + 1 }));
+    const destinationOf = (link) => { try { const url=new URL(link.href, location.href); return url.origin===location.origin ? url.pathname+url.hash : url.origin+url.pathname; } catch { return ''; } };
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a');
+      if (!link) return;
+      const text=(link.textContent || link.getAttribute('aria-label') || '').trim().replace(/\s+/g,' ').slice(0,100);
+      const destination=destinationOf(link);
+      const placement = link.closest('.hero') ? 'hero' : link.closest('.site-nav') ? 'navigation' : link.closest('footer') ? 'footer' : link.closest('.gallery') ? 'gallery' : 'page';
+      if (link.matches('.hero .btn-primary')) cro.track('hero_cta_clicked', { text, destination });
+      else if (link.matches('.hero .btn-light,.hero .btn-outline')) cro.track('secondary_cta_clicked', { text, destination });
+      if (link.href.includes('calendarw.html')) cro.track('availability_clicked', { placement });
+      if (link.href.includes('wa.me')) { cro.track('whatsapp_clicked', { placement }); cro.track('contact_clicked', { method:'whatsapp', placement }); }
+      if (link.href.includes('calendarw.html#emailEnquiry')) cro.track('contact_clicked', { method:'email', placement });
+      if (link.href.includes('google.com/maps/dir')) cro.track('location_clicked', { placement:'location_section', destination });
+      if (link.matches('.glightbox')) cro.trackOnce('gallery_opened', 'gallery_opened', { item:(link.dataset.caption || '').slice(0,100) });
+    });
+    const importantSections={villa:'villa',gallery:'gallery',reviews:'reviews',planning:'planning',visit:'location'};
+    const sectionObserver=new IntersectionObserver((entries) => entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const section=importantSections[entry.target.id];
+      if (cro.trackOnce(`section:${section}`, 'section_viewed', { section }) && section==='reviews') cro.track('reviews_viewed');
+      sectionObserver.unobserve(entry.target);
+    }), { threshold:0.35 });
+    Object.keys(importantSections).forEach(id => { const section=document.getElementById(id); if(section) sectionObserver.observe(section); });
+    const scrollMilestones=[25,50,75,90];
+    const trackScroll=() => {
+      const available=document.documentElement.scrollHeight-window.innerHeight;
+      const depth=available>0 ? Math.round(window.scrollY*100/available) : 100;
+      scrollMilestones.forEach(percent => { if(depth>=percent) cro.trackOnce(`scroll:${percent}`, 'scroll_depth_reached', { percent }); });
+      if(depth>=90) window.removeEventListener('scroll', trackScroll);
+    };
+    window.addEventListener('scroll', trackScroll, { passive:true }); trackScroll();
     (() => {
       const track = document.getElementById('reviewTrack');
       const previous = document.getElementById('reviewPrevious');
@@ -86,9 +120,9 @@
         track.style.transform = `translateX(-${activeReview * 100}%)`;
         dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === activeReview));
       };
-      previous.addEventListener('click', () => showReview(activeReview - 1));
-      next.addEventListener('click', () => showReview(activeReview + 1));
-      dots.forEach((dot, index) => dot.addEventListener('click', () => showReview(index)));
+      previous.addEventListener('click', () => { cro.track('reviews_interacted', { action:'previous' }); showReview(activeReview - 1); });
+      next.addEventListener('click', () => { cro.track('reviews_interacted', { action:'next' }); showReview(activeReview + 1); });
+      dots.forEach((dot, index) => dot.addEventListener('click', () => { cro.track('reviews_interacted', { action:'select', index:index+1 }); showReview(index); }));
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => showReview(activeReview + 1), 6500);
     })();
   </script>

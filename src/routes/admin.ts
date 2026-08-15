@@ -30,6 +30,7 @@ import {
   sendAgreement,
 } from '../services/workflow.js';
 import { BOOKING_COM_COMMISSION_BASIS_POINTS, directPerformance } from '../services/analytics.js';
+import { croDashboard } from '../services/cro.js';
 
 interface AdminRouteDependencies {
   db: Database;
@@ -355,6 +356,11 @@ export async function registerAdminRoutes(app: FastifyInstance, deps: AdminRoute
     const payment = await createPaymentRequest(db, paymentProvider, id, agreement.id, purpose);
     await email.sendPaymentRequest(id, payment);
     return reply.redirect(`/admin/bookings/${encodeURIComponent(id)}?message=${encodeURIComponent('Payment request ready')}`);
+  });
+
+  app.get('/admin/cro', { preHandler: auth }, async (request, reply) => {
+    const admin = adminFromRequest(request);
+    return reply.view('cro-dashboard.njk', { title:'CRO dashboard', admin, csrf:admin.csrf_token, cro:croDashboard(db, 'villa-tullia') });
   });
 
   app.post('/admin/bookings/:id/payment/:paymentId/confirm-bank-transfer', { preHandler: [auth, csrf] }, async (request, reply) => {

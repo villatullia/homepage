@@ -64,7 +64,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       return (
         ['index.html', 'calendarw.html', 'privacy.html', 'robots.txt', 'sitemap.xml', 'favicon.svg', 'testcam.html', 'CNAME'].includes(normalized) ||
         normalized.startsWith('imgs/Foto/') ||
-        normalized === 'imgs/flowers.jpg'
+        normalized === 'imgs/flowers.jpg' || normalized === 'cro.js'
       );
     },
     setHeaders(response, filePath) {

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-cro-site="villa-tullia">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -77,8 +77,11 @@
     </aside>
   </main>
   <footer class="site-footer"><span>© 2026 Villa Tullia · Padenghe sul Garda</span><span class="footer-links"><a href="index.html">Villa home</a><a href="https://wa.me/393466733267" target="_blank" rel="noopener">WhatsApp</a></span></footer>
+  <script>window.CRO_CONFIG={siteId:'villa-tullia',debug:location.hostname==='localhost'||location.hostname==='127.0.0.1'};</script>
+  <script src="/cro.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      cro.track('availability_page_view');
       const oneDay = 24 * 60 * 60 * 1000;
       const today = new Date(); today.setHours(0, 0, 0, 0);
       const parseDate = (value) => new Date(`${value}T00:00:00`);
@@ -186,6 +189,7 @@
           button.innerHTML = `<strong>${year}</strong><small>${year > today.getFullYear() ? 'Direct enquiries open' : openCount ? `${openCount} open ${openCount === 1 ? 'week' : 'weeks'}` : 'No open weeks'}</small>`;
           button.addEventListener('click', () => {
             selectedYear = year;
+            cro.track('year_selected', { year });
             const firstOpenWeek = yearWeeks.find((week) => week.status === 'available' && week.start >= today);
             visibleMonth = new Date(firstOpenWeek.start.getFullYear(), firstOpenWeek.start.getMonth(), 1);
             renderWeeks();
@@ -212,6 +216,7 @@
           button.innerHTML = `<strong>${formatDate(month, { month:'short', year:'numeric' })}</strong><small>${openCount ? `${openCount} open ${openCount === 1 ? 'week' : 'weeks'}` : 'No open weeks'}</small>`;
           button.addEventListener('click', () => {
             visibleMonth = month;
+            cro.track('month_selected', { year:month.getFullYear(), month:month.getMonth()+1 });
             renderWeeks();
             setFlowStep(2);
           });
@@ -238,7 +243,7 @@
           card.className = `week ${selectable ? 'available' : past ? 'past' : 'reserved'}${selectedWeek === week ? ' selected' : ''}`;
           const state = selectable ? 'Available' : past ? 'Past' : 'Unavailable';
           card.innerHTML = `<div class="week-date"><b>${formatDate(week.start, { day:'numeric', month:'short' })}</b>Saturday</div><div class="week-info"><strong>${formatDate(week.start, { day:'numeric', month:'long' })} – ${formatDate(endOfStay, { day:'numeric', month:'long' })}</strong><span>7 nights · Saturday to Saturday</span></div><span class="status ${selectable ? 'available' : past ? 'past' : 'reserved'}">${state}</span>`;
-          if (selectable) card.addEventListener('click', () => setSelectedWeek(week));
+          if (selectable) card.addEventListener('click', () => { cro.track('week_selected', { checkIn:toIsoDate(week.start), checkOut:toIsoDate(week.end) }); setSelectedWeek(week); });
           weeksElement.appendChild(card);
         });
         fitFlow();
@@ -251,9 +256,11 @@
       changeDates.addEventListener('click', () => setFlowStep(2));
       continueButton.addEventListener('click', () => {
         if (!selectedWeek) return;
+        cro.track('contact_step_reached');
         setFlowStep(4);
       });
       emailToggle.addEventListener('click', () => {
+        cro.track('email_form_started');
         emailForm.hidden = false;
         enquirySuccess.hidden = true;
         emailStatus.className = 'email-status';
@@ -265,6 +272,7 @@
       window.addEventListener('resize', fitFlow);
       inquireButton.addEventListener('click', () => {
         if (!selectedWeek) return;
+        cro.track('whatsapp_clicked', { placement:'availability_contact_step' });
         const message = `Hello! I am interested in Villa Tullia from ${formatDate(selectedWeek.start)} to ${formatDate(new Date(selectedWeek.end - oneDay))}.`;
         window.open(`https://wa.me/393466733267?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
       });
@@ -280,6 +288,8 @@
           const response = await fetch('/api/enquiries', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(payload) });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || 'Could not send enquiry');
+          cro.track('email_form_submitted');
+          cro.track('enquiry_completed', { method:'email' });
           emailStatus.textContent = '';
           enquiryReference.textContent = data.reference;
           emailForm.hidden = true;
