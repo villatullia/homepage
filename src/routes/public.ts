@@ -8,7 +8,7 @@ import { createEnquiry, enquirySchema } from '../services/booking.js';
 import type { EmailService } from '../services/email.js';
 import { balanceDueDate, markPaymentSucceeded, selectBankTransfer, selectCardPayment } from '../services/payment.js';
 import type { PaymentRow } from '../types.js';
-import { croEventSchema, recordCroEvent } from '../services/cro.js';
+import { croEventSchema, recordCroEvent, resolveCountry } from '../services/cro.js';
 
 interface PublicDependencies {
   db: Database;
@@ -36,7 +36,7 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
   app.post('/api/cro/events', { config: { rateLimit: { max: 120, timeWindow: '1 minute' } } }, async (request, reply) => {
     const parsed = croEventSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid event' });
-    recordCroEvent(db, parsed.data);
+    recordCroEvent(db, parsed.data, { countryCode:await resolveCountry(request.ip, request.headers) });
     return reply.code(202).send({ ok: true });
   });
 

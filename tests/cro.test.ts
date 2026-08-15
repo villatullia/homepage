@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { croDashboard, croEventSchema, recordCroEvent } from '../src/services/cro.js';
+import { croDashboard, croEventSchema, recordCroEvent, resolveCountry } from '../src/services/cro.js';
 import { createTestContext } from './helpers.js';
 
 const cleanup:Array<()=>void>=[];
@@ -30,9 +30,16 @@ describe('CRO tracking', () => {
     recordCroEvent(context.db,event('enquiry_completed'));
     expect(croDashboard(context.db,'villa-tullia').homepage).toMatchObject({
       visitors:1, sessions:1, availabilitySessions:1, availabilityRate:100,
-      ctas:[{label:'hero_cta_clicked',clicks:1,rate:100}],
+      ctas:[{label:'Main availability button',clicks:1,rate:100}],
       scroll:[{milestone:50,sessions:1,rate:100}],
       sections:[{section:'reviews',visitors:1,reachRate:100,conversions:1,conversionRate:100}],
     });
+  });
+  it('stores coarse visitor context and accepts a trusted country header', async () => {
+    const context=createTestContext(); cleanup.push(context.close);
+    recordCroEvent(context.db, {...event('page_view'),context:{browser:'Firefox',operatingSystem:'Linux',language:'it-IT',timezone:'Europe/Rome',screenSize:'large'}}, {countryCode:'IT'});
+    expect(context.db.prepare('SELECT country_code,browser,operating_system,language,timezone,screen_size FROM cro_events').get()).toMatchObject({country_code:'IT',browser:'Firefox',operating_system:'Linux',language:'it-IT',timezone:'Europe/Rome',screen_size:'large'});
+    expect(await resolveCountry('203.0.113.10', {'cf-ipcountry':'DE'})).toBe('DE');
+    expect(croDashboard(context.db,'villa-tullia').visitorContext.countries[0]).toMatchObject({label:'IT',visitors:1});
   });
 });

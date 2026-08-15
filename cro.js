@@ -15,9 +15,14 @@
   ['source','medium','campaign','term','content'].forEach(k => { const value=params.get(`utm_${k}`); if(value) utm[k]=value; });
   write(firstTouchKey, JSON.stringify(utm), localStorage);
   const deviceType = /iPad|Tablet/i.test(navigator.userAgent) ? 'tablet' : /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
+  const browser = /Edg\//.test(navigator.userAgent) ? 'Edge' : /Firefox\//.test(navigator.userAgent) ? 'Firefox' : /CriOS|Chrome\//.test(navigator.userAgent) ? 'Chrome' : /Safari\//.test(navigator.userAgent) ? 'Safari' : 'Other';
+  const operatingSystem = /Windows/i.test(navigator.userAgent) ? 'Windows' : /Android/i.test(navigator.userAgent) ? 'Android' : /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'iOS' : /Mac OS/i.test(navigator.userAgent) ? 'macOS' : /Linux/i.test(navigator.userAgent) ? 'Linux' : 'Other';
+  const width = Math.max(screen.width || 0, screen.height || 0);
+  const screenSize = width < 768 ? 'small' : width < 1200 ? 'medium' : 'large';
+  const context = { browser, operatingSystem, language:(navigator.language || '').slice(0,20), timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone || '').slice(0,80), screenSize };
   function track(eventName, properties) {
     let referrer=''; try { const url=new URL(document.referrer); referrer=url.origin+url.pathname; } catch {}
-    const payload={siteId,visitorId,sessionId,eventName,page:location.pathname,referrer,deviceType,utm,properties:properties||{}};
+    const payload={siteId,visitorId,sessionId,eventName,page:location.pathname,referrer,deviceType,utm,context,properties:properties||{}};
     if(debug) console.debug('[CRO]', eventName, payload);
     const body=JSON.stringify(payload);
     if(navigator.sendBeacon) navigator.sendBeacon('/api/cro/events', new Blob([body], {type:'application/json'}));
