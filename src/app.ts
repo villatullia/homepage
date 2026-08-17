@@ -17,6 +17,7 @@ import { EmailService } from './services/email.js';
 import { registerAdminRoutes } from './routes/admin.js';
 import { registerPublicRoutes } from './routes/public.js';
 import { registerWebhookRoutes } from './routes/webhooks.js';
+import { localizedPublicPage, type PublicLocale } from './public-localization.js';
 
 export interface BuildAppOptions {
   config?: AppConfig;
@@ -73,6 +74,17 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     },
   });
   app.get('/', async (_request, reply) => reply.sendFile('index.html'));
+  const localizedRoute = (url: string, file: 'index.html' | 'calendarw.html' | 'privacy.html', locale: PublicLocale) => {
+    app.get(url, async (_request, reply) => reply.type('text/html; charset=utf-8').header('Cache-Control', 'no-cache').send(localizedPublicPage(file, locale)));
+  };
+  app.get('/de', async (_request, reply) => reply.redirect('/de/'));
+  app.get('/it', async (_request, reply) => reply.redirect('/it/'));
+  localizedRoute('/de/', 'index.html', 'de');
+  localizedRoute('/it/', 'index.html', 'it');
+  localizedRoute('/de/verfuegbarkeit/', 'calendarw.html', 'de');
+  localizedRoute('/it/disponibilita/', 'calendarw.html', 'it');
+  localizedRoute('/de/datenschutz/', 'privacy.html', 'de');
+  localizedRoute('/it/privacy/', 'privacy.html', 'it');
   app.get('/healthz', async (_request, reply) => reply.header('Cache-Control', 'no-store').send({ ok: true }));
 
   const signatureProvider = createSignatureProvider(config);

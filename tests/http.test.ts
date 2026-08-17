@@ -21,6 +21,17 @@ describe('public HTTP surface', () => {
 
     expect((await app.inject({ method: 'GET', url: '/' })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url: '/privacy.html' })).statusCode).toBe(200);
+    const german = await app.inject({ method: 'GET', url: '/de/' });
+    expect(german.statusCode).toBe(200);
+    expect(german.body).toContain('<html lang="de"');
+    expect(german.body).toContain('Ferienvilla am Gardasee für 8 Personen');
+    expect(german.body).toContain('rel="canonical" href="https://villatullia.it/de/"');
+    expect(german.body).toContain('hreflang="it" href="https://villatullia.it/it/"');
+    const italianAvailability = await app.inject({ method: 'GET', url: '/it/disponibilita/' });
+    expect(italianAvailability.statusCode).toBe(200);
+    expect(italianAvailability.body).toContain('<html lang="it"');
+    expect(italianAvailability.body).toContain('Scegli la tua settimana sul Garda.');
+    expect(italianAvailability.body).toContain("new Intl.DateTimeFormat('it-IT'");
     expect((await app.inject({ method: 'GET', url: '/favicon.svg' })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url: '/.env.example' })).statusCode).toBe(404);
     expect((await app.inject({ method: 'GET', url: '/src/config.ts' })).statusCode).toBe(404);

@@ -22,7 +22,7 @@
   const context = { browser, operatingSystem, language:(navigator.language || '').slice(0,20), timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone || '').slice(0,80), screenSize };
   function track(eventName, properties) {
     let referrer=''; try { const url=new URL(document.referrer); referrer=url.origin+url.pathname; } catch {}
-    const payload={siteId,visitorId,sessionId,eventName,page:location.pathname,referrer,deviceType,utm,context,properties:properties||{}};
+    const payload={siteId,visitorId,sessionId,eventName,page:location.pathname,referrer,deviceType,utm,context,properties:{pageLanguage:(document.documentElement.lang||'').slice(0,10),...(properties||{})}};
     if(debug) console.debug('[CRO]', eventName, payload);
     const body=JSON.stringify(payload);
     if(navigator.sendBeacon) navigator.sendBeacon('/api/cro/events', new Blob([body], {type:'application/json'}));
