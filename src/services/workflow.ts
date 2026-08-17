@@ -16,12 +16,15 @@ import type { SignatureProvider } from './signature.js';
 import type { PaymentProvider } from './payment.js';
 import { createPaymentRequest } from './payment.js';
 import type { EmailService } from './email.js';
+import { getDirectWebsiteRate } from '../domain/direct-rates.js';
 
 function availabilityError(message: string, statusCode: 409 | 503): Error & { statusCode: number; expose: boolean } {
   return Object.assign(new Error(message), { statusCode, expose: true });
 }
 
 async function assertPartnerAvailability(config: AppConfig, booking: BookingRow): Promise<void> {
+  // These explicitly published direct weeks intentionally ignore Airbnb/Vrbo's next-season closure.
+  if (getDirectWebsiteRate(booking.check_in, booking.check_out)) return;
   let response: Response;
   try {
     response = await fetch(config.CALENDAR_AVAILABILITY_URL, { signal: AbortSignal.timeout(5000) });

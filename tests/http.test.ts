@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { buildApp } from '../src/app.js';
 import { acquireDateHold } from '../src/db.js';
 import { createBooking } from '../src/services/booking.js';
@@ -8,6 +8,7 @@ import { validBooking } from './helpers.js';
 const cleanup: Array<() => Promise<void> | void> = [];
 afterEach(async () => {
   for (const close of cleanup.splice(0)) await close();
+  vi.unstubAllGlobals();
 });
 
 describe('public HTTP surface', () => {
@@ -80,6 +81,32 @@ describe('public HTTP surface', () => {
     expect(response.body).toContain('SUMMARY:Villa Tullia - Unavailable');
     expect(response.body).not.toContain('Ada Lovelace');
     expect(response.body).not.toContain(booking.reference);
+  });
+
+  it('publishes 2027 direct rates separately from partner and local calendar blocks', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
+      lastUpdated: '2026-08-17T10:00:00Z',
+      blockedRanges: [{ start: '2027-01-01', end: '2029-01-01' }],
+    }), { status: 200 })));
+    const context = createTestContext();
+    const { booking } = createBooking(context.db, context.config, validBooking());
+    acquireDateHold(context.db, booking, 72);
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => {
+      await app.close();
+      context.close();
+    });
+
+    const response = await app.inject({ method: 'GET', url: '/api/availability' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      partnerBlockedRanges: [{ start: '2027-01-01', end: '2029-01-01' }],
+      localBlockedRanges: [{ start: '2027-06-10', end: '2027-06-17' }],
+    });
+    const rates = response.json().directRates as Array<{ start: string; end: string; weeklyPrice: number; currency: string }>;
+    expect(rates).toHaveLength(21);
+    expect(rates[0]).toEqual({ start: '2027-05-15', end: '2027-05-22', weeklyPrice: 4200, currency: 'EUR' });
+    expect(rates.at(-1)).toEqual({ start: '2027-10-02', end: '2027-10-09', weeklyPrice: 3400, currency: 'EUR' });
   });
 
   it('silently discards honeypot submissions', async () => {

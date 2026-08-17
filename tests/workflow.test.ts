@@ -149,6 +149,23 @@ describe('enquiry-to-confirmation workflow', () => {
     expect(context.db.prepare('SELECT 1 FROM date_blocks WHERE booking_id = ?').get(booking.id)).toBeUndefined();
   });
 
+  it('allows an explicitly published 2027 direct-rate week despite the partner closure', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ blockedRanges: [{ start: '2027-01-01', end: '2029-01-01' }] }), { status: 200 })),
+    );
+    const context = createTestContext();
+    cleanup.push(context.close);
+    const { booking } = createBooking(context.db, context.config, validBooking({
+      checkIn: '2027-06-12',
+      checkOut: '2027-06-19',
+      rentalPriceMinor: 500000,
+    }));
+    await generateAgreement(context.db, context.config, booking.id);
+
+    await expect(sendAgreement(context.db, context.config, createSignatureProvider(context.config), booking.id, 'test-admin')).resolves.toBeTruthy();
+  });
+
   it('matches Documenso v2 webhooks by envelopeId', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ blockedRanges: [] }), { status: 200 })));
     const context = createTestContext();

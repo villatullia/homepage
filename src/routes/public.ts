@@ -8,6 +8,7 @@ import { createEnquiry, enquirySchema } from '../services/booking.js';
 import type { EmailService } from '../services/email.js';
 import { balanceDueDate, markPaymentSucceeded, selectBankTransfer, selectCardPayment } from '../services/payment.js';
 import type { PaymentRow } from '../types.js';
+import { directWebsiteRates2027 } from '../domain/direct-rates.js';
 import { croEventSchema, recordCroEvent, resolveCountry } from '../services/cro.js';
 
 interface PublicDependencies {
@@ -97,6 +98,9 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
     return reply.header('Cache-Control', 'no-store').send({
       lastUpdated: upstreamUpdated ?? nowIso(),
       blockedRanges: [...unique.values()].sort((a, b) => a.start.localeCompare(b.start)),
+      partnerBlockedRanges: partnerRanges,
+      localBlockedRanges: localRanges,
+      directRates: directWebsiteRates2027,
     });
   });
 

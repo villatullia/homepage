@@ -93,6 +93,7 @@
       const today = new Date(); today.setHours(0, 0, 0, 0);
       const parseDate = (value) => new Date(`${value}T00:00:00`);
       const formatDate = (date, options = { day:'numeric', month:'long', year:'numeric' }) => new Intl.DateTimeFormat('en-GB', options).format(date);
+      const formatPrice = (price) => new Intl.NumberFormat('en-GB', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(price);
       const toIsoDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       // Villa Tullia's Saturday-to-Saturday season runs May through October. Show this and next season for direct enquiries.
       const seasonWeeks = [];
@@ -106,13 +107,19 @@
           checkIn = checkOut;
         }
       }
-      const buildInventory = (blockedRanges = []) => seasonWeeks.map(([start, end]) => {
-        const startDate = parseDate(start);
-        const endDate = parseDate(end);
-        // Partner calendars may be deliberately closed for next season. Keep next year's direct-enquiry weeks visible here.
-        const overlapsBooking = blockedRanges.some((block) => startDate < parseDate(block.end) && endDate > parseDate(block.start));
-        return { start:startDate, end:endDate, status:overlapsBooking ? 'reserved' : 'available' };
-      }).sort((a,b) => a.start - b.start);
+      const buildInventory = (partnerBlockedRanges = [], localBlockedRanges = [], directRates = []) => {
+        const ratesByCheckIn = new Map(directRates.map((rate) => [rate.start, rate]));
+        return seasonWeeks.map(([start, end]) => {
+          const startDate = parseDate(start);
+          const endDate = parseDate(end);
+          const directRate = ratesByCheckIn.get(start);
+          const overlapsPartnerCalendar = partnerBlockedRanges.some((block) => startDate < parseDate(block.end) && endDate > parseDate(block.start));
+          const overlapsLocalBooking = localBlockedRanges.some((block) => startDate < parseDate(block.end) && endDate > parseDate(block.start));
+          // A published direct rate deliberately opens the week despite Airbnb/Vrbo closures. Local holds and bookings remain authoritative.
+          const reserved = overlapsLocalBooking || (!directRate && overlapsPartnerCalendar);
+          return { start:startDate, end:endDate, status:reserved ? 'reserved' : 'available', price:directRate?.weeklyPrice ?? null };
+        }).sort((a,b) => a.start - b.start);
+      };
       let inventory = buildInventory();
       const firstMonth = new Date(inventory[0].start.getFullYear(), inventory[0].start.getMonth(), 1);
       const lastInventoryWeek = inventory[inventory.length - 1];
@@ -249,7 +256,8 @@
           if (selectable) card.type = 'button';
           card.className = `week ${selectable ? 'available' : past ? 'past' : 'reserved'}${selectedWeek === week ? ' selected' : ''}`;
           const state = selectable ? 'Available' : past ? 'Past' : 'Unavailable';
-          card.innerHTML = `<div class="week-date"><b>${formatDate(week.start, { day:'numeric', month:'short' })}</b>Saturday</div><div class="week-info"><strong>${formatDate(week.start, { day:'numeric', month:'long' })} – ${formatDate(endOfStay, { day:'numeric', month:'long' })}</strong><span>7 nights · Saturday to Saturday</span></div><span class="status ${selectable ? 'available' : past ? 'past' : 'reserved'}">${state}</span>`;
+          const priceText = week.price ? ` · ${formatPrice(week.price)} total` : '';
+          card.innerHTML = `<div class="week-date"><b>${formatDate(week.start, { day:'numeric', month:'short' })}</b>Saturday</div><div class="week-info"><strong>${formatDate(week.start, { day:'numeric', month:'long' })} – ${formatDate(endOfStay, { day:'numeric', month:'long' })}</strong><span>7 nights · Saturday to Saturday${priceText}</span></div><span class="status ${selectable ? 'available' : past ? 'past' : 'reserved'}">${state}</span>`;
           if (selectable) card.addEventListener('click', () => { cro.track('week_selected', { checkIn:toIsoDate(week.start), checkOut:toIsoDate(week.end) }); setSelectedWeek(week); });
           weeksElement.appendChild(card);
         });
@@ -315,7 +323,8 @@
       fetch('/api/availability', { cache:'no-store' })
         .then((response) => response.ok ? response.json() : Promise.reject(new Error('Live calendar unavailable')))
         .then((data) => {
-          inventory = buildInventory(Array.isArray(data.blockedRanges) ? data.blockedRanges : []);
+          const partnerBlocks = Array.isArray(data.partnerBlockedRanges) ? data.partnerBlockedRanges : (Array.isArray(data.blockedRanges) ? data.blockedRanges : []);
+          inventory = buildInventory(partnerBlocks, Array.isArray(data.localBlockedRanges) ? data.localBlockedRanges : [], Array.isArray(data.directRates) ? data.directRates : []);
           syncStatus.textContent = data.lastUpdated ? `Live calendar checked ${formatDate(new Date(data.lastUpdated), { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}.` : 'Live calendar connected.';
           renderWeeks();
         })
