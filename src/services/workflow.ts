@@ -231,7 +231,10 @@ export async function processDocumensoEvent(
       transitionBooking(db, booking.id, 'AWAITING_GUEST_SIGNATURE', { type: 'SIGNATURE_PROVIDER' }, 'OWNER_SIGNED');
     }
   });
-  if (event.event === 'DOCUMENT_COMPLETED') {
+  // Documenso emits DOCUMENT_SIGNED for the final signer with the envelope
+  // already in COMPLETED state. Do not depend on a separate DOCUMENT_COMPLETED
+  // webhook, which may be delayed or not selected in the team webhook settings.
+  if (event.event === 'DOCUMENT_COMPLETED' || event.payload?.status === 'COMPLETED') {
     const signed = await signatureProvider.downloadCompleted(providerDocumentId);
     await finalizeAgreement(db, config, agreement, signed, paymentProvider, email, 'SIGNATURE_PROVIDER');
   }

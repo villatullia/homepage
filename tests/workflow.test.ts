@@ -202,7 +202,7 @@ describe('enquiry-to-confirmation workflow', () => {
       async resend() {},
       async cancel() {},
       async downloadCompleted() {
-        throw new Error('not needed for a signature event');
+        return Buffer.from('signed agreement');
       },
       verifyWebhook() {
         return true;
@@ -228,5 +228,31 @@ describe('enquiry-to-confirmation workflow', () => {
     expect((context.db.prepare('SELECT status FROM bookings WHERE id = ?').get(booking.id) as { status: string }).status).toBe(
       'AWAITING_GUEST_SIGNATURE',
     );
+
+    await processDocumensoEvent(
+      context.db,
+      context.config,
+      provider,
+      createPaymentProvider(context.config),
+      new EmailService(context.db, context.config),
+      {
+        event: 'DOCUMENT_SIGNED',
+        payload: {
+          id: 1,
+          envelopeId: 'envelope_test',
+          status: 'COMPLETED',
+          recipients: [
+            { email: 'ada@example.test', signingStatus: 'SIGNED', signedAt: '2026-07-30T18:10:00.000Z' },
+          ],
+        },
+      },
+    );
+    expect((context.db.prepare('SELECT status FROM bookings WHERE id = ?').get(booking.id) as { status: string }).status).toBe(
+      'AWAITING_PAYMENT',
+    );
+    expect(
+      (context.db.prepare('SELECT guest_signed_at FROM agreements WHERE id = ?').get(agreement.id) as { guest_signed_at: string })
+        .guest_signed_at,
+    ).toBe('2026-07-30T18:10:00.000Z');
   });
 });
