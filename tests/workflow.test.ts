@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BookingRow, PaymentRow } from '../src/types.js';
 import { createBooking } from '../src/services/booking.js';
@@ -99,6 +100,23 @@ describe('enquiry-to-confirmation workflow', () => {
     const payment = context.db.prepare('SELECT * FROM payments WHERE booking_id = ?').get(booking.id) as unknown as PaymentRow;
     markPaymentSucceeded(context.db, payment, { paymentIntentId: 'mock_full_intent' });
     expect(context.db.prepare("SELECT 1 FROM scheduled_jobs WHERE job_type = 'BALANCE_PAYMENT_REQUEST' AND booking_id = ?").get(booking.id)).toBeUndefined();
+  });
+
+  it('recovers when an interrupted attempt left an untracked agreement PDF', async () => {
+    const context = createTestContext();
+    cleanup.push(context.close);
+    const { booking } = createBooking(context.db, context.config, validBooking());
+    const directory = path.join(context.config.storagePath, 'agreements', booking.reference);
+    const orphanPath = path.join(directory, 'agreement-v1-unsigned.pdf');
+    fs.mkdirSync(directory, { recursive: true });
+    fs.writeFileSync(orphanPath, 'orphaned partial attempt');
+
+    const agreement = await generateAgreement(context.db, context.config, booking.id);
+
+    expect(agreement.version).toBe(1);
+    expect(agreement.unsigned_pdf_path).not.toBe(orphanPath);
+    expect(fs.readFileSync(orphanPath, 'utf8')).toBe('orphaned partial attempt');
+    expect(fs.existsSync(agreement.unsigned_pdf_path)).toBe(true);
   });
 
   it('lets a guest select bank transfer and requires administrator confirmation', async () => {

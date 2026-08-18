@@ -166,14 +166,20 @@ export async function generateAgreement(db: Database, config: AppConfig, booking
   const row = db.prepare('SELECT COALESCE(MAX(version), 0) + 1 AS version FROM agreements WHERE booking_id = ?').get(bookingId) as {
     version: number;
   };
+  const id = randomUUID();
   const context = buildAgreementContext(db, config, booking, row.version);
   const html = Handlebars.compile(template.body_template, { strict: true })(context);
   const directory = path.join(config.storagePath, 'agreements', booking.reference);
-  const targetPath = path.join(directory, `agreement-v${row.version}-unsigned.pdf`);
+  const preferredPath = path.join(directory, `agreement-v${row.version}-unsigned.pdf`);
+  // A process interruption after rendering but before the database transaction can
+  // leave an unreferenced PDF at the preferred path. Keep that file untouched and
+  // use a unique path so that generating the agreement remains safely retryable.
+  const targetPath = fs.existsSync(preferredPath)
+    ? path.join(directory, `agreement-v${row.version}-${id}-unsigned.pdf`)
+    : preferredPath;
   const pageCount = await writePdf(html, targetPath);
   const hash = sha256(fs.readFileSync(targetPath));
   const timestamp = nowIso();
-  const id = randomUUID();
 
   db.exec('BEGIN IMMEDIATE');
   try {
@@ -211,6 +217,9 @@ export async function generateAgreement(db: Database, config: AppConfig, booking
     db.exec('COMMIT');
   } catch (error) {
     db.exec('ROLLBACK');
+    // The agreement is not durable unless its database row is committed. Remove
+    // only the file created by this attempt so a retry does not hit a stale path.
+    fs.rmSync(targetPath, { force: true });
     throw error;
   }
   return db.prepare('SELECT * FROM agreements WHERE id = ?').get(id) as unknown as AgreementRow;
