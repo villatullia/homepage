@@ -17,6 +17,7 @@ export interface SignatureProvider {
   resend(documentId: string): Promise<void>;
   cancel(documentId: string): Promise<void>;
   downloadCompleted(documentId: string): Promise<Buffer>;
+  downloadIfCompleted(documentId: string): Promise<Buffer | null>;
   verifyWebhook(secretHeader: string | undefined): boolean;
 }
 
@@ -33,6 +34,10 @@ class MockSignatureProvider implements SignatureProvider {
 
   async downloadCompleted(): Promise<Buffer> {
     throw new Error('Mock signed documents are completed by the local workflow');
+  }
+
+  async downloadIfCompleted(): Promise<Buffer | null> {
+    return null;
   }
 
   verifyWebhook(): boolean {
@@ -154,6 +159,16 @@ class DocumensoSignatureProvider implements SignatureProvider {
   async downloadCompleted(documentId: string): Promise<Buffer> {
     const envelope = await this.json(`/envelope/${encodeURIComponent(documentId)}`);
     if (envelope.status !== 'COMPLETED') throw new Error('Documenso document is not completed');
+    return this.downloadSignedItem(envelope);
+  }
+
+  async downloadIfCompleted(documentId: string): Promise<Buffer | null> {
+    const envelope = await this.json(`/envelope/${encodeURIComponent(documentId)}`);
+    if (envelope.status !== 'COMPLETED') return null;
+    return this.downloadSignedItem(envelope);
+  }
+
+  private async downloadSignedItem(envelope: any): Promise<Buffer> {
     const itemId = envelope.envelopeItems?.[0]?.id;
     if (!itemId) throw new Error('Documenso envelope has no PDF item');
     const response = await fetch(

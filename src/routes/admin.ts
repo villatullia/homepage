@@ -325,8 +325,9 @@ export async function registerAdminRoutes(app: FastifyInstance, deps: AdminRoute
 
   app.post('/admin/bookings/:id/agreement/resend', { preHandler: [auth, csrf] }, async (request, reply) => {
     const id = (request.params as { id: string }).id;
-    await resendAgreement(db, signatureProvider, id);
-    return reply.redirect(`/admin/bookings/${encodeURIComponent(id)}?message=${encodeURIComponent('Signing invitation resent')}`);
+    const result = await resendAgreement(db, config, signatureProvider, paymentProvider, email, id);
+    const message = result === 'synchronized' ? 'Completed signatures synchronized' : 'Signing invitation resent';
+    return reply.redirect(`/admin/bookings/${encodeURIComponent(id)}?message=${encodeURIComponent(message)}`);
   });
 
   app.post('/admin/bookings/:id/mock-owner-sign', { preHandler: [auth, csrf] }, async (request, reply) => {

@@ -204,6 +204,9 @@ describe('enquiry-to-confirmation workflow', () => {
       async downloadCompleted() {
         return Buffer.from('signed agreement');
       },
+      async downloadIfCompleted() {
+        return Buffer.from('signed agreement');
+      },
       verifyWebhook() {
         return true;
       },

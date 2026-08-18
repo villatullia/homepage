@@ -87,16 +87,29 @@ export async function sendAgreement(
   return db.prepare('SELECT * FROM agreements WHERE id = ?').get(agreement.id) as unknown as AgreementRow;
 }
 
-export async function resendAgreement(db: Database, provider: SignatureProvider, bookingId: string): Promise<void> {
+export async function resendAgreement(
+  db: Database,
+  config: AppConfig,
+  provider: SignatureProvider,
+  paymentProvider: PaymentProvider,
+  email: EmailService,
+  bookingId: string,
+): Promise<'resent' | 'synchronized'> {
   const agreement = db.prepare(`
     SELECT * FROM agreements WHERE booking_id = ? AND status IN ('SENT','OWNER_SIGNED') ORDER BY version DESC LIMIT 1
   `).get(bookingId) as AgreementRow | undefined;
   if (!agreement?.provider_document_id) throw new Error('No active signature request');
+  const completedPdf = await provider.downloadIfCompleted(agreement.provider_document_id);
+  if (completedPdf) {
+    await finalizeAgreement(db, config, agreement, completedPdf, paymentProvider, email, 'SIGNATURE_PROVIDER');
+    return 'synchronized';
+  }
   await provider.resend(agreement.provider_document_id);
   db.prepare(`
     INSERT INTO booking_events (id, booking_id, actor_type, event_type, details_json, created_at)
     VALUES (?, ?, 'ADMIN', 'SIGNING_INVITATION_RESENT', ?, ?)
   `).run(randomUUID(), bookingId, JSON.stringify({ agreementId: agreement.id }), nowIso());
+  return 'resent';
 }
 
 function applySignerTimestamps(
