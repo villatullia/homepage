@@ -138,6 +138,19 @@ class DocumensoSignatureProvider implements SignatureProvider {
           typedSignatureEnabled: true,
           uploadSignatureEnabled: true,
           drawSignatureEnabled: true,
+          emailSettings: {
+            // Villa Tullia handles workflow, payment, and confirmation emails.
+            // Documenso only needs to deliver each signer's actionable invite.
+            recipientSigningRequest: true,
+            recipientRemoved: false,
+            recipientSigned: false,
+            documentPending: false,
+            documentCompleted: false,
+            documentDeleted: false,
+            ownerDocumentCompleted: false,
+            ownerRecipientExpired: false,
+            ownerDocumentCreated: false,
+          },
         },
       }),
     );
