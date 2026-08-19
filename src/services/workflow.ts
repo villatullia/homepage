@@ -146,7 +146,10 @@ async function finalizeAgreement(
     config.storagePath,
     'agreements',
     (db.prepare('SELECT reference FROM bookings WHERE id = ?').get(agreement.booking_id) as { reference: string }).reference,
-    `agreement-v${agreement.version}-signed.pdf`,
+    // References and version numbers can be reused after a database restore or
+    // test reset while document storage persists. The agreement ID keeps the
+    // immutable signed artifact from colliding with an older booking's file.
+    `agreement-v${agreement.version}-${agreement.id}-signed.pdf`,
   );
   fs.mkdirSync(path.dirname(target), { recursive: true });
   if (!fs.existsSync(target)) fs.writeFileSync(target, signedPdf, { flag: 'wx' });
