@@ -18,14 +18,14 @@ compose exec -T app node --input-type=module -e '
            a.completed_at
     FROM bookings b
     JOIN agreements a ON a.booking_id = b.id
-    WHERE a.status IN ("SENT", "OWNER_SIGNED", "COMPLETED")
+    WHERE a.status IN (?, ?, ?)
     ORDER BY a.updated_at DESC LIMIT 5
-  `).all());
+  `).all("SENT", "OWNER_SIGNED", "COMPLETED"));
   console.log(db.prepare(`
     SELECT event_type, processing_error, received_at, processed_at
-    FROM webhook_events WHERE provider = "documenso"
+    FROM webhook_events WHERE provider = ?
     ORDER BY received_at DESC LIMIT 10
-  `).all());
+  `).all("documenso"));
 '
 
 echo 'Documenso envelope and recipient state (latest five envelopes)'
