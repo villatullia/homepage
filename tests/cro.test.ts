@@ -13,7 +13,10 @@ describe('CRO tracking', () => {
     const context=createTestContext(); cleanup.push(context.close);
     for (const name of ['page_view','availability_clicked','availability_page_view','year_selected','month_selected','week_selected','contact_step_reached','enquiry_completed']) recordCroEvent(context.db,event(name));
     expect(context.db.prepare('SELECT properties_json FROM cro_events').all()).toHaveLength(8);
-    expect(croDashboard(context.db,'villa-tullia')).toMatchObject({visitors:1,sessions:1,conversions:1,conversionRate:100});
+    const dashboard=croDashboard(context.db,'villa-tullia');
+    expect(dashboard).toMatchObject({visitors:1,sessions:1,conversions:1,conversionRate:100});
+    expect(dashboard.optimizationPrompt).toContain('- Completed enquiries: 1');
+    expect(dashboard.optimizationPrompt).toContain('Do not implement changes yet');
   });
   it('reports distinct visitors alongside sessions at every funnel step', () => {
     const context=createTestContext(); cleanup.push(context.close);

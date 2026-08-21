@@ -40,6 +40,64 @@ export async function resolveCountry(ip: string, headers: Record<string, string 
 }
 
 const funnel = ['page_view','availability_clicked','availability_page_view','year_selected','month_selected','week_selected','contact_step_reached','enquiry_completed'];
+
+function optimizationPrompt(data: {
+  visitors:number; sessions:number; conversions:number; conversionRate:number;
+  stages:Array<{label:string;count:number;dropoffRate:number;visitors:number;visitorDropoffRate:number}>;
+  devices:Array<any>; sources:Array<any>; homepage:any; visitorContext:any; insights:string[];
+}) {
+  const rows = (items:Array<Record<string, unknown>>, format:(row:Record<string, any>)=>string, empty='No data yet') =>
+    items.length ? items.slice(0, 10).map(format).join('\n') : `- ${empty}`;
+  return `Act as a conversion-rate optimization consultant for Villa Tullia, a direct-booking holiday villa website on Lake Garda. Analyze the privacy-safe analytics below and, if you have access to the website files in the current workspace, inspect the actual pages and booking journey before making recommendations.
+
+Please provide:
+1. A concise diagnosis of the most important conversion bottlenecks, citing the data behind each finding.
+2. A prioritized list of improvements, ranked by likely impact, confidence, and implementation effort.
+3. Specific A/B tests with a hypothesis, exact change, primary metric, guardrail metric, and suggested minimum evidence needed to decide.
+4. Concrete copy, CTA, layout, trust, mobile, and booking-flow suggestions where relevant.
+5. Any tracking gaps or data-quality issues that should be fixed before drawing stronger conclusions.
+
+Do not treat correlation as causation. Be explicit about uncertainty, especially when sample sizes are small. Distinguish visitors from sessions. Do not implement changes yet; recommend them first.
+
+OVERALL
+- Visitors: ${data.visitors}
+- Sessions: ${data.sessions}
+- Completed enquiries: ${data.conversions}
+- Session conversion rate: ${data.conversionRate}%
+
+AUTOMATIC SIGNALS
+${data.insights.map(value=>`- ${value}`).join('\n')}
+
+BOOKING FUNNEL
+${rows(data.stages, row=>`- ${row.label}: ${row.count} sessions, ${row.visitors} visitors; drop-off from prior step ${row.dropoffRate}% of sessions / ${row.visitorDropoffRate}% of visitors`)}
+
+HOMEPAGE
+- ${data.homepage.visitors} visitors / ${data.homepage.sessions} sessions
+- Homepage to availability page: ${data.homepage.availabilitySessions} sessions (${data.homepage.availabilityRate}%)
+CTA interactions:
+${rows(data.homepage.ctas, row=>`- ${row.label}: ${row.clicks} sessions (${row.rate}% of homepage sessions)`)}
+Scroll depth:
+${rows(data.homepage.scroll, row=>`- ${row.milestone}%: ${row.sessions} sessions (${row.rate}% of homepage sessions)`)}
+Section exposure and later enquiry rate:
+${rows(data.homepage.sections, row=>`- ${row.section}: ${row.visitors} visitors reached it (${row.reachRate}%); ${row.conversions} later enquired (${row.conversionRate}%)`)}
+
+DEVICE PERFORMANCE
+${rows(data.devices, row=>`- ${row.label}: ${row.sessions} sessions, ${row.conversions} enquiries (${row.rate}%)`)}
+
+TOP TRAFFIC SOURCES / REFERRERS
+${rows(data.sources, row=>`- ${row.label}: ${row.sessions} sessions, ${row.conversions} enquiries (${row.rate}%)`)}
+
+VISITOR CONTEXT (visitor-level enquiry rate)
+Countries:
+${rows(data.visitorContext.countries, row=>`- ${row.label}: ${row.visitors} visitors, ${row.conversions} enquiries (${row.rate}%)`)}
+Languages:
+${rows(data.visitorContext.languages, row=>`- ${row.label}: ${row.visitors} visitors, ${row.conversions} enquiries (${row.rate}%)`)}
+Browsers:
+${rows(data.visitorContext.browsers, row=>`- ${row.label}: ${row.visitors} visitors, ${row.conversions} enquiries (${row.rate}%)`)}
+Operating systems:
+${rows(data.visitorContext.operatingSystems, row=>`- ${row.label}: ${row.visitors} visitors, ${row.conversions} enquiries (${row.rate}%)`)}`;
+}
+
 export function croDashboard(db: Database, siteId: string) {
   const scalar = (sql:string, ...args:string[]) => (db.prepare(sql).get(...args) as { n:number }).n;
   const visitors = scalar('SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=?', siteId);
@@ -57,7 +115,7 @@ export function croDashboard(db: Database, siteId: string) {
     const visitorDropoff = previous ? Math.max(0, previous.visitors - stage.visitors) : 0;
     return {
       ...stage,
-      label:stageLabels[stage.name],
+      label:stageLabels[stage.name] ?? stage.name,
       dropoff,
       dropoffRate:previous?.count ? Math.round(dropoff * 1000 / previous.count) / 10 : 0,
       visitorDropoff,
@@ -94,5 +152,6 @@ export function croDashboard(db: Database, siteId: string) {
   const overall = sessions ? conversions*100/sessions : 0;
   for (const source of sources.filter((row:any)=>row.sessions>=5)) if (Math.abs(source.rate-overall)>=5) insights.push(`${source.label} conversion is unusually ${source.rate>overall?'high':'low'} at ${source.rate}%.`);
   if (!insights.length) insights.push('More traffic is needed before reliable automatic insights are available.');
-  return { visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, stages:stageRows, devices, sources, homepage, visitorContext, insights };
+  const dashboard = { visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, stages:stageRows, devices, sources, homepage, visitorContext, insights };
+  return { ...dashboard, optimizationPrompt:optimizationPrompt(dashboard) };
 }

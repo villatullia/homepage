@@ -1,6 +1,7 @@
 {% extends "base.njk" %}{% block body %}<main>
 <div class="page-head"><div><div class="eyebrow">Conversion analytics</div><h1>CRO dashboard</h1><p>Anonymous, privacy-safe funnel performance.</p></div><a class="button secondary" href="/admin">Booking dashboard</a></div>
 <div class="stack"><section class="card"><div class="metrics"><div class="metric"><span>Visitors</span><strong>{{ cro.visitors }}</strong></div><div class="metric"><span>Sessions</span><strong>{{ cro.sessions }}</strong></div><div class="metric"><span>Enquiries</span><strong>{{ cro.conversions }}</strong></div><div class="metric highlight"><span>Conversion rate</span><strong>{{ cro.conversionRate }}%</strong></div></div></section>
+<section class="card"><div class="page-head compact"><div><h2>Get optimization suggestions</h2><p>Generate a privacy-safe brief from the latest CRO data to paste into ChatGPT.</p></div><button class="button terracotta" id="generateOptimizationPrompt" type="button" aria-controls="optimizationPromptPanel" aria-expanded="false">Generate optimization prompt</button></div><div id="optimizationPromptPanel" hidden><label for="optimizationPrompt">Prompt</label><textarea id="optimizationPrompt" class="prompt-output" readonly>{{ cro.optimizationPrompt }}</textarea><div class="actions"><button class="button" id="copyOptimizationPrompt" type="button">Copy prompt</button><span class="copy-status" id="optimizationPromptStatus" role="status" aria-live="polite"></span></div></div></section>
 <section class="card"><h2>Automatic insights</h2><ul>{% for insight in cro.insights %}<li>{{ insight }}</li>{% endfor %}</ul></section>
 <section class="card"><div class="page-head"><div><h2>Homepage behavior</h2><p>{{ cro.homepage.visitors }} visitors · {{ cro.homepage.sessions }} sessions</p></div><div class="metric highlight"><span>Homepage → availability</span><strong>{{ cro.homepage.availabilityRate }}%</strong></div></div>
 <div class="grid"><div><h3>CTA click-through</h3><div class="table-wrap"><table><thead><tr><th>Interaction</th><th>Sessions</th><th>CTR</th></tr></thead><tbody>{% for row in cro.homepage.ctas %}<tr><td>{{ row.label | replace('_', ' ') }}</td><td>{{ row.clicks }}</td><td>{{ row.rate }}%</td></tr>{% else %}<tr><td colspan="3">No CTA clicks yet</td></tr>{% endfor %}</tbody></table></div></div>
@@ -9,4 +10,29 @@
 <section class="card"><h2>Booking journey</h2><p class="muted">Visitors are distinct anonymous users and may return across multiple sessions.</p><div class="table-wrap"><table><thead><tr><th>Step</th><th>Sessions</th><th>Session drop-off</th><th>Visitors</th><th>Visitor drop-off</th></tr></thead><tbody>{% for row in cro.stages %}<tr><td>{{ row.label }}</td><td>{{ row.count }}</td><td>{% if loop.first %}—{% else %}{{ row.dropoff }} ({{ row.dropoffRate }}%){% endif %}</td><td>{{ row.visitors }}</td><td>{% if loop.first %}—{% else %}{{ row.visitorDropoff }} ({{ row.visitorDropoffRate }}%){% endif %}</td></tr>{% endfor %}</tbody></table></div></section>
 <section class="card"><h2>Visitor details</h2><div class="grid"><div><h3>Countries</h3><div class="table-wrap"><table><thead><tr><th>Country</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.countries %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div><div><h3>Browsers</h3><div class="table-wrap"><table><thead><tr><th>Browser</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.browsers %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div><div><h3>Operating systems</h3><div class="table-wrap"><table><thead><tr><th>System</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.operatingSystems %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div><div><h3>Languages</h3><div class="table-wrap"><table><thead><tr><th>Language</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.languages %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div></div></section>
 <div class="grid"><section class="card"><h2>Device performance</h2><div class="table-wrap"><table><thead><tr><th>Device</th><th>Sessions</th><th>Enquiries</th><th>Rate</th></tr></thead><tbody>{% for row in cro.devices %}<tr><td>{{ row.label }}</td><td>{{ row.sessions }}</td><td>{{ row.conversions }}</td><td>{{ row.rate }}%</td></tr>{% else %}<tr><td colspan="4">No data yet</td></tr>{% endfor %}</tbody></table></div></section>
-<section class="card"><h2>Traffic sources</h2><div class="table-wrap"><table><thead><tr><th>Source / referrer</th><th>Sessions</th><th>Enquiries</th><th>Rate</th></tr></thead><tbody>{% for row in cro.sources %}<tr><td>{{ row.label }}</td><td>{{ row.sessions }}</td><td>{{ row.conversions }}</td><td>{{ row.rate }}%</td></tr>{% else %}<tr><td colspan="4">No data yet</td></tr>{% endfor %}</tbody></table></div></section></div></div></main>{% endblock %}
+<section class="card"><h2>Traffic sources</h2><div class="table-wrap"><table><thead><tr><th>Source / referrer</th><th>Sessions</th><th>Enquiries</th><th>Rate</th></tr></thead><tbody>{% for row in cro.sources %}<tr><td>{{ row.label }}</td><td>{{ row.sessions }}</td><td>{{ row.conversions }}</td><td>{{ row.rate }}%</td></tr>{% else %}<tr><td colspan="4">No data yet</td></tr>{% endfor %}</tbody></table></div></section></div></div></main>
+<script>
+  (() => {
+    const generate = document.getElementById('generateOptimizationPrompt');
+    const panel = document.getElementById('optimizationPromptPanel');
+    const prompt = document.getElementById('optimizationPrompt');
+    const copy = document.getElementById('copyOptimizationPrompt');
+    const status = document.getElementById('optimizationPromptStatus');
+    const copyPrompt = async () => {
+      try {
+        await navigator.clipboard.writeText(prompt.value);
+        status.textContent = 'Copied to clipboard.';
+      } catch {
+        prompt.focus();
+        prompt.select();
+        status.textContent = 'Prompt selected — press Ctrl+C or Cmd+C to copy.';
+      }
+    };
+    generate.addEventListener('click', async () => {
+      panel.hidden = false;
+      generate.setAttribute('aria-expanded', 'true');
+      await copyPrompt();
+    });
+    copy.addEventListener('click', copyPrompt);
+  })();
+</script>{% endblock %}
