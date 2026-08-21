@@ -15,6 +15,21 @@ describe('CRO tracking', () => {
     expect(context.db.prepare('SELECT properties_json FROM cro_events').all()).toHaveLength(8);
     expect(croDashboard(context.db,'villa-tullia')).toMatchObject({visitors:1,sessions:1,conversions:1,conversionRate:100});
   });
+  it('reports distinct visitors alongside sessions at every funnel step', () => {
+    const context=createTestContext(); cleanup.push(context.close);
+    const secondSession='33333333-3333-4333-8333-333333333333';
+    recordCroEvent(context.db,event('page_view'));
+    recordCroEvent(context.db,event('availability_clicked'));
+    recordCroEvent(context.db,event('page_view',id1,secondSession));
+    recordCroEvent(context.db,event('availability_clicked',id1,secondSession));
+    recordCroEvent(context.db,event('availability_page_view',id1,secondSession));
+
+    expect(croDashboard(context.db,'villa-tullia').stages.slice(0,3)).toMatchObject([
+      {name:'page_view',count:2,visitors:1,visitorDropoff:0,visitorDropoffRate:0},
+      {name:'availability_clicked',count:2,visitors:1,dropoff:0,dropoffRate:0,visitorDropoff:0,visitorDropoffRate:0},
+      {name:'availability_page_view',count:1,visitors:1,dropoff:1,dropoffRate:50,visitorDropoff:0,visitorDropoffRate:0},
+    ]);
+  });
   it('rejects personal data in event properties', () => {
     const context=createTestContext(); cleanup.push(context.close);
     expect(()=>recordCroEvent(context.db,{...event('form_started'),properties:{email:'private@example.test'}})).toThrow('Personal data');

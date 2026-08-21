@@ -45,12 +45,24 @@ export function croDashboard(db: Database, siteId: string) {
   const visitors = scalar('SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=?', siteId);
   const sessions = scalar('SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=?', siteId);
   const conversions = scalar("SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND event_name='enquiry_completed'", siteId);
-  const stages = funnel.map((name) => ({ name, count:scalar('SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND event_name=?', siteId, name) }));
+  const stages = funnel.map((name) => ({
+    name,
+    count:scalar('SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND event_name=?', siteId, name),
+    visitors:scalar('SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND event_name=?', siteId, name),
+  }));
   const stageLabels:Record<string,string> = { page_view:'Website visit', availability_clicked:'Availability link clicked', availability_page_view:'Availability page reached', year_selected:'Year selected', month_selected:'Month selected', week_selected:'Week selected', contact_step_reached:'Contact options reached', enquiry_completed:'Enquiry completed' };
   const stageRows = stages.map((stage, index) => {
     const previous = index > 0 ? stages[index - 1] : undefined;
     const dropoff = previous ? Math.max(0, previous.count - stage.count) : 0;
-    return { ...stage, label:stageLabels[stage.name], dropoff, dropoffRate:previous?.count ? Math.round(dropoff * 1000 / previous.count) / 10 : 0 };
+    const visitorDropoff = previous ? Math.max(0, previous.visitors - stage.visitors) : 0;
+    return {
+      ...stage,
+      label:stageLabels[stage.name],
+      dropoff,
+      dropoffRate:previous?.count ? Math.round(dropoff * 1000 / previous.count) / 10 : 0,
+      visitorDropoff,
+      visitorDropoffRate:previous?.visitors ? Math.round(visitorDropoff * 1000 / previous.visitors) / 10 : 0,
+    };
   });
   const performance = (column:string) => db.prepare(`SELECT COALESCE(${column}, 'Direct / unknown') label, COUNT(DISTINCT session_id) sessions, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN session_id END) conversions FROM cro_events WHERE site_id=? GROUP BY label ORDER BY sessions DESC`).all(siteId).map((row:any) => ({...row, rate:row.sessions ? Math.round(row.conversions*1000/row.sessions)/10 : 0}));
   const devices = performance('device_type');
