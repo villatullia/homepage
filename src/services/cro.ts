@@ -144,6 +144,62 @@ export function croDashboard(db: Database, siteId: string) {
   };
   const contextPerformance = (column:string) => (db.prepare(`SELECT COALESCE(${column}, 'Unknown') label, COUNT(DISTINCT visitor_id) visitors, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN visitor_id END) conversions FROM cro_events WHERE site_id=? GROUP BY label ORDER BY visitors DESC`).all(siteId) as Array<{label:string;visitors:number;conversions:number}>).map(row=>({...row, rate:row.visitors ? Math.round(row.conversions*1000/row.visitors)/10 : 0}));
   const visitorContext = { countries:contextPerformance('country_code'), browsers:contextPerformance('browser'), operatingSystems:contextPerformance('operating_system'), languages:contextPerformance('language'), screenSizes:contextPerformance('screen_size') };
+  type JourneyEventRow = {
+    visitor_id:string; session_id:string; event_name:string; occurred_at:string; page:string;
+    properties_json:string; country_code:string|null; browser:string|null; operating_system:string|null;
+    language:string|null; device_type:string|null; referrer:string|null; utm_source:string|null;
+  };
+  const journeyEventLabels:Record<string,string> = {
+    page_view:'Viewed page', availability_clicked:'Clicked availability', availability_page_view:'Viewed availability',
+    year_selected:'Selected year', month_selected:'Selected month', week_selected:'Selected week',
+    contact_step_reached:'Reached contact options', email_form_started:'Started email enquiry',
+    email_form_submitted:'Submitted email enquiry', enquiry_completed:'Completed enquiry',
+    hero_cta_clicked:'Clicked main button', secondary_cta_clicked:'Clicked secondary button',
+    contact_clicked:'Clicked contact link', whatsapp_clicked:'Clicked WhatsApp', location_clicked:'Opened directions',
+    gallery_opened:'Opened gallery', gallery_interacted:'Used gallery', reviews_viewed:'Viewed reviews',
+    reviews_interacted:'Used reviews', section_viewed:'Viewed section', scroll_depth_reached:'Reached scroll depth',
+    language_suggestion_shown:'Saw language suggestion', language_selected:'Changed language',
+  };
+  const formatJourneyTime = (value:string) => new Intl.DateTimeFormat('en-GB', {
+    timeZone:'Europe/Rome', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit',
+  }).format(new Date(value));
+  const journeyRows = db.prepare(`SELECT visitor_id,session_id,event_name,occurred_at,page,properties_json,country_code,browser,operating_system,language,device_type,referrer,utm_source
+    FROM cro_events WHERE site_id=? ORDER BY occurred_at ASC, rowid ASC`).all(siteId) as JourneyEventRow[];
+  const journeyMap = new Map<string, any>();
+  for (const row of journeyRows) {
+    let visitor = journeyMap.get(row.visitor_id);
+    if (!visitor) {
+      visitor = { id:row.visitor_id, label:`Visitor ${row.visitor_id.slice(0, 8).toUpperCase()}`, firstSeen:row.occurred_at, lastSeen:row.occurred_at, sessions:new Map<string, any>(), country:row.country_code ?? 'Unknown', browser:row.browser ?? 'Unknown', operatingSystem:row.operating_system ?? 'Unknown', language:row.language ?? 'Unknown', device:row.device_type ?? 'Unknown', source:row.utm_source || row.referrer || 'Direct / unknown', converted:false };
+      journeyMap.set(row.visitor_id, visitor);
+    }
+    visitor.lastSeen = row.occurred_at;
+    visitor.country = row.country_code ?? visitor.country;
+    visitor.browser = row.browser ?? visitor.browser;
+    visitor.operatingSystem = row.operating_system ?? visitor.operatingSystem;
+    visitor.language = row.language ?? visitor.language;
+    visitor.device = row.device_type ?? visitor.device;
+    visitor.converted ||= row.event_name === 'enquiry_completed';
+    let session = visitor.sessions.get(row.session_id);
+    if (!session) {
+      session = { id:row.session_id, firstSeen:row.occurred_at, lastSeen:row.occurred_at, events:[] };
+      visitor.sessions.set(row.session_id, session);
+    }
+    session.lastSeen = row.occurred_at;
+    let properties:Record<string, string|number|boolean|null> = {};
+    try { properties = JSON.parse(row.properties_json) as typeof properties; } catch { /* Old malformed event data should not break the dashboard. */ }
+    session.events.push({
+      name:row.event_name, label:journeyEventLabels[row.event_name] ?? row.event_name.replaceAll('_', ' '),
+      occurredAt:row.occurred_at, time:formatJourneyTime(row.occurred_at), page:row.page,
+      details:Object.entries(properties).map(([key, value]) => `${key.replaceAll('_', ' ')}: ${String(value)}`).join(' · '),
+    });
+  }
+  const visitorJourneys = [...journeyMap.values()].map(visitor => ({
+    ...visitor, firstSeenFormatted:formatJourneyTime(visitor.firstSeen), lastSeenFormatted:formatJourneyTime(visitor.lastSeen),
+    eventCount:[...visitor.sessions.values()].reduce((total:number, session:any) => total + session.events.length, 0),
+    sessions:[...visitor.sessions.values()].reverse().map((session:any, index:number, sessions:any[]) => ({
+      ...session, number:sessions.length-index, firstSeenFormatted:formatJourneyTime(session.firstSeen), eventCount:session.events.length,
+    })),
+  })).sort((a,b) => b.lastSeen.localeCompare(a.lastSeen));
   const insights:string[] = [];
   const biggest = stageRows.slice(1).sort((a,b)=>b.dropoffRate-a.dropoffRate)[0];
   if (biggest?.dropoff) insights.push(`Biggest funnel drop-off: ${biggest.dropoffRate}% before ${biggest.name.replaceAll('_',' ')}.`);
@@ -152,6 +208,6 @@ export function croDashboard(db: Database, siteId: string) {
   const overall = sessions ? conversions*100/sessions : 0;
   for (const source of sources.filter((row:any)=>row.sessions>=5)) if (Math.abs(source.rate-overall)>=5) insights.push(`${source.label} conversion is unusually ${source.rate>overall?'high':'low'} at ${source.rate}%.`);
   if (!insights.length) insights.push('More traffic is needed before reliable automatic insights are available.');
-  const dashboard = { visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, stages:stageRows, devices, sources, homepage, visitorContext, insights };
+  const dashboard = { visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, stages:stageRows, devices, sources, homepage, visitorContext, visitorJourneys, insights };
   return { ...dashboard, optimizationPrompt:optimizationPrompt(dashboard) };
 }

@@ -33,6 +33,20 @@ describe('CRO tracking', () => {
       {name:'availability_page_view',count:1,visitors:1,dropoff:1,dropoffRate:50,visitorDropoff:0,visitorDropoffRate:0},
     ]);
   });
+
+  it('builds a chronological path for each anonymous visitor across sessions', () => {
+    const context=createTestContext(); cleanup.push(context.close);
+    const secondSession='00000000-0000-4000-8000-000000000099';
+    recordCroEvent(context.db,{...event('page_view'),page:'/'});
+    recordCroEvent(context.db,{...event('availability_clicked'),properties:{placement:'hero'}});
+    recordCroEvent(context.db,{...event('availability_page_view',id1,secondSession),page:'/calendarw.html'});
+    const journey=croDashboard(context.db,'villa-tullia').visitorJourneys[0];
+    expect(journey).toMatchObject({label:'Visitor 11111111',converted:false,eventCount:3});
+    expect(journey.sessions).toHaveLength(2);
+    expect(journey.sessions[1].events.map((item:any)=>item.label)).toEqual(['Viewed page','Clicked availability']);
+    expect(journey.sessions[1].events[1].details).toBe('placement: hero');
+    expect(journey.sessions[0].events[0]).toMatchObject({label:'Viewed availability',page:'/calendarw.html'});
+  });
   it('rejects personal data in event properties', () => {
     const context=createTestContext(); cleanup.push(context.close);
     expect(()=>recordCroEvent(context.db,{...event('form_started'),properties:{email:'private@example.test'}})).toThrow('Personal data');
