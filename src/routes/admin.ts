@@ -31,6 +31,7 @@ import {
 } from '../services/workflow.js';
 import { BOOKING_COM_COMMISSION_BASIS_POINTS, directPerformance } from '../services/analytics.js';
 import { croDashboard } from '../services/cro.js';
+import { randomUUID } from 'node:crypto';
 
 interface AdminRouteDependencies {
   db: Database;
@@ -151,7 +152,12 @@ export async function registerAdminRoutes(app: FastifyInstance, deps: AdminRoute
 
   app.get('/admin', { preHandler: auth }, async (request, reply) => {
     const admin = adminFromRequest(request);
-    const query = request.query as { bookingStatus?: string; enquiryStatus?: string };
+    const query = request.query as {
+      bookingStatus?: string;
+      enquiryStatus?: string;
+      calendarMessage?: string;
+      calendarError?: string;
+    };
     const enquiryStatus = query.enquiryStatus && query.enquiryStatus !== 'ALL' ? query.enquiryStatus : undefined;
     const bookingStatus = query.bookingStatus && query.bookingStatus !== 'ALL' ? query.bookingStatus : undefined;
     const enquiries = enquiryStatus
@@ -167,6 +173,12 @@ export async function registerAdminRoutes(app: FastifyInstance, deps: AdminRoute
           ORDER BY b.created_at DESC LIMIT 100
         `).all();
     const performance = directPerformance(db);
+    const closedWeeks = db.prepare(`
+      SELECT id, check_in, check_out, note, created_at
+      FROM manual_week_blocks
+      WHERE released_at IS NULL
+      ORDER BY check_in
+    `).all();
     const directPerformanceView = {
       ...performance,
       benchmarkPercent: BOOKING_COM_COMMISSION_BASIS_POINTS / 100,
@@ -188,13 +200,59 @@ export async function registerAdminRoutes(app: FastifyInstance, deps: AdminRoute
       enquiryStatuses: ['ENQUIRY_NEW', 'ENQUIRY_APPROVED', 'CONVERTED', 'DECLINED', 'SPAM'],
       enquiryStatus: enquiryStatus ?? 'ALL',
       bookingStatus: bookingStatus ?? 'ALL',
+      calendarMessage: query.calendarMessage,
+      calendarError: query.calendarError,
       signingProvider: signatureProvider.name,
       paymentProvider: paymentProvider.name,
       directPerformance: directPerformanceView,
+      closedWeeks,
       icalFeedUrl: config.ICAL_FEED_TOKEN
         ? `${config.APP_BASE_URL}/calendar/${encodeURIComponent(config.ICAL_FEED_TOKEN)}/villa-tullia.ics`
         : '',
     });
+  });
+
+  app.post('/admin/calendar/close-week', { preHandler: [auth, csrf] }, async (request, reply) => {
+    const admin = adminFromRequest(request);
+    const body = bodyRecord(request);
+    const checkIn = String(body.checkIn ?? '');
+    const note = String(body.note ?? '').trim().slice(0, 200);
+    const parsed = /^\d{4}-\d{2}-\d{2}$/.test(checkIn) ? new Date(`${checkIn}T00:00:00Z`) : new Date(Number.NaN);
+    if (Number.isNaN(parsed.getTime()) || parsed.getUTCDay() !== 6) {
+      return reply.redirect(`/admin?calendarError=${encodeURIComponent('Choose a Saturday as the start of the week.')}`);
+    }
+    const checkoutDate = new Date(parsed);
+    checkoutDate.setUTCDate(checkoutDate.getUTCDate() + 7);
+    const checkOut = checkoutDate.toISOString().slice(0, 10);
+    const overlap = db.prepare(`
+      SELECT 1 FROM date_blocks
+      WHERE released_at IS NULL AND (expires_at IS NULL OR expires_at > unixepoch())
+        AND ? < check_out AND ? > check_in
+      UNION ALL
+      SELECT 1 FROM manual_week_blocks
+      WHERE released_at IS NULL AND ? < check_out AND ? > check_in
+      LIMIT 1
+    `).get(checkIn, checkOut, checkIn, checkOut);
+    if (overlap) return reply.redirect(`/admin?calendarError=${encodeURIComponent('That week is already unavailable.')}`);
+    const timestamp = nowIso();
+    db.prepare(`
+      INSERT INTO manual_week_blocks
+        (id, property_id, check_in, check_out, note, created_by, created_at, updated_at)
+      VALUES (?, 'villa-tullia', ?, ?, ?, ?, ?, ?)
+    `).run(randomUUID(), checkIn, checkOut, note || null, admin.id, timestamp, timestamp);
+    return reply.redirect(`/admin?calendarMessage=${encodeURIComponent(`Week ${checkIn} to ${checkOut} closed`)}`);
+  });
+
+  app.post('/admin/calendar/closed-weeks/:id/reopen', { preHandler: [auth, csrf] }, async (request, reply) => {
+    const admin = adminFromRequest(request);
+    const id = (request.params as { id: string }).id;
+    const timestamp = nowIso();
+    const result = db.prepare(`
+      UPDATE manual_week_blocks SET released_at = ?, released_by = ?, updated_at = ?
+      WHERE id = ? AND released_at IS NULL
+    `).run(timestamp, admin.id, timestamp, id);
+    const message = result.changes === 1 ? 'Week reopened' : 'Week was already open';
+    return reply.redirect(`/admin?calendarMessage=${encodeURIComponent(message)}`);
   });
 
   app.get('/admin/enquiries/:id', { preHandler: auth }, async (request, reply) => {

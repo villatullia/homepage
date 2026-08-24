@@ -47,6 +47,9 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
     const blocks = db.prepare(`
       SELECT id, check_in, check_out FROM date_blocks
       WHERE released_at IS NULL AND (expires_at IS NULL OR expires_at > unixepoch())
+      UNION ALL
+      SELECT id, check_in, check_out FROM manual_week_blocks
+      WHERE released_at IS NULL
       ORDER BY check_in, check_out
     `).all() as Array<{ id: string; check_in: string; check_out: string }>;
     const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
@@ -88,6 +91,9 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
     const localRanges = db.prepare(`
       SELECT check_in AS start, check_out AS end FROM date_blocks
       WHERE released_at IS NULL AND (expires_at IS NULL OR expires_at > unixepoch())
+      UNION ALL
+      SELECT check_in AS start, check_out AS end FROM manual_week_blocks
+      WHERE released_at IS NULL
     `).all() as Array<{ start: string; end: string }>;
     const unique = new Map<string, { start: string; end: string }>();
     for (const range of [...partnerRanges, ...localRanges]) {

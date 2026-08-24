@@ -83,6 +83,30 @@ describe('public HTTP surface', () => {
     expect(response.body).not.toContain(booking.reference);
   });
 
+  it('exports manually closed weeks and removes them after reopening', async () => {
+    const context = createTestContext();
+    context.db.prepare(`
+      INSERT INTO manual_week_blocks
+        (id, property_id, check_in, check_out, note, created_at, updated_at)
+      VALUES ('owner-week', 'villa-tullia', '2027-08-07', '2027-08-14', 'Owner stay', '2026-08-24', '2026-08-24')
+    `).run();
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => {
+      await app.close();
+      context.close();
+    });
+
+    const url = `/calendar/${context.config.ICAL_FEED_TOKEN}/villa-tullia.ics`;
+    const closed = await app.inject({ method: 'GET', url });
+    expect(closed.body).toContain('DTSTART;VALUE=DATE:20270807');
+    expect(closed.body).toContain('DTEND;VALUE=DATE:20270814');
+    expect(closed.body).not.toContain('Owner stay');
+
+    context.db.prepare("UPDATE manual_week_blocks SET released_at = '2026-08-25', updated_at = '2026-08-25' WHERE id = 'owner-week'").run();
+    const reopened = await app.inject({ method: 'GET', url });
+    expect(reopened.body).not.toContain('DTSTART;VALUE=DATE:20270807');
+  });
+
   it('publishes 2027 direct rates separately from partner and local calendar blocks', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
       lastUpdated: '2026-08-17T10:00:00Z',

@@ -1,8 +1,22 @@
 {% extends "base.njk" %}
 {% block body %}
 <main>
+  {% if calendarMessage %}<p class="notice">{{ calendarMessage }}</p>{% endif %}
+  {% if calendarError %}<p class="notice error">{{ calendarError }}</p>{% endif %}
   <div class="page-head"><div><div class="eyebrow">Overview</div><h1>Bookings and enquiries</h1><p>Every action below is recorded in the booking audit trail.</p></div><a class="button terracotta" href="/admin/bookings/new">Create booking</a></div>
   <div class="grid">
+    <section class="card span-2">
+      <div class="page-head"><div><div class="eyebrow">Availability</div><h2 style="margin-top:5px">Close a week</h2><p>Select the arrival Saturday. The full Saturday-to-Saturday week will be blocked on the direct calendar and included in the private iCal feed used by Booking.com and other channels.</p></div></div>
+      <form method="post" action="/admin/calendar/close-week">
+        <input type="hidden" name="_csrf" value="{{ csrf }}">
+        <div class="form-grid">
+          <div class="field"><label for="closedWeekStart">Arrival Saturday</label><input id="closedWeekStart" name="checkIn" type="date" required></div>
+          <div class="field"><label for="closedWeekNote">Reason (optional)</label><input id="closedWeekNote" name="note" maxlength="200" placeholder="Owner stay, maintenance…"></div>
+        </div>
+        <button class="button terracotta" style="margin-top:14px" type="submit">Close this week</button>
+      </form>
+      {% if closedWeeks.length %}<div class="table-wrap" style="margin-top:20px"><table><thead><tr><th>Closed week</th><th>Reason</th><th></th></tr></thead><tbody>{% for week in closedWeeks %}<tr><td>{{ week.check_in }}<br><small class="muted">to {{ week.check_out }}</small></td><td>{{ week.note or 'No reason added' }}</td><td><form method="post" action="/admin/calendar/closed-weeks/{{ week.id }}/reopen"><input type="hidden" name="_csrf" value="{{ csrf }}"><button class="button secondary" type="submit">Reopen</button></form></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="muted" style="margin-bottom:0">No weeks have been closed manually.</p>{% endif %}
+    </section>
     <section class="card span-2">
       <div class="page-head"><div><div class="eyebrow">Direct website performance</div><h2 style="margin-top:5px">What direct bookings are earning</h2></div><div class="muted">Booking.com comparison: {{ directPerformance.benchmarkPercent }}%</div></div>
       <div class="metrics">
