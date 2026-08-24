@@ -150,7 +150,7 @@ export function localizedPublicPage(file: 'index.html' | 'calendarw.html' | 'pri
   const canonical = `https://villatullia.it${routes[locale][page]}`;
   let html = source
     .replace(/^\s*<link rel="alternate" hreflang="[^"]+" href="[^"]+">\r?\n/gm, '')
-    .replace(/^\s*<nav class="language-switcher"[^>]*>.*?<\/nav>\r?\n/m, '')
+    .replace(/<nav class="language-switcher"[^>]*>.*?<\/nav>/, languageSwitcher(page, locale))
     .replace('<html lang="en"', `<html lang="${locale}"`)
     .replace(/<link rel="canonical" href="[^"]+">/, alternates(page, canonical))
     .replace(/<meta property="og:url" content="[^"]+">/, `<meta property="og:url" content="${canonical}">`)
@@ -158,9 +158,7 @@ export function localizedPublicPage(file: 'index.html' | 'calendarw.html' | 'pri
     .replace(/"url":"https:\/\/villatullia\.it\/"/g, `"url":"${canonical}"`)
     .replaceAll('src="imgs/', 'src="/imgs/')
     .replaceAll('href="imgs/', 'href="/imgs/')
-    .replaceAll("url('imgs/", "url('/imgs/")
-    .replace('</head>', '<style>.language-switcher{position:fixed;z-index:50;top:14px;right:18px;display:flex;gap:7px;align-items:center;padding:7px 10px;background:rgba(17,43,39,.88);color:#fff;font:700 11px/1 "DM Sans",sans-serif;letter-spacing:.08em}.language-switcher a{text-decoration:none;opacity:.68}.language-switcher a[aria-current="page"]{opacity:1;text-decoration:underline;text-underline-offset:3px}</style>\n</head>')
-    .replace('<body>', `<body>\n  ${languageSwitcher(page, locale)}`);
+    .replaceAll("url('imgs/", "url('/imgs/");
   html = replaceAll(html, [...(page === 'home' ? home[locale] : page === 'availability' ? availability[locale] : privacy[locale]), ...common[locale]]);
   html = html
     .replaceAll('href="calendarw.html#emailEnquiry"', `href="${routes[locale].availability}#emailEnquiry"`)
