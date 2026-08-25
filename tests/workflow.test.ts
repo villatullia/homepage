@@ -167,10 +167,15 @@ describe('enquiry-to-confirmation workflow', () => {
     expect(context.db.prepare('SELECT 1 FROM date_blocks WHERE booking_id = ?').get(booking.id)).toBeUndefined();
   });
 
-  it('allows an explicitly published 2027 direct-rate week despite the partner closure', async () => {
+  it('allows a published direct-rate week despite Airbnb/Vrbo closures', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => new Response(JSON.stringify({ blockedRanges: [{ start: '2027-01-01', end: '2029-01-01' }] }), { status: 200 })),
+      vi.fn(async () => new Response(JSON.stringify({
+        blockedRanges: [{ start: '2027-01-01', end: '2029-01-01' }],
+        bookingBlockedRanges: [],
+        softBlockedRanges: [{ start: '2027-01-01', end: '2029-01-01' }],
+        manualBlockedRanges: [],
+      }), { status: 200 })),
     );
     const context = createTestContext();
     cleanup.push(context.close);
@@ -182,6 +187,30 @@ describe('enquiry-to-confirmation workflow', () => {
     await generateAgreement(context.db, context.config, booking.id);
 
     await expect(sendAgreement(context.db, context.config, createSignatureProvider(context.config), booking.id, 'test-admin')).resolves.toBeTruthy();
+  });
+
+  it('rejects a published direct-rate week blocked by Booking.com', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({
+        blockedRanges: [{ start: '2027-07-31', end: '2027-08-14' }],
+        bookingBlockedRanges: [{ start: '2027-07-31', end: '2027-08-14' }],
+        softBlockedRanges: [],
+        manualBlockedRanges: [],
+      }), { status: 200 })),
+    );
+    const context = createTestContext();
+    cleanup.push(context.close);
+    const { booking } = createBooking(context.db, context.config, validBooking({
+      checkIn: '2027-07-31',
+      checkOut: '2027-08-07',
+      rentalPriceMinor: 500000,
+    }));
+    await generateAgreement(context.db, context.config, booking.id);
+
+    await expect(
+      sendAgreement(context.db, context.config, createSignatureProvider(context.config), booking.id, 'test-admin'),
+    ).rejects.toMatchObject({ statusCode: 409 });
   });
 
   it('matches Documenso v2 webhooks by envelopeId', async () => {

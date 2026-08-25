@@ -77,12 +77,25 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
 
   app.get('/api/availability', async (_request, reply) => {
     let partnerRanges: Array<{ start: string; end: string }> = [];
+    let authoritativePartnerRanges: Array<{ start: string; end: string }> = [];
+    let softPartnerRanges: Array<{ start: string; end: string }> = [];
     let upstreamUpdated: string | undefined;
     try {
       const response = await fetch(config.CALENDAR_AVAILABILITY_URL, { signal: AbortSignal.timeout(5000) });
       if (response.ok) {
-        const payload = (await response.json()) as { blockedRanges?: Array<{ start: string; end: string }>; lastUpdated?: string };
+        const payload = (await response.json()) as {
+          blockedRanges?: Array<{ start: string; end: string }>;
+          bookingBlockedRanges?: Array<{ start: string; end: string }>;
+          manualBlockedRanges?: Array<{ start: string; end: string }>;
+          softBlockedRanges?: Array<{ start: string; end: string }>;
+          lastUpdated?: string;
+        };
         partnerRanges = Array.isArray(payload.blockedRanges) ? payload.blockedRanges : [];
+        const hasSourceRanges = Array.isArray(payload.bookingBlockedRanges) || Array.isArray(payload.softBlockedRanges);
+        authoritativePartnerRanges = hasSourceRanges
+          ? [...(payload.bookingBlockedRanges ?? []), ...(payload.manualBlockedRanges ?? [])]
+          : partnerRanges;
+        softPartnerRanges = hasSourceRanges ? (payload.softBlockedRanges ?? []) : [];
         upstreamUpdated = payload.lastUpdated;
       }
     } catch {
@@ -105,6 +118,8 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
       lastUpdated: upstreamUpdated ?? nowIso(),
       blockedRanges: [...unique.values()].sort((a, b) => a.start.localeCompare(b.start)),
       partnerBlockedRanges: partnerRanges,
+      authoritativePartnerBlockedRanges: authoritativePartnerRanges,
+      softPartnerBlockedRanges: softPartnerRanges,
       localBlockedRanges: localRanges,
       directRates: directWebsiteRates2027,
     });

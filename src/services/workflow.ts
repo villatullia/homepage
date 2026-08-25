@@ -23,8 +23,7 @@ function availabilityError(message: string, statusCode: 409 | 503): Error & { st
 }
 
 async function assertPartnerAvailability(config: AppConfig, booking: BookingRow): Promise<void> {
-  // These explicitly published direct weeks intentionally ignore Airbnb/Vrbo's next-season closure.
-  if (getDirectWebsiteRate(booking.check_in, booking.check_out)) return;
+  const directRate = getDirectWebsiteRate(booking.check_in, booking.check_out);
   let response: Response;
   try {
     response = await fetch(config.CALENDAR_AVAILABILITY_URL, { signal: AbortSignal.timeout(5000) });
@@ -34,8 +33,17 @@ async function assertPartnerAvailability(config: AppConfig, booking: BookingRow)
   if (!response.ok) {
     throw availabilityError('The external availability calendar could not be verified. Try again before sending the agreement.', 503);
   }
-  const payload = (await response.json()) as { blockedRanges?: Array<{ start?: string; end?: string }> };
-  const conflict = (payload.blockedRanges ?? []).some(
+  const payload = (await response.json()) as {
+    blockedRanges?: Array<{ start?: string; end?: string }>;
+    bookingBlockedRanges?: Array<{ start?: string; end?: string }>;
+    manualBlockedRanges?: Array<{ start?: string; end?: string }>;
+    softBlockedRanges?: Array<{ start?: string; end?: string }>;
+  };
+  const hasSourceRanges = Array.isArray(payload.bookingBlockedRanges) || Array.isArray(payload.softBlockedRanges);
+  const ranges = directRate && hasSourceRanges
+    ? [...(payload.bookingBlockedRanges ?? []), ...(payload.manualBlockedRanges ?? [])]
+    : (payload.blockedRanges ?? []);
+  const conflict = ranges.some(
     (range) =>
       typeof range.start === 'string' &&
       typeof range.end === 'string' &&

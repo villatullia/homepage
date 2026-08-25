@@ -120,16 +120,17 @@
           checkIn = checkOut;
         }
       }
-      const buildInventory = (partnerBlockedRanges = [], localBlockedRanges = [], directRates = []) => {
+      const buildInventory = (authoritativePartnerRanges = [], softPartnerRanges = [], localBlockedRanges = [], directRates = []) => {
         const ratesByCheckIn = new Map(directRates.map((rate) => [rate.start, rate]));
         return seasonWeeks.map(([start, end]) => {
           const startDate = parseDate(start);
           const endDate = parseDate(end);
           const directRate = ratesByCheckIn.get(start);
-          const overlapsPartnerCalendar = partnerBlockedRanges.some((block) => startDate < parseDate(block.end) && endDate > parseDate(block.start));
+          const overlapsAuthoritativePartner = authoritativePartnerRanges.some((block) => startDate < parseDate(block.end) && endDate > parseDate(block.start));
+          const overlapsSoftPartner = softPartnerRanges.some((block) => startDate < parseDate(block.end) && endDate > parseDate(block.start));
           const overlapsLocalBooking = localBlockedRanges.some((block) => startDate < parseDate(block.end) && endDate > parseDate(block.start));
-          // A published direct rate deliberately opens the week despite Airbnb/Vrbo closures. Local holds and bookings remain authoritative.
-          const reserved = overlapsLocalBooking || (!directRate && overlapsPartnerCalendar);
+          // Booking.com, manual blocks, and local bookings are authoritative. Published direct rates ignore only Airbnb/Vrbo closures.
+          const reserved = overlapsLocalBooking || overlapsAuthoritativePartner || (!directRate && overlapsSoftPartner);
           return { start:startDate, end:endDate, status:reserved ? 'reserved' : 'available', price:directRate?.weeklyPrice ?? null };
         }).sort((a,b) => a.start - b.start);
       };
@@ -336,8 +337,9 @@
       fetch('/api/availability', { cache:'no-store' })
         .then((response) => response.ok ? response.json() : Promise.reject(new Error('Live calendar unavailable')))
         .then((data) => {
-          const partnerBlocks = Array.isArray(data.partnerBlockedRanges) ? data.partnerBlockedRanges : (Array.isArray(data.blockedRanges) ? data.blockedRanges : []);
-          inventory = buildInventory(partnerBlocks, Array.isArray(data.localBlockedRanges) ? data.localBlockedRanges : [], Array.isArray(data.directRates) ? data.directRates : []);
+          const authoritativeBlocks = Array.isArray(data.authoritativePartnerBlockedRanges) ? data.authoritativePartnerBlockedRanges : (Array.isArray(data.partnerBlockedRanges) ? data.partnerBlockedRanges : []);
+          const softBlocks = Array.isArray(data.softPartnerBlockedRanges) ? data.softPartnerBlockedRanges : [];
+          inventory = buildInventory(authoritativeBlocks, softBlocks, Array.isArray(data.localBlockedRanges) ? data.localBlockedRanges : [], Array.isArray(data.directRates) ? data.directRates : []);
           syncStatus.textContent = data.lastUpdated ? `Live calendar checked ${formatDate(new Date(data.lastUpdated), { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}.` : 'Live calendar connected.';
           renderWeeks();
         })
