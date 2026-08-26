@@ -127,10 +127,10 @@ describe('public HTTP surface', () => {
       partnerBlockedRanges: [{ start: '2027-01-01', end: '2029-01-01' }],
       localBlockedRanges: [{ start: '2027-06-10', end: '2027-06-17' }],
     });
-    const rates = response.json().directRates as Array<{ start: string; end: string; weeklyPrice: number; currency: string }>;
+    const rates = response.json().directRates as Array<{ start: string; end: string; weeklyPrice: number; bookingComPrice?: number; currency: string }>;
     expect(rates).toHaveLength(21);
-    expect(rates[0]).toEqual({ start: '2027-05-15', end: '2027-05-22', weeklyPrice: 3675, currency: 'EUR' });
-    expect(rates.at(-1)).toEqual({ start: '2027-10-02', end: '2027-10-09', weeklyPrice: 2975, currency: 'EUR' });
+    expect(rates[0]).toEqual({ start: '2027-05-15', end: '2027-05-22', weeklyPrice: 3675, bookingComPrice: 4676, currency: 'EUR' });
+    expect(rates.at(-1)).toEqual({ start: '2027-10-02', end: '2027-10-09', weeklyPrice: 2975, bookingComPrice: 3976, currency: 'EUR' });
   });
 
   it('silently discards honeypot submissions', async () => {
