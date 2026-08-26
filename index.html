@@ -18,6 +18,7 @@
   <link rel="alternate" hreflang="en" href="https://villatullia.it/">
   <link rel="alternate" hreflang="de" href="https://villatullia.it/de/">
   <link rel="alternate" hreflang="it" href="https://villatullia.it/it/">
+  <link rel="alternate" hreflang="nl" href="https://villatullia.it/nl/">
   <link rel="alternate" hreflang="x-default" href="https://villatullia.it/">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="website">
@@ -81,7 +82,7 @@
 </head>
 <body>
   <aside id="languageSuggestion" class="language-suggestion" hidden><span id="languageSuggestionText"></span><a id="languageSuggestionLink" href="#"></a><button type="button" aria-label="Dismiss">×</button></aside>
-  <nav class="site-nav"><a class="logo" href="#top">Villa Tullia<span>Padenghe sul Garda</span></a><div class="nav-links"><a href="#villa">The Villa</a><a href="#gallery">Gallery</a><a href="#reviews">Reviews</a><a href="#visit">Location</a></div><div class="nav-actions"><nav class="language-switcher" aria-label="Language"><a href="/" lang="en" hreflang="en" aria-current="page">EN</a><span aria-hidden="true">·</span><a href="/de/" lang="de" hreflang="de">DE</a><span aria-hidden="true">·</span><a href="/it/" lang="it" hreflang="it">IT</a></nav><a class="nav-book" href="calendarw.html">Book direct</a></div></nav>
+  <nav class="site-nav"><a class="logo" href="#top">Villa Tullia<span>Padenghe sul Garda</span></a><div class="nav-links"><a href="#villa">The Villa</a><a href="#gallery">Gallery</a><a href="#reviews">Reviews</a><a href="#visit">Location</a></div><div class="nav-actions"><nav class="language-switcher" aria-label="Language"><a href="/" lang="en" hreflang="en" aria-current="page">EN</a><span aria-hidden="true">·</span><a href="/de/" lang="de" hreflang="de">DE</a><span aria-hidden="true">·</span><a href="/it/" lang="it" hreflang="it">IT</a><span aria-hidden="true">·</span><a href="/nl/" lang="nl" hreflang="nl">NL</a></nav><a class="nav-book" href="calendarw.html">Book direct</a></div></nav>
   <main id="top">
     <section class="hero"><div class="hero-content"><div class="eyebrow">Lake Garda · Italy</div><h1>Villa Tullia is made for slowing down.</h1><p>An easy, elegant villa for long lunches, sunlit swims, and the kind of lake views that make every day feel like a holiday.</p><div class="hero-actions"><a class="btn btn-primary" href="calendarw.html">See direct prices & availability <i class="bi bi-arrow-up-right"></i></a><a class="btn btn-light" href="https://wa.me/393466733267?text=Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia." target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i>Ask on WhatsApp</a><a class="btn btn-outline" href="#villa">Discover the villa</a></div><div class="direct-promise"><i class="bi bi-patch-check-fill"></i><div><strong>Lowest price guaranteed</strong><span>Book here for our best available price.</span></div></div></div><div class="hero-note">A private home for up to 8 guests, nestled above Lake Garda.</div></section>
     <div class="direct-bar" aria-label="Direct booking benefits"><strong>Book direct. Pay less.</strong><span><i class="bi bi-check2"></i>Lowest price guaranteed</span><span><i class="bi bi-check2"></i>No platform fees</span><span><i class="bi bi-check2"></i>Personal service</span></div>
@@ -103,9 +104,9 @@
     (() => {
       if (location.pathname !== '/') return;
       try { if (localStorage.getItem('villa_language_chosen')) return; } catch {}
-      const language=(navigator.language||'').slice(0,2); if (!['de','it'].includes(language)) return;
+      const language=(navigator.language||'').slice(0,2); if (!['de','it','nl'].includes(language)) return;
       const suggestion=document.getElementById('languageSuggestion'); const link=document.getElementById('languageSuggestionLink'); const text=document.getElementById('languageSuggestionText');
-      const german=language==='de'; text.textContent=german?'Diese Seite ist auch auf Deutsch verfügbar.':'Questo sito è disponibile anche in italiano.'; link.textContent=german?'Deutsch ansehen':'Vedi in italiano'; link.href=german?'/de/':'/it/'; suggestion.hidden=false; cro.track('language_suggestion_shown',{language});
+      const options={de:['Diese Seite ist auch auf Deutsch verfügbar.','Deutsch ansehen','/de/'],it:['Questo sito è disponibile anche in italiano.','Vedi in italiano','/it/'],nl:['Deze website is ook beschikbaar in het Nederlands.','Bekijk in het Nederlands','/nl/']}; const option=options[language]; text.textContent=option[0]; link.textContent=option[1]; link.href=option[2]; suggestion.hidden=false; cro.track('language_suggestion_shown',{language});
       link.addEventListener('click',()=>{try{localStorage.setItem('villa_language_chosen','1');}catch{}cro.track('language_selected',{language,placement:'suggestion'});});
       suggestion.querySelector('button').addEventListener('click',()=>{suggestion.hidden=true;try{localStorage.setItem('villa_language_chosen','1');}catch{}});
     })();

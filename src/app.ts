@@ -79,12 +79,16 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   };
   app.get('/de', async (_request, reply) => reply.redirect('/de/'));
   app.get('/it', async (_request, reply) => reply.redirect('/it/'));
+  app.get('/nl', async (_request, reply) => reply.redirect('/nl/'));
   localizedRoute('/de/', 'index.html', 'de');
   localizedRoute('/it/', 'index.html', 'it');
+  localizedRoute('/nl/', 'index.html', 'nl');
   localizedRoute('/de/verfuegbarkeit/', 'calendarw.html', 'de');
   localizedRoute('/it/disponibilita/', 'calendarw.html', 'it');
+  localizedRoute('/nl/beschikbaarheid/', 'calendarw.html', 'nl');
   localizedRoute('/de/datenschutz/', 'privacy.html', 'de');
   localizedRoute('/it/privacy/', 'privacy.html', 'it');
+  localizedRoute('/nl/privacy/', 'privacy.html', 'nl');
   app.get('/healthz', async (_request, reply) => reply.header('Cache-Control', 'no-store').send({ ok: true }));
 
   const signatureProvider = createSignatureProvider(config);
