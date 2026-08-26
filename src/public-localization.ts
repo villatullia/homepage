@@ -86,14 +86,14 @@ const home: Record<PublicLocale, Array<[string, string]>> = {
 
 home.nl.unshift(
   ['See weekly prices from €2,975', 'Bekijk weekprijzen vanaf €2.975'],
-  ['Save €838–€1,613 per week', 'Bespaar €838–€1.613 per week'],
-  ['Compared with Villa Tullia’s public Booking.com prices checked 26 August 2026.', 'Vergeleken met de openbare Booking.com-prijzen van Villa Tullia, gecontroleerd op 26 augustus 2026.'],
+  ['Save €368–€646 per week', 'Bespaar €368–€646 per week'],
+  ['Compared with Villa Tullia’s lowest non-refundable Booking.com prices checked 26 August 2026.', 'Vergeleken met de laagste niet-restitueerbare Booking.com-prijzen van Villa Tullia, gecontroleerd op 26 augustus 2026.'],
   ['See every week.', 'Bekijk elke week.'],
 );
 home.de.unshift(
   ['See weekly prices from €2,975', 'Wochenpreise ab 2.975 € ansehen'],
-  ['Save €838–€1,613 per week', 'Sparen Sie 838–1.613 € pro Woche'],
-  ['Compared with Villa Tullia’s public Booking.com prices checked 26 August 2026.', 'Verglichen mit den öffentlichen Booking.com-Preisen der Villa Tullia, geprüft am 26. August 2026.'],
+  ['Save €368–€646 per week', 'Sparen Sie 368–646 € pro Woche'],
+  ['Compared with Villa Tullia’s lowest non-refundable Booking.com prices checked 26 August 2026.', 'Verglichen mit den günstigsten nicht erstattungsfähigen Booking.com-Preisen der Villa Tullia, geprüft am 26. August 2026.'],
   ['See every week.', 'Alle Wochen ansehen.'],
   ['Ask on WhatsApp', 'Auf WhatsApp fragen'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Guten%20Tag%2C%20ich%20interessiere%20mich%20für%20die%20Villa%20Tullia.'],
@@ -104,8 +104,8 @@ home.de.unshift(
 );
 home.it.unshift(
   ['See weekly prices from €2,975', 'Prezzi settimanali da 2.975 €'],
-  ['Save €838–€1,613 per week', 'Risparmia 838–1.613 € a settimana'],
-  ['Compared with Villa Tullia’s public Booking.com prices checked 26 August 2026.', 'Confronto con i prezzi pubblici di Villa Tullia su Booking.com verificati il 26 agosto 2026.'],
+  ['Save €368–€646 per week', 'Risparmia 368–646 € a settimana'],
+  ['Compared with Villa Tullia’s lowest non-refundable Booking.com prices checked 26 August 2026.', 'Confronto con i prezzi non rimborsabili più bassi di Villa Tullia su Booking.com verificati il 26 agosto 2026.'],
   ['See every week.', 'Vedi tutte le settimane.'],
   ['Ask on WhatsApp', 'Chiedi su WhatsApp'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Buongiorno%2C%20sono%20interessato%20a%20Villa%20Tullia.'],
@@ -136,15 +136,15 @@ const availability: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 availability.nl.unshift(
-  ['Save €838–€1,613 per week.', 'Bespaar €838–€1.613 per week.'],
-  ['Every available week shows our direct total beside the public Booking.com total, so you can see the real saving before you enquire.', 'Bij elke beschikbare week staat ons directe totaal naast de openbare Booking.com-prijs, zodat u vóór uw aanvraag de echte besparing ziet.'],
-  ['Booking.com prices checked 26 August 2026 for 7 nights and 8 adults; its displayed totals included taxes and fees. Prices can change. No comparison is shown where Booking.com returned no price.', 'Booking.com-prijzen gecontroleerd op 26 augustus 2026 voor 7 nachten en 8 volwassenen; de getoonde totalen waren inclusief belastingen en toeslagen. Prijzen kunnen veranderen. Er wordt geen vergelijking getoond als Booking.com geen prijs vermeldde.'],
+  ['Save €368–€646 per week.', 'Bespaar €368–€646 per week.'],
+  ['Every available week shows our direct total beside the lowest non-refundable Booking.com total, so you can see the real saving before you enquire.', 'Bij elke beschikbare week staat ons directe totaal naast de laagste niet-restitueerbare Booking.com-prijs, zodat u vóór uw aanvraag de echte besparing ziet.'],
+  ['Lowest non-refundable Booking.com prices checked 26 August 2026 for 7 nights and 8 adults; displayed totals included taxes and fees. Prices can change. No comparison is shown where Booking.com returned no price.', 'Laagste niet-restitueerbare Booking.com-prijzen gecontroleerd op 26 augustus 2026 voor 7 nachten en 8 volwassenen; de getoonde totalen waren inclusief belastingen en toeslagen. Prijzen kunnen veranderen. Er wordt geen vergelijking getoond als Booking.com geen prijs vermeldde.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
-  ['Save €838–€1,613 per week.', 'Sparen Sie 838–1.613 € pro Woche.'],
-  ['Every available week shows our direct total beside the public Booking.com total, so you can see the real saving before you enquire.', 'Für jede verfügbare Woche sehen Sie unseren Direktpreis neben dem öffentlichen Booking.com-Preis – so erkennen Sie die tatsächliche Ersparnis vor Ihrer Anfrage.'],
-  ['Booking.com prices checked 26 August 2026 for 7 nights and 8 adults; its displayed totals included taxes and fees. Prices can change. No comparison is shown where Booking.com returned no price.', 'Booking.com-Preise am 26. August 2026 für 7 Nächte und 8 Erwachsene geprüft; die angezeigten Gesamtpreise enthielten Steuern und Gebühren. Preise können sich ändern. Wenn Booking.com keinen Preis anzeigte, erfolgt kein Vergleich.'],
+  ['Save €368–€646 per week.', 'Sparen Sie 368–646 € pro Woche.'],
+  ['Every available week shows our direct total beside the lowest non-refundable Booking.com total, so you can see the real saving before you enquire.', 'Für jede verfügbare Woche sehen Sie unseren Direktpreis neben dem günstigsten nicht erstattungsfähigen Booking.com-Preis.'],
+  ['Lowest non-refundable Booking.com prices checked 26 August 2026 for 7 nights and 8 adults; displayed totals included taxes and fees. Prices can change. No comparison is shown where Booking.com returned no price.', 'Günstigste nicht erstattungsfähige Booking.com-Preise am 26. August 2026 für 7 Nächte und 8 Erwachsene geprüft; die Gesamtpreise enthielten Steuern und Gebühren. Preise können sich ändern.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direkt'], ['Save ${formatPrice(saving)}', '${formatPrice(saving)} sparen'],
   ['No commitment at this stage.', 'In diesem Schritt gehen Sie keine Verpflichtung ein.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Diese Anfrage ist unverbindlich. Eine Buchung wird erst verbindlich, wenn der Mietvertrag von Ihnen und Villa Tullia unterzeichnet wurde.'],
@@ -153,9 +153,9 @@ availability.de.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Buchen Sie hier direkt und bei Ihrer Ankunft wartet ein Willkommensgeschenk auf Sie.'],
 );
 availability.it.unshift(
-  ['Save €838–€1,613 per week.', 'Risparmia 838–1.613 € a settimana.'],
-  ['Every available week shows our direct total beside the public Booking.com total, so you can see the real saving before you enquire.', 'Per ogni settimana disponibile mostriamo il totale diretto accanto al prezzo pubblico di Booking.com, così puoi vedere il risparmio reale prima di inviare la richiesta.'],
-  ['Booking.com prices checked 26 August 2026 for 7 nights and 8 adults; its displayed totals included taxes and fees. Prices can change. No comparison is shown where Booking.com returned no price.', 'Prezzi Booking.com verificati il 26 agosto 2026 per 7 notti e 8 adulti; i totali mostrati includevano imposte e commissioni. I prezzi possono cambiare. Se Booking.com non ha restituito un prezzo, non viene mostrato alcun confronto.'],
+  ['Save €368–€646 per week.', 'Risparmia 368–646 € a settimana.'],
+  ['Every available week shows our direct total beside the lowest non-refundable Booking.com total, so you can see the real saving before you enquire.', 'Per ogni settimana disponibile mostriamo il totale diretto accanto al prezzo non rimborsabile più basso di Booking.com.'],
+  ['Lowest non-refundable Booking.com prices checked 26 August 2026 for 7 nights and 8 adults; displayed totals included taxes and fees. Prices can change. No comparison is shown where Booking.com returned no price.', 'Prezzi non rimborsabili più bassi su Booking.com verificati il 26 agosto 2026 per 7 notti e 8 adulti; i totali includevano imposte e commissioni. I prezzi possono cambiare.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} diretto'], ['Save ${formatPrice(saving)}', 'Risparmia ${formatPrice(saving)}'],
   ['No commitment at this stage.', 'In questa fase non assumi alcun impegno.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Questa richiesta non è vincolante. La prenotazione diventa vincolante solo quando il contratto di locazione è stato firmato sia da te sia da Villa Tullia.'],
