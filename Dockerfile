@@ -20,6 +20,7 @@ COPY --chown=node:node templates ./templates
 COPY --chown=node:node src/views ./src/views
 COPY --chown=node:node index.html calendarw.html privacy.html robots.txt sitemap.xml favicon.svg CNAME testcam.html cro.js ./
 COPY --chown=node:node imgs ./imgs
+COPY --chown=node:node guide ./guide
 COPY --chown=node:node data/availability.json data/manual-blocks.json ./data/
 RUN mkdir -p /app/data/private /app/storage /app/backups && chown -R node:node /app/data /app/storage /app/backups
 USER node
