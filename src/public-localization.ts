@@ -13,20 +13,20 @@ const routes = {
 
 const common: Record<PublicLocale, Array<[string, string]>> = {
   nl: [
-    ['Language', 'Taal'], ['Book direct', 'Direct boeken'], ['Availability', 'Beschikbaarheid'], ['Email enquiry', 'Aanvraag per e-mail'],
+    ['Language', 'Taal'], ['Book direct', 'Direct boeken'], ['Availability', 'Beschikbaarheid'], ['Email enquiry', 'Aanvraag per e-mail'], ['Local guide', 'Lokale gids'],
     ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'],
     ['Previous review', 'Vorige beoordeling'], ['Next review', 'Volgende beoordeling'], ['Verified Booking.com guest', 'Geverifieerde gast van Booking.com'], ['Verified Vrbo guest', 'Geverifieerde gast van Vrbo'],
   ],
   de: [
     ['Language', 'Sprache'],
-    ['Book direct', 'Direkt buchen'], ['Availability', 'Verfügbarkeit'], ['Email enquiry', 'E-Mail-Anfrage'],
+    ['Book direct', 'Direkt buchen'], ['Availability', 'Verfügbarkeit'], ['Email enquiry', 'E-Mail-Anfrage'], ['Local guide', 'Reiseführer'],
     ['Privacy notice', 'Datenschutzerklärung'], ['Privacy', 'Datenschutz'], ['Villa home', 'Zur Villa'],
     ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
     ['Verified Booking.com guest', 'Verifizierter Booking.com-Gast'], ['Verified Vrbo guest', 'Verifizierter Vrbo-Gast'],
   ],
   it: [
     ['Language', 'Lingua'],
-    ['Book direct', 'Prenota direttamente'], ['Availability', 'Disponibilità'], ['Email enquiry', 'Richiesta via e-mail'],
+    ['Book direct', 'Prenota direttamente'], ['Availability', 'Disponibilità'], ['Email enquiry', 'Richiesta via e-mail'], ['Local guide', 'Guida locale'],
     ['Privacy notice', 'Informativa sulla privacy'], ['Villa home', 'Torna alla villa'],
     ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
     ['Verified Booking.com guest', 'Ospite verificato Booking.com'], ['Verified Vrbo guest', 'Ospite verificato Vrbo'],
