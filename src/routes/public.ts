@@ -10,6 +10,7 @@ import { balanceDueDate, markPaymentSucceeded, selectBankTransfer, selectCardPay
 import type { PaymentRow } from '../types.js';
 import { directWebsiteRates2027 } from '../domain/direct-rates.js';
 import { croEventSchema, recordCroEvent, resolveCountry } from '../services/cro.js';
+import { RatingsService } from '../services/ratings.js';
 
 interface PublicDependencies {
   db: Database;
@@ -33,12 +34,18 @@ function publicBooking(db: Database, token: string) {
 
 export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDependencies): Promise<void> {
   const { db, config, email } = deps;
+  const ratings = new RatingsService(config.storagePath);
 
   app.post('/api/cro/events', { config: { rateLimit: { max: 120, timeWindow: '1 minute' } } }, async (request, reply) => {
     const parsed = croEventSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid event' });
     recordCroEvent(db, parsed.data, { countryCode:await resolveCountry(request.ip, request.headers) });
     return reply.code(202).send({ ok: true });
+  });
+
+  app.get('/api/ratings', { config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (_request, reply) => {
+    const snapshot = await ratings.getRatings();
+    return reply.header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400').send(snapshot);
   });
 
   app.get('/calendar/:token/villa-tullia.ics', async (request, reply) => {
