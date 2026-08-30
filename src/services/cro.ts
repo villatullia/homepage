@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
+import countries from 'i18n-iso-countries';
 import type { Database } from '../db.js';
 import { nowIso } from '../lib/format.js';
 import { sha256 } from '../lib/crypto.js';
@@ -105,13 +106,14 @@ ${rows(data.visitorContext.operatingSystems, row=>`- ${row.label}: ${row.visitor
 
 export function croDashboard(db: Database, siteId: string) {
   const scalar = (sql:string, ...args:string[]) => (db.prepare(sql).get(...args) as { n:number }).n;
-  const visitors = scalar('SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=?', siteId);
-  const sessions = scalar('SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=?', siteId);
-  const conversions = scalar("SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND event_name='enquiry_completed'", siteId);
+  const ownerFilter = "UPPER(SUBSTR(visitor_id,1,8)) NOT IN ('41DD1AFC','1C7B359F')";
+  const visitors = scalar(`SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter}`, siteId);
+  const sessions = scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter}`, siteId);
+  const conversions = scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='enquiry_completed'`, siteId);
   const stages = funnel.map((name) => ({
     name,
-    count:scalar('SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND event_name=?', siteId, name),
-    visitors:scalar('SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND event_name=?', siteId, name),
+    count:scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name=?`, siteId, name),
+    visitors:scalar(`SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name=?`, siteId, name),
   }));
   const stageLabels:Record<string,string> = { page_view:'Website visit', availability_clicked:'Availability link clicked', availability_page_view:'Availability page reached', year_selected:'Year selected', month_selected:'Month selected', week_selected:'Week selected', contact_step_reached:'Contact options reached', enquiry_completed:'Enquiry completed' };
   const stageRows = stages.map((stage, index) => {
@@ -127,13 +129,13 @@ export function croDashboard(db: Database, siteId: string) {
       visitorDropoffRate:previous?.visitors ? Math.round(visitorDropoff * 1000 / previous.visitors) / 10 : 0,
     };
   });
-  const performance = (column:string) => db.prepare(`SELECT COALESCE(${column}, 'Direct / unknown') label, COUNT(DISTINCT session_id) sessions, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN session_id END) conversions FROM cro_events WHERE site_id=? GROUP BY label ORDER BY sessions DESC`).all(siteId).map((row:any) => ({...row, rate:row.sessions ? Math.round(row.conversions*1000/row.sessions)/10 : 0}));
+  const performance = (column:string) => db.prepare(`SELECT COALESCE(${column}, 'Direct / unknown') label, COUNT(DISTINCT session_id) sessions, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN session_id END) conversions FROM cro_events WHERE site_id=? AND ${ownerFilter} GROUP BY label ORDER BY sessions DESC`).all(siteId).map((row:any) => ({...row, rate:row.sessions ? Math.round(row.conversions*1000/row.sessions)/10 : 0}));
   const devices = performance('device_type');
   const sources = performance("NULLIF(COALESCE(utm_source, referrer), '')");
   const durationRows = db.prepare(`SELECT session_id,
       MAX(CASE WHEN event_name='visit_duration' THEN CAST(json_extract(properties_json,'$.seconds') AS REAL) END) tracked_seconds,
       MAX(0, (julianday(MAX(occurred_at)) - julianday(MIN(occurred_at))) * 86400.0) observed_seconds
-    FROM cro_events WHERE site_id=? GROUP BY session_id`).all(siteId) as Array<{session_id:string;tracked_seconds:number|null;observed_seconds:number}>;
+    FROM cro_events WHERE site_id=? AND ${ownerFilter} GROUP BY session_id`).all(siteId) as Array<{session_id:string;tracked_seconds:number|null;observed_seconds:number}>;
   const averageVisitDurationSeconds = durationRows.length ? Math.round(durationRows.reduce((total, row) => total + Math.max(0, row.tracked_seconds ?? row.observed_seconds ?? 0), 0) / durationRows.length) : 0;
   const formatDuration = (seconds:number) => seconds >= 3600
     ? `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`
@@ -141,40 +143,45 @@ export function croDashboard(db: Database, siteId: string) {
   const dateLabel = (value:string) => new Intl.DateTimeFormat('en-GB', { timeZone:'UTC', day:'numeric', month:'short', year:'numeric' }).format(new Date(`${value}T00:00:00Z`));
   const weekRows = db.prepare(`SELECT json_extract(properties_json,'$.checkIn') check_in, json_extract(properties_json,'$.checkOut') check_out,
       COUNT(*) clicks, COUNT(DISTINCT visitor_id) visitors
-    FROM cro_events WHERE site_id=? AND event_name='week_selected' AND json_extract(properties_json,'$.checkIn') IS NOT NULL
+    FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='week_selected' AND json_extract(properties_json,'$.checkIn') IS NOT NULL
     GROUP BY check_in, check_out ORDER BY clicks DESC, check_in ASC LIMIT 10`).all(siteId) as Array<{check_in:string;check_out:string;clicks:number;visitors:number}>;
   const maxWeekClicks = Math.max(0, ...weekRows.map(row => row.clicks));
   const monthRows = db.prepare(`SELECT CAST(json_extract(properties_json,'$.year') AS INTEGER) year, CAST(json_extract(properties_json,'$.month') AS INTEGER) month,
       COUNT(*) clicks, COUNT(DISTINCT visitor_id) visitors
-    FROM cro_events WHERE site_id=? AND event_name='month_selected' AND json_extract(properties_json,'$.year') IS NOT NULL
+    FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='month_selected' AND json_extract(properties_json,'$.year') IS NOT NULL
     GROUP BY year, month ORDER BY clicks DESC, year ASC, month ASC LIMIT 6`).all(siteId) as Array<{year:number;month:number;clicks:number;visitors:number}>;
   const yearRows = db.prepare(`SELECT CAST(json_extract(properties_json,'$.year') AS INTEGER) year, COUNT(*) clicks, COUNT(DISTINCT visitor_id) visitors
-    FROM cro_events WHERE site_id=? AND event_name='year_selected' AND json_extract(properties_json,'$.year') IS NOT NULL
+    FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='year_selected' AND json_extract(properties_json,'$.year') IS NOT NULL
     GROUP BY year ORDER BY clicks DESC, year ASC`).all(siteId) as Array<{year:number;clicks:number;visitors:number}>;
   const stayInterest = {
     weeks:weekRows.map(row => ({ ...row, label:`${dateLabel(row.check_in)} – ${dateLabel(row.check_out)}`, barPercent:maxWeekClicks ? Math.round(row.clicks * 100 / maxWeekClicks) : 0 })),
     months:monthRows.map(row => ({ ...row, label:new Intl.DateTimeFormat('en-GB', { month:'long', year:'numeric', timeZone:'UTC' }).format(new Date(Date.UTC(row.year, row.month - 1, 1))) })),
     years:yearRows.map(row => ({ ...row, label:String(row.year) })),
   };
-  const homepageSessions = scalar("SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND event_name='page_view' AND page IN ('/','/index.html')", siteId);
-  const homepageVisitors = scalar("SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND event_name='page_view' AND page IN ('/','/index.html')", siteId);
-  const homepageToAvailability = scalar(`SELECT COUNT(DISTINCT h.session_id) n FROM cro_events h WHERE h.site_id=? AND h.event_name='page_view' AND h.page IN ('/','/index.html') AND EXISTS (SELECT 1 FROM cro_events a WHERE a.site_id=h.site_id AND a.session_id=h.session_id AND a.event_name='availability_page_view')`, siteId);
-  const ctaRows = db.prepare(`SELECT event_name label, COUNT(DISTINCT session_id) clicks FROM cro_events WHERE site_id=? AND event_name IN ('hero_cta_clicked','secondary_cta_clicked','contact_clicked','location_clicked') GROUP BY event_name ORDER BY clicks DESC`).all(siteId) as Array<{label:string;clicks:number}>;
+  const homepageSessions = scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='page_view' AND page IN ('/','/index.html')`, siteId);
+  const homepageVisitors = scalar(`SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='page_view' AND page IN ('/','/index.html')`, siteId);
+  const homepageToAvailability = scalar(`SELECT COUNT(DISTINCT h.session_id) n FROM cro_events h WHERE h.site_id=? AND UPPER(SUBSTR(h.visitor_id,1,8)) NOT IN ('41DD1AFC','1C7B359F') AND h.event_name='page_view' AND h.page IN ('/','/index.html') AND EXISTS (SELECT 1 FROM cro_events a WHERE a.site_id=h.site_id AND a.session_id=h.session_id AND a.event_name='availability_page_view')`, siteId);
+  const ctaRows = db.prepare(`SELECT event_name label, COUNT(DISTINCT session_id) clicks FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name IN ('hero_cta_clicked','secondary_cta_clicked','contact_clicked','location_clicked') GROUP BY event_name ORDER BY clicks DESC`).all(siteId) as Array<{label:string;clicks:number}>;
   const homepage = {
     visitors:homepageVisitors, sessions:homepageSessions,
     availabilitySessions:homepageToAvailability,
     availabilityRate:homepageSessions ? Math.round(homepageToAvailability*1000/homepageSessions)/10 : 0,
     ctas:ctaRows.map(row=>({...row, label:({hero_cta_clicked:'Main availability button',secondary_cta_clicked:'Secondary homepage buttons',contact_clicked:'Contact links',location_clicked:'Directions link'} as Record<string,string>)[row.label] ?? row.label, rate:homepageSessions ? Math.round(row.clicks*1000/homepageSessions)/10 : 0})),
-    scroll:(db.prepare(`SELECT CAST(json_extract(properties_json,'$.percent') AS INTEGER) milestone, COUNT(DISTINCT session_id) sessions FROM cro_events WHERE site_id=? AND event_name='scroll_depth_reached' GROUP BY milestone ORDER BY milestone`).all(siteId) as Array<{milestone:number;sessions:number}>).map(row=>({...row, rate:homepageSessions ? Math.round(row.sessions*1000/homepageSessions)/10 : 0})),
+    scroll:(db.prepare(`SELECT CAST(json_extract(properties_json,'$.percent') AS INTEGER) milestone, COUNT(DISTINCT session_id) sessions FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='scroll_depth_reached' GROUP BY milestone ORDER BY milestone`).all(siteId) as Array<{milestone:number;sessions:number}>).map(row=>({...row, rate:homepageSessions ? Math.round(row.sessions*1000/homepageSessions)/10 : 0})),
     sections:(db.prepare(`WITH exposures AS (
       SELECT visitor_id, json_extract(properties_json,'$.section') section, MIN(occurred_at) seen_at
-      FROM cro_events WHERE site_id=? AND event_name='section_viewed' GROUP BY visitor_id, section
+      FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='section_viewed' GROUP BY visitor_id, section
     ) SELECT section, COUNT(*) visitors,
       SUM(CASE WHEN EXISTS (SELECT 1 FROM cro_events c WHERE c.site_id=? AND c.visitor_id=exposures.visitor_id AND c.event_name='enquiry_completed' AND c.occurred_at>=exposures.seen_at) THEN 1 ELSE 0 END) conversions
       FROM exposures GROUP BY section ORDER BY visitors DESC`).all(siteId, siteId) as Array<{section:string;visitors:number;conversions:number}>).map(row=>({...row, reachRate:homepageVisitors ? Math.round(row.visitors*1000/homepageVisitors)/10 : 0, conversionRate:row.visitors ? Math.round(row.conversions*1000/row.visitors)/10 : 0})),
   };
-  const contextPerformance = (column:string) => (db.prepare(`SELECT COALESCE(${column}, 'Unknown') label, COUNT(DISTINCT visitor_id) visitors, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN visitor_id END) conversions FROM cro_events WHERE site_id=? GROUP BY label ORDER BY visitors DESC`).all(siteId) as Array<{label:string;visitors:number;conversions:number}>).map(row=>({...row, rate:row.visitors ? Math.round(row.conversions*1000/row.visitors)/10 : 0}));
-  const visitorContext = { countries:contextPerformance('country_code'), browsers:contextPerformance('browser'), operatingSystems:contextPerformance('operating_system'), languages:contextPerformance('language'), screenSizes:contextPerformance('screen_size') };
+  const contextPerformance = (column:string) => (db.prepare(`SELECT COALESCE(${column}, 'Unknown') label, COUNT(DISTINCT visitor_id) visitors, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN visitor_id END) conversions FROM cro_events WHERE site_id=? AND ${ownerFilter} GROUP BY label ORDER BY visitors DESC`).all(siteId) as Array<{label:string;visitors:number;conversions:number}>).map(row=>({...row, rate:row.visitors ? Math.round(row.conversions*1000/row.visitors)/10 : 0}));
+  const countryPerformance = contextPerformance('country_code').map(row => ({
+    ...row,
+    iso3:row.label === 'Unknown' ? undefined : countries.alpha2ToAlpha3(row.label),
+    countryName:row.label === 'Unknown' ? 'Unknown' : countries.getName(row.label, 'en') ?? row.label,
+  }));
+  const visitorContext = { countries:countryPerformance, browsers:contextPerformance('browser'), operatingSystems:contextPerformance('operating_system'), languages:contextPerformance('language'), screenSizes:contextPerformance('screen_size') };
   type JourneyEventRow = {
     visitor_id:string; session_id:string; event_name:string; occurred_at:string; page:string;
     properties_json:string; country_code:string|null; browser:string|null; operating_system:string|null;
@@ -195,7 +202,7 @@ export function croDashboard(db: Database, siteId: string) {
     timeZone:'Europe/Rome', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit',
   }).format(new Date(value));
   const journeyRows = db.prepare(`SELECT visitor_id,session_id,event_name,occurred_at,page,properties_json,country_code,browser,operating_system,language,device_type,referrer,utm_source
-    FROM cro_events WHERE site_id=? AND event_name!='visit_duration' ORDER BY occurred_at ASC, rowid ASC`).all(siteId) as JourneyEventRow[];
+    FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name!='visit_duration' ORDER BY occurred_at ASC, rowid ASC`).all(siteId) as JourneyEventRow[];
   const journeyMap = new Map<string, any>();
   for (const row of journeyRows) {
     let visitor = journeyMap.get(row.visitor_id);

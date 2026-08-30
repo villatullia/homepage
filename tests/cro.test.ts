@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
+import path from 'node:path';
+import nunjucks from 'nunjucks';
 import { croDashboard, croEventSchema, recordCroEvent, resolveCountry } from '../src/services/cro.js';
 import { createTestContext } from './helpers.js';
 
@@ -72,7 +74,12 @@ describe('CRO tracking', () => {
     recordCroEvent(context.db, {...event('page_view'),context:{browser:'Firefox',operatingSystem:'Linux',language:'it-IT',timezone:'Europe/Rome',screenSize:'large'}}, {countryCode:'IT'});
     expect(context.db.prepare('SELECT country_code,browser,operating_system,language,timezone,screen_size FROM cro_events').get()).toMatchObject({country_code:'IT',browser:'Firefox',operating_system:'Linux',language:'it-IT',timezone:'Europe/Rome',screen_size:'large'});
     expect(await resolveCountry('203.0.113.10', {'cf-ipcountry':'DE'})).toBe('DE');
-    expect(croDashboard(context.db,'villa-tullia').visitorContext.countries[0]).toMatchObject({label:'IT',visitors:1});
+    const dashboard=croDashboard(context.db,'villa-tullia');
+    expect(dashboard.visitorContext.countries[0]).toMatchObject({label:'IT',countryName:'Italy',iso3:'ITA',visitors:1});
+    const html=nunjucks.configure(path.resolve(process.cwd(),'src/views'), {autoescape:true}).render('cro-dashboard.njk', {title:'CRO dashboard',admin:{display_name:'Test Owner'},csrf:'test',cro:dashboard});
+    expect(html).toContain('Visitors around the world');
+    expect(html).toContain('data-iso3="ITA" data-country="Italy" data-visitors="1"');
+    expect(html).toContain('Darker blue means more visitors');
   });
   it('reports average engaged visit time and ranks selected stay dates', () => {
     const context=createTestContext(); cleanup.push(context.close);
@@ -90,5 +97,18 @@ describe('CRO tracking', () => {
     expect(dashboard.stayInterest.weeks[0]).toMatchObject({label:'5 Jun 2027 – 12 Jun 2027',clicks:2,visitors:2,barPercent:100});
     expect(dashboard.stayInterest.months[0]).toMatchObject({label:'June 2027',clicks:1});
     expect(dashboard.stayInterest.years[0]).toMatchObject({label:'2027',clicks:1});
+  });
+  it('excludes the owner test devices from every dashboard calculation', () => {
+    const context=createTestContext(); cleanup.push(context.close);
+    const ownerLaptop='41dd1afc-1111-4111-8111-111111111111';
+    const ownerMobile='1c7b359f-2222-4222-8222-222222222222';
+    recordCroEvent(context.db,event('page_view'));
+    recordCroEvent(context.db,event('page_view',ownerLaptop,'66666666-6666-4666-8666-666666666666'));
+    recordCroEvent(context.db,event('enquiry_completed',ownerLaptop,'66666666-6666-4666-8666-666666666666'));
+    recordCroEvent(context.db,{...event('week_selected',ownerMobile,'77777777-7777-4777-8777-777777777777'),properties:{checkIn:'2027-08-07',checkOut:'2027-08-14'}});
+    const dashboard=croDashboard(context.db,'villa-tullia');
+    expect(dashboard).toMatchObject({visitors:1,sessions:1,conversions:0,conversionRate:0});
+    expect(dashboard.stayInterest.weeks).toEqual([]);
+    expect(dashboard.visitorJourneys.map(visitor=>visitor.label)).toEqual(['Visitor 11111111']);
   });
 });

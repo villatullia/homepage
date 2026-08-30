@@ -8,6 +8,7 @@
 <div class="grid"><div><h3>CTA click-through</h3><div class="table-wrap"><table><thead><tr><th>Interaction</th><th>Sessions</th><th>CTR</th></tr></thead><tbody>{% for row in cro.homepage.ctas %}<tr><td>{{ row.label | replace('_', ' ') }}</td><td>{{ row.clicks }}</td><td>{{ row.rate }}%</td></tr>{% else %}<tr><td colspan="3">No CTA clicks yet</td></tr>{% endfor %}</tbody></table></div></div>
 <div><h3>Scroll depth</h3><div class="table-wrap"><table><thead><tr><th>Depth</th><th>Sessions</th><th>Reached</th></tr></thead><tbody>{% for row in cro.homepage.scroll %}<tr><td>{{ row.milestone }}%</td><td>{{ row.sessions }}</td><td>{{ row.rate }}%</td></tr>{% else %}<tr><td colspan="3">No scroll data yet</td></tr>{% endfor %}</tbody></table></div></div></div></section>
 <section class="card"><h2>Key section exposure</h2><p class="muted">Enquiry rate is for visitors who reached the section and later completed an enquiry.</p><div class="table-wrap"><table><thead><tr><th>Section</th><th>Visitors</th><th>Homepage reach</th><th>Later enquiries</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.homepage.sections %}<tr><td>{{ row.section }}</td><td>{{ row.visitors }}</td><td>{{ row.reachRate }}%</td><td>{{ row.conversions }}</td><td>{{ row.conversionRate }}%</td></tr>{% else %}<tr><td colspan="5">No section exposure yet</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="card"><h2>Visitors around the world</h2><p class="muted">Darker blue means more visitors. Hover over a country to see its total.</p><div id="countryHeatmap" class="country-map" aria-label="World map showing visitors by country"><div class="country-map-status">Loading visitor map…</div><div id="countryMapTooltip" class="map-tooltip" role="tooltip"></div></div><div class="map-legend" aria-label="Visitor intensity from fewer to more"><span>Fewer</span><span class="map-legend-scale" aria-hidden="true"></span><span>More</span></div><ul id="countryMapData" hidden>{% for row in cro.visitorContext.countries %}{% if row.iso3 %}<li data-iso3="{{ row.iso3 }}" data-country="{{ row.countryName }}" data-visitors="{{ row.visitors }}"></li>{% endif %}{% endfor %}</ul></section>
 <section class="card"><h2>Booking journey</h2><p class="muted">Visitors are distinct anonymous users and may return across multiple sessions.</p><div class="table-wrap"><table><thead><tr><th>Step</th><th>Sessions</th><th>Session drop-off</th><th>Visitors</th><th>Visitor drop-off</th></tr></thead><tbody>{% for row in cro.stages %}<tr><td>{{ row.label }}</td><td>{{ row.count }}</td><td>{% if loop.first %}—{% else %}{{ row.dropoff }} ({{ row.dropoffRate }}%){% endif %}</td><td>{{ row.visitors }}</td><td>{% if loop.first %}—{% else %}{{ row.visitorDropoff }} ({{ row.visitorDropoffRate }}%){% endif %}</td></tr>{% endfor %}</tbody></table></div></section>
 <section class="card"><h2>Individual visitor paths</h2><p class="muted">Click an anonymous visitor to see every recorded action, grouped by visit. Times are shown in Italy time.</p><div>{% for visitor in cro.visitorJourneys %}<details class="journey"><summary><strong>{{ visitor.label }}{% if visitor.converted %} · Enquired{% endif %}</strong><span class="journey-meta">{{ visitor.sessions | length }} visit{% if visitor.sessions | length != 1 %}s{% endif %} · {{ visitor.eventCount }} actions</span><span class="journey-meta">Last seen {{ visitor.lastSeenFormatted }}</span></summary><div class="journey-body"><p class="journey-context">{{ visitor.country }} · {{ visitor.device }} · {{ visitor.browser }} on {{ visitor.operatingSystem }} · {{ visitor.language }} · {{ visitor.source }}</p>{% for session in visitor.sessions %}<div class="journey-session"><h3>Visit {{ session.number }} <span class="muted">· {{ session.firstSeenFormatted }}</span></h3><ol class="timeline">{% for event in session.events %}<li><strong>{{ event.label }}</strong><small>{{ event.time }}{% if event.page %} · <span class="journey-page">{{ event.page }}</span>{% endif %}</small>{% if event.details %}<small>{{ event.details }}</small>{% endif %}</li>{% endfor %}</ol></div>{% endfor %}</div></details>{% else %}<p class="muted">No visitor paths recorded yet.</p>{% endfor %}</div></section>
 <section class="card"><h2>Visitor details</h2><div class="grid"><div><h3>Countries</h3><div class="table-wrap"><table><thead><tr><th>Country</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.countries %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div><div><h3>Browsers</h3><div class="table-wrap"><table><thead><tr><th>Browser</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.browsers %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div><div><h3>Operating systems</h3><div class="table-wrap"><table><thead><tr><th>System</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.operatingSystems %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div><div><h3>Languages</h3><div class="table-wrap"><table><thead><tr><th>Language</th><th>Visitors</th><th>Enquiry rate</th></tr></thead><tbody>{% for row in cro.visitorContext.languages %}<tr><td>{{ row.label }}</td><td>{{ row.visitors }}</td><td>{{ row.rate }}%</td></tr>{% endfor %}</tbody></table></div></div></div></section>
@@ -37,4 +38,48 @@
     });
     copy.addEventListener('click', copyPrompt);
   })();
-</script>{% endblock %}
+</script>
+<script type="module">
+  import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
+  import { feature } from 'https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/+esm';
+  import world from 'https://cdn.jsdelivr.net/npm/@d3-maps/atlas@1.0.0/world/countries/countries-110m/+esm';
+
+  const root = document.getElementById('countryHeatmap');
+  const tooltip = document.getElementById('countryMapTooltip');
+  const visitorData = new Map([...document.querySelectorAll('#countryMapData li')].map(item => [item.dataset.iso3, { country:item.dataset.country, visitors:Number(item.dataset.visitors) }]));
+  const worldFeatures = feature(world, world.objects.features).features;
+  const maxVisitors = Math.max(1, ...[...visitorData.values()].map(item => item.visitors));
+  const color = d3.scaleSequential([0, maxVisitors], d3.interpolateBlues);
+
+  const drawCountryMap = () => {
+    const width = Math.max(320, Math.round(root.getBoundingClientRect().width));
+    const height = width < 620 ? 250 : 410;
+    root.querySelector('svg')?.remove();
+    const svg = d3.select(root).insert('svg', ':first-child').attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img').attr('aria-labelledby', 'countryMapTitle countryMapDescription');
+    svg.append('title').attr('id', 'countryMapTitle').text('Visitors by country');
+    svg.append('desc').attr('id', 'countryMapDescription').text('A world heatmap where darker blue countries have more visitors. Exact totals are also listed in the visitor details table.');
+    const projection = d3.geoNaturalEarth1().fitExtent([[8, 8], [width - 8, height - 8]], { type:'FeatureCollection', features:worldFeatures });
+    const path = d3.geoPath(projection);
+    svg.append('g').selectAll('path').data(worldFeatures).join('path')
+      .attr('d', path)
+      .attr('class', country => visitorData.has(country.properties.id) ? 'has-data' : null)
+      .attr('fill', country => { const value = visitorData.get(country.properties.id)?.visitors; return value ? color(value) : '#e8edf2'; })
+      .attr('aria-label', country => { const item = visitorData.get(country.properties.id); return item ? `${item.country}: ${item.visitors} visitors` : null; })
+      .on('pointerenter', (_event, country) => {
+        const item = visitorData.get(country.properties.id);
+        if (!item) return;
+        tooltip.innerHTML = `<strong>${item.country}</strong>${item.visitors} visitor${item.visitors === 1 ? '' : 's'}`;
+        tooltip.style.display = 'block';
+      })
+      .on('pointermove', event => {
+        const bounds = root.getBoundingClientRect();
+        tooltip.style.left = `${Math.min(bounds.width - 220, Math.max(8, event.clientX - bounds.left + 12))}px`;
+        tooltip.style.top = `${Math.max(8, event.clientY - bounds.top - 48)}px`;
+      })
+      .on('pointerleave', () => { tooltip.style.display = 'none'; });
+    root.querySelector('.country-map-status')?.remove();
+  };
+  drawCountryMap();
+  new ResizeObserver(drawCountryMap).observe(root);
+</script>
+{% endblock %}
