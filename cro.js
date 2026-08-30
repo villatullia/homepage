@@ -33,6 +33,25 @@
     if (trackedOnce.has(key)) return false;
     trackedOnce.add(key); track(eventName, properties); return true;
   }
+  const activeTimeKey = `cro_active_ms_${siteId}`;
+  let activeMs = Number(read(activeTimeKey, sessionStorage)) || 0;
+  let visibleSince = document.visibilityState === 'visible' ? Date.now() : null;
+  const settleVisibleTime = () => {
+    if (visibleSince === null) return;
+    activeMs += Math.max(0, Date.now() - visibleSince);
+    visibleSince = null;
+    write(activeTimeKey, String(activeMs), sessionStorage);
+  };
+  const reportVisitDuration = () => {
+    const seconds = Math.max(0, Math.round((activeMs + (visibleSince === null ? 0 : Date.now() - visibleSince)) / 1000));
+    track('visit_duration', { seconds });
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { settleVisibleTime(); reportVisitDuration(); }
+    else if (visibleSince === null) visibleSince = Date.now();
+  });
+  global.addEventListener('pagehide', () => { settleVisibleTime(); reportVisitDuration(); });
+  global.setInterval(() => { if (document.visibilityState === 'visible') reportVisitDuration(); }, 30000);
   global.cro={track,trackOnce,visitorId,sessionId};
   track('page_view');
 })(window);

@@ -222,6 +222,7 @@
         emailForm.hidden = false;
         enquirySuccess.hidden = true;
         renderWeeks();
+        cro.track('contact_step_reached');
         setFlowStep(3, true);
       };
       const renderYearChoices = () => {

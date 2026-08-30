@@ -74,4 +74,21 @@ describe('CRO tracking', () => {
     expect(await resolveCountry('203.0.113.10', {'cf-ipcountry':'DE'})).toBe('DE');
     expect(croDashboard(context.db,'villa-tullia').visitorContext.countries[0]).toMatchObject({label:'IT',visitors:1});
   });
+  it('reports average engaged visit time and ranks selected stay dates', () => {
+    const context=createTestContext(); cleanup.push(context.close);
+    const secondVisitor='44444444-4444-4444-8444-444444444444';
+    const secondSession='55555555-5555-4555-8555-555555555555';
+    recordCroEvent(context.db,event('page_view'));
+    recordCroEvent(context.db,{...event('visit_duration'),properties:{seconds:90}});
+    recordCroEvent(context.db,{...event('week_selected'),properties:{checkIn:'2027-06-05',checkOut:'2027-06-12'}});
+    recordCroEvent(context.db,{...event('week_selected',secondVisitor,secondSession),properties:{checkIn:'2027-06-05',checkOut:'2027-06-12'}});
+    recordCroEvent(context.db,{...event('visit_duration',secondVisitor,secondSession),properties:{seconds:30}});
+    recordCroEvent(context.db,{...event('month_selected'),properties:{year:2027,month:6}});
+    recordCroEvent(context.db,{...event('year_selected'),properties:{year:2027}});
+    const dashboard=croDashboard(context.db,'villa-tullia');
+    expect(dashboard).toMatchObject({averageVisitDurationSeconds:60,averageVisitDurationFormatted:'1m 00s'});
+    expect(dashboard.stayInterest.weeks[0]).toMatchObject({label:'5 Jun 2027 – 12 Jun 2027',clicks:2,visitors:2,barPercent:100});
+    expect(dashboard.stayInterest.months[0]).toMatchObject({label:'June 2027',clicks:1});
+    expect(dashboard.stayInterest.years[0]).toMatchObject({label:'2027',clicks:1});
+  });
 });

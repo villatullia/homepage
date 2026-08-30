@@ -45,6 +45,7 @@ function optimizationPrompt(data: {
   visitors:number; sessions:number; conversions:number; conversionRate:number;
   stages:Array<{label:string;count:number;dropoffRate:number;visitors:number;visitorDropoffRate:number}>;
   devices:Array<any>; sources:Array<any>; homepage:any; visitorContext:any; insights:string[];
+  averageVisitDurationFormatted:string; stayInterest:any;
 }) {
   const rows = (items:Array<Record<string, unknown>>, format:(row:Record<string, any>)=>string, empty='No data yet') =>
     items.length ? items.slice(0, 10).map(format).join('\n') : `- ${empty}`;
@@ -64,12 +65,16 @@ OVERALL
 - Sessions: ${data.sessions}
 - Completed enquiries: ${data.conversions}
 - Session conversion rate: ${data.conversionRate}%
+- Average engaged visit time: ${data.averageVisitDurationFormatted}
 
 AUTOMATIC SIGNALS
 ${data.insights.map(value=>`- ${value}`).join('\n')}
 
 BOOKING FUNNEL
 ${rows(data.stages, row=>`- ${row.label}: ${row.count} sessions, ${row.visitors} visitors; drop-off from prior step ${row.dropoffRate}% of sessions / ${row.visitorDropoffRate}% of visitors`)}
+
+MOST SELECTED WEEKS
+${rows(data.stayInterest.weeks, row=>`- ${row.label}: ${row.clicks} selections by ${row.visitors} visitors`)}
 
 HOMEPAGE
 - ${data.homepage.visitors} visitors / ${data.homepage.sessions} sessions
@@ -125,6 +130,32 @@ export function croDashboard(db: Database, siteId: string) {
   const performance = (column:string) => db.prepare(`SELECT COALESCE(${column}, 'Direct / unknown') label, COUNT(DISTINCT session_id) sessions, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN session_id END) conversions FROM cro_events WHERE site_id=? GROUP BY label ORDER BY sessions DESC`).all(siteId).map((row:any) => ({...row, rate:row.sessions ? Math.round(row.conversions*1000/row.sessions)/10 : 0}));
   const devices = performance('device_type');
   const sources = performance("NULLIF(COALESCE(utm_source, referrer), '')");
+  const durationRows = db.prepare(`SELECT session_id,
+      MAX(CASE WHEN event_name='visit_duration' THEN CAST(json_extract(properties_json,'$.seconds') AS REAL) END) tracked_seconds,
+      MAX(0, (julianday(MAX(occurred_at)) - julianday(MIN(occurred_at))) * 86400.0) observed_seconds
+    FROM cro_events WHERE site_id=? GROUP BY session_id`).all(siteId) as Array<{session_id:string;tracked_seconds:number|null;observed_seconds:number}>;
+  const averageVisitDurationSeconds = durationRows.length ? Math.round(durationRows.reduce((total, row) => total + Math.max(0, row.tracked_seconds ?? row.observed_seconds ?? 0), 0) / durationRows.length) : 0;
+  const formatDuration = (seconds:number) => seconds >= 3600
+    ? `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`
+    : `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, '0')}s`;
+  const dateLabel = (value:string) => new Intl.DateTimeFormat('en-GB', { timeZone:'UTC', day:'numeric', month:'short', year:'numeric' }).format(new Date(`${value}T00:00:00Z`));
+  const weekRows = db.prepare(`SELECT json_extract(properties_json,'$.checkIn') check_in, json_extract(properties_json,'$.checkOut') check_out,
+      COUNT(*) clicks, COUNT(DISTINCT visitor_id) visitors
+    FROM cro_events WHERE site_id=? AND event_name='week_selected' AND json_extract(properties_json,'$.checkIn') IS NOT NULL
+    GROUP BY check_in, check_out ORDER BY clicks DESC, check_in ASC LIMIT 10`).all(siteId) as Array<{check_in:string;check_out:string;clicks:number;visitors:number}>;
+  const maxWeekClicks = Math.max(0, ...weekRows.map(row => row.clicks));
+  const monthRows = db.prepare(`SELECT CAST(json_extract(properties_json,'$.year') AS INTEGER) year, CAST(json_extract(properties_json,'$.month') AS INTEGER) month,
+      COUNT(*) clicks, COUNT(DISTINCT visitor_id) visitors
+    FROM cro_events WHERE site_id=? AND event_name='month_selected' AND json_extract(properties_json,'$.year') IS NOT NULL
+    GROUP BY year, month ORDER BY clicks DESC, year ASC, month ASC LIMIT 6`).all(siteId) as Array<{year:number;month:number;clicks:number;visitors:number}>;
+  const yearRows = db.prepare(`SELECT CAST(json_extract(properties_json,'$.year') AS INTEGER) year, COUNT(*) clicks, COUNT(DISTINCT visitor_id) visitors
+    FROM cro_events WHERE site_id=? AND event_name='year_selected' AND json_extract(properties_json,'$.year') IS NOT NULL
+    GROUP BY year ORDER BY clicks DESC, year ASC`).all(siteId) as Array<{year:number;clicks:number;visitors:number}>;
+  const stayInterest = {
+    weeks:weekRows.map(row => ({ ...row, label:`${dateLabel(row.check_in)} – ${dateLabel(row.check_out)}`, barPercent:maxWeekClicks ? Math.round(row.clicks * 100 / maxWeekClicks) : 0 })),
+    months:monthRows.map(row => ({ ...row, label:new Intl.DateTimeFormat('en-GB', { month:'long', year:'numeric', timeZone:'UTC' }).format(new Date(Date.UTC(row.year, row.month - 1, 1))) })),
+    years:yearRows.map(row => ({ ...row, label:String(row.year) })),
+  };
   const homepageSessions = scalar("SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND event_name='page_view' AND page IN ('/','/index.html')", siteId);
   const homepageVisitors = scalar("SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND event_name='page_view' AND page IN ('/','/index.html')", siteId);
   const homepageToAvailability = scalar(`SELECT COUNT(DISTINCT h.session_id) n FROM cro_events h WHERE h.site_id=? AND h.event_name='page_view' AND h.page IN ('/','/index.html') AND EXISTS (SELECT 1 FROM cro_events a WHERE a.site_id=h.site_id AND a.session_id=h.session_id AND a.event_name='availability_page_view')`, siteId);
@@ -164,7 +195,7 @@ export function croDashboard(db: Database, siteId: string) {
     timeZone:'Europe/Rome', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit',
   }).format(new Date(value));
   const journeyRows = db.prepare(`SELECT visitor_id,session_id,event_name,occurred_at,page,properties_json,country_code,browser,operating_system,language,device_type,referrer,utm_source
-    FROM cro_events WHERE site_id=? ORDER BY occurred_at ASC, rowid ASC`).all(siteId) as JourneyEventRow[];
+    FROM cro_events WHERE site_id=? AND event_name!='visit_duration' ORDER BY occurred_at ASC, rowid ASC`).all(siteId) as JourneyEventRow[];
   const journeyMap = new Map<string, any>();
   for (const row of journeyRows) {
     let visitor = journeyMap.get(row.visitor_id);
@@ -208,6 +239,6 @@ export function croDashboard(db: Database, siteId: string) {
   const overall = sessions ? conversions*100/sessions : 0;
   for (const source of sources.filter((row:any)=>row.sessions>=5)) if (Math.abs(source.rate-overall)>=5) insights.push(`${source.label} conversion is unusually ${source.rate>overall?'high':'low'} at ${source.rate}%.`);
   if (!insights.length) insights.push('More traffic is needed before reliable automatic insights are available.');
-  const dashboard = { visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, stages:stageRows, devices, sources, homepage, visitorContext, visitorJourneys, insights };
+  const dashboard = { visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, averageVisitDurationSeconds, averageVisitDurationFormatted:formatDuration(averageVisitDurationSeconds), stayInterest, stages:stageRows, devices, sources, homepage, visitorContext, visitorJourneys, insights };
   return { ...dashboard, optimizationPrompt:optimizationPrompt(dashboard) };
 }
