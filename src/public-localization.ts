@@ -136,13 +136,21 @@ const availability: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 availability.nl.unshift(
+  ['Step 1 of 4', 'Stap 1 van 4'], ['Step ${step + 1} of 4', 'Stap ${step + 1} van 4'],
+  ['Step 1 · Choose a year', 'Stap 1 · Kies een jaar'], ['Step 3 · Pick a week', 'Stap 3 · Kies een week'], ['Step 4 · Your enquiry', 'Stap 4 · Uw aanvraag'],
+  ['Your stay at a glance.', 'Uw verblijf in één oogopslag.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Laat uw naam en e-mailadres achter. Wij bevestigen persoonlijk de beschikbaarheid en de volgende stappen.'],
+  ['7 nights · ${formatPrice(week.price)} direct total', '7 nachten · ${formatPrice(week.price)} direct totaal'], ['7 nights · Price confirmed personally', '7 nachten · Prijs persoonlijk bevestigd'],
+  ['Send enquiry', 'Aanvraag versturen'], ['Contact us on WhatsApp', 'Neem contact op via WhatsApp'], ['>or<', '>of<'],
   ['Save €368–€646 per week.', 'Bespaar €368–€646 per week.'],
-  ['Every available week shows our direct total beside the lowest non-refundable Booking.com total, so you can see the real saving before you enquire.', 'Bij elke beschikbare week staat ons directe totaal naast de laagste niet-restitueerbare Booking.com-prijs, zodat u vóór uw aanvraag de echte besparing ziet.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
+  ['Step 1 of 4', 'Schritt 1 von 4'], ['Step ${step + 1} of 4', 'Schritt ${step + 1} von 4'],
+  ['Step 1 · Choose a year', 'Schritt 1 · Jahr wählen'], ['Step 3 · Pick a week', 'Schritt 3 · Woche wählen'], ['Step 4 · Your enquiry', 'Schritt 4 · Ihre Anfrage'],
+  ['Your stay at a glance.', 'Ihr Aufenthalt auf einen Blick.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Hinterlassen Sie Ihren Namen und Ihre E-Mail-Adresse. Wir bestätigen die Verfügbarkeit und die nächsten Schritte persönlich.'],
+  ['7 nights · ${formatPrice(week.price)} direct total', '7 Nächte · ${formatPrice(week.price)} Direktpreis gesamt'], ['7 nights · Price confirmed personally', '7 Nächte · Preis wird persönlich bestätigt'],
+  ['Send enquiry', 'Anfrage senden'], ['Contact us on WhatsApp', 'Kontakt über WhatsApp'], ['>or<', '>oder<'],
   ['Save €368–€646 per week.', 'Sparen Sie 368–646 € pro Woche.'],
-  ['Every available week shows our direct total beside the lowest non-refundable Booking.com total, so you can see the real saving before you enquire.', 'Für jede verfügbare Woche sehen Sie unseren Direktpreis neben dem günstigsten nicht erstattungsfähigen Booking.com-Preis.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direkt'], ['Save ${formatPrice(saving)}', '${formatPrice(saving)} sparen'],
   ['No commitment at this stage.', 'In diesem Schritt gehen Sie keine Verpflichtung ein.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Diese Anfrage ist unverbindlich. Eine Buchung wird erst verbindlich, wenn der Mietvertrag von Ihnen und Villa Tullia unterzeichnet wurde.'],
@@ -151,8 +159,12 @@ availability.de.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Buchen Sie hier direkt und bei Ihrer Ankunft wartet ein Willkommensgeschenk auf Sie.'],
 );
 availability.it.unshift(
+  ['Step 1 of 4', 'Passaggio 1 di 4'], ['Step ${step + 1} of 4', 'Passaggio ${step + 1} di 4'],
+  ['Step 1 · Choose a year', 'Passaggio 1 · Scegli l’anno'], ['Step 3 · Pick a week', 'Passaggio 3 · Scegli la settimana'], ['Step 4 · Your enquiry', 'Passaggio 4 · La tua richiesta'],
+  ['Your stay at a glance.', 'Il tuo soggiorno in sintesi.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Lascia nome e indirizzo e-mail: confermeremo personalmente la disponibilità e i prossimi passi.'],
+  ['7 nights · ${formatPrice(week.price)} direct total', '7 notti · totale diretto ${formatPrice(week.price)}'], ['7 nights · Price confirmed personally', '7 notti · Prezzo confermato personalmente'],
+  ['Send enquiry', 'Invia la richiesta'], ['Contact us on WhatsApp', 'Contattaci su WhatsApp'], ['>or<', '>oppure<'],
   ['Save €368–€646 per week.', 'Risparmia 368–646 € a settimana.'],
-  ['Every available week shows our direct total beside the lowest non-refundable Booking.com total, so you can see the real saving before you enquire.', 'Per ogni settimana disponibile mostriamo il totale diretto accanto al prezzo non rimborsabile più basso di Booking.com.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} diretto'], ['Save ${formatPrice(saving)}', 'Risparmia ${formatPrice(saving)}'],
   ['No commitment at this stage.', 'In questa fase non assumi alcun impegno.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Questa richiesta non è vincolante. La prenotazione diventa vincolante solo quando il contratto di locazione è stato firmato sia da te sia da Villa Tullia.'],

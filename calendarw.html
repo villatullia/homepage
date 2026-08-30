@@ -46,6 +46,10 @@
   <style>
     .week-price { margin-top:7px!important; color:var(--forest)!important; font-size:.88rem!important; }.week-price b { font-size:1.05rem; }.week-price s { margin-left:7px; color:#8a918e; }.week-saving { margin-left:7px; padding:3px 6px; color:#17624d; background:#dff1e9; font-size:.68rem; font-style:normal; font-weight:700; white-space:nowrap; }.comparison-note { margin-top:12px!important; color:#66726e!important; font-size:.7rem!important; line-height:1.45!important; }
     .email-status.is-error { padding:10px; border-left:4px solid var(--reserved); background:#fff0eb; color:#7d321f!important; }
+    .selection-price { margin-top:7px; color:var(--forest); font-size:.78rem; font-weight:700; }
+    .contact-divider { display:flex; align-items:center; gap:12px; margin:16px 0 0; color:#7a8581; font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+    .contact-divider:before,.contact-divider:after { content:""; flex:1; border-top:1px solid var(--line); }
+    .contact-divider + .inquire { margin-top:12px; }
     .enquiry-success { margin-top:18px; padding:24px 20px; border:2px solid var(--available); background:#eef8f2; text-align:center; outline:none; }
     .enquiry-success-icon { display:grid; place-items:center; width:54px; height:54px; margin:0 auto 13px; border-radius:50%; background:var(--available); color:#fff; font-size:1.6rem; }
     .enquiry-success strong { display:block; color:var(--ink); font:600 1.55rem "Playfair Display",serif; }
@@ -75,25 +79,23 @@
   </header>
   <main class="booking-area">
     <aside class="info-panel" id="bookingFlow">
-      <div class="flow-progress"><span id="flowCount" class="flow-count">Step 1 of 5</span><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="flow-progress"><span id="flowCount" class="flow-count">Step 1 of 4</span><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></span></div>
       <div class="flow-window"><div id="flowTrack" class="flow-track">
-        <section class="flow-slide"><div class="flow-kicker">Book direct. Pay less.</div><h2>Save €368–€646 per week.</h2><p class="slide-copy">Every available week shows our direct total beside the lowest non-refundable Booking.com total, so you can see the real saving before you enquire.</p><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="yearChoices" class="year-choices"></div></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 1 · Choose a year</div><h2>Save €368–€646 per week.</h2><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="yearChoices" class="year-choices"></div></section>
         <section class="flow-slide"><div class="flow-kicker">Step 2 · Choose a month</div><h2>When would you like to stay?</h2><p class="slide-copy">Choose a month in our May-to-October season. We will then show you its available Saturday-to-Saturday weeks.</p><div id="monthChoices" class="month-choices"></div><button id="backToYears" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change year</button></section>
-        <section class="flow-slide"><div class="flow-kicker">Step 2 · Pick a week</div><h2>Choose a green week.</h2><p class="slide-copy">Each green option is a complete seven-night stay.</p><div class="picker-card" aria-label="Villa Tullia availability"><div class="picker-head"><div><strong id="monthTitle">Availability</strong><span>Choose an available week to enquire</span></div><div class="month-control"><button id="previousMonth" type="button" aria-label="Previous month"><i class="bi bi-arrow-left"></i></button><button id="nextMonth" type="button" aria-label="Next month"><i class="bi bi-arrow-right"></i></button></div></div><div id="weeks" class="weeks"></div></div><button id="backToMonths" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change month</button></section>
-        <section class="flow-slide"><div class="flow-kicker">Step 3 · Confirm dates</div><h2>Does this look right?</h2><p class="slide-copy">We will use these exact dates in your enquiry.</p><div class="selection"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div></div><button id="continueButton" class="continue-button" type="button">Yes, continue <i class="bi bi-arrow-right"></i></button><button id="changeWeek" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Pick another week</button></section>
-        <section class="flow-slide"><div class="flow-kicker">Step 4 · Get in touch</div><h2>Almost there.</h2><p class="slide-copy">Send a quick message and we will confirm availability and the next steps personally.</p><div class="booking-assurances"><div class="booking-assurance"><i class="bi bi-file-earmark-check" aria-hidden="true"></i><p><strong>No commitment at this stage.</strong> This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.</p></div></div><button id="inquireButton" class="inquire" type="button"><i class="bi bi-whatsapp"></i> Enquire on WhatsApp</button><button id="emailToggle" class="email-toggle" type="button"><i class="bi bi-envelope"></i> Send an email instead</button><form id="emailEnquiry" class="email-form" hidden>
-        <label for="emailWeek">Preferred week</label><input id="emailWeek" value="General enquiry" readonly>
+        <section class="flow-slide"><div class="flow-kicker">Step 3 · Pick a week</div><h2>Choose a green week.</h2><p class="slide-copy">Each green option is a complete seven-night stay.</p><div class="picker-card" aria-label="Villa Tullia availability"><div class="picker-head"><div><strong id="monthTitle">Availability</strong><span>Choose an available week to enquire</span></div><div class="month-control"><button id="previousMonth" type="button" aria-label="Previous month"><i class="bi bi-arrow-left"></i></button><button id="nextMonth" type="button" aria-label="Next month"><i class="bi bi-arrow-right"></i></button></div></div><div id="weeks" class="weeks"></div></div><button id="backToMonths" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change month</button></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 4 · Your enquiry</div><h2>Your stay at a glance.</h2><p class="slide-copy">Leave your name and email and we will confirm availability and the next steps personally.</p><div class="selection"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div><div id="selectionPrice" class="selection-price"></div></div><div class="booking-assurances"><div class="booking-assurance"><i class="bi bi-file-earmark-check" aria-hidden="true"></i><p><strong>No commitment at this stage.</strong> This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.</p></div></div><form id="emailEnquiry" class="email-form">
+        <input id="emailWeek" type="hidden" value="General enquiry">
         <input id="emailCheckIn" type="hidden" name="checkIn"><input id="emailCheckOut" type="hidden" name="checkOut">
         <label for="guestName">Your name</label><input id="guestName" name="name" required autocomplete="name">
         <label for="guestEmail">Email address</label><input id="guestEmail" type="email" name="email" required autocomplete="email">
-        <label for="guestPhone">Phone number <span style="font-weight:400;text-transform:none">(optional)</span></label><input id="guestPhone" type="tel" name="phone" autocomplete="tel">
-        <label for="guestsCount">Number of guests <span style="font-weight:400;text-transform:none">(optional)</span></label><input id="guestsCount" type="number" name="guestsCount" min="1" max="8">
         <div class="website-field" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
-        <label for="guestMessage">Your message</label><textarea id="guestMessage" name="message">Hello, I am interested in staying at Villa Tullia.</textarea>
-        <button class="email-button" type="submit"><i class="bi bi-envelope"></i> Send email enquiry</button>
+        <input id="guestMessage" type="hidden" name="message" value="Hello, I am interested in staying at Villa Tullia.">
+        <button class="email-button" type="submit"><i class="bi bi-envelope"></i> Send enquiry</button>
         <p class="privacy-copy">We use these details only to respond to your stay enquiry. See our <a href="privacy.html" target="_blank">privacy notice</a>.</p>
         <p id="emailStatus" class="email-status" role="status" aria-live="polite"></p>
       </form>
+        <div class="contact-divider"><span>or</span></div><button id="inquireButton" class="inquire" type="button"><i class="bi bi-whatsapp"></i> Contact us on WhatsApp</button>
         <div id="enquirySuccess" class="enquiry-success" hidden tabindex="-1" role="status" aria-live="polite"><span class="enquiry-success-icon"><i class="bi bi-check-lg"></i></span><strong>Enquiry sent successfully</strong><p>Your request is safely recorded. We have also notified Villa Tullia and will reply to you personally.</p><span class="enquiry-reference">Reference: <span id="enquiryReference"></span></span></div>
         <button id="changeDates" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change selected week</button></section>
       </div></div>
@@ -164,9 +166,8 @@
       const weeksElement = document.getElementById('weeks');
       const monthTitle = document.getElementById('monthTitle');
       const selectionDate = document.getElementById('selectionDate');
+      const selectionPrice = document.getElementById('selectionPrice');
       const inquireButton = document.getElementById('inquireButton');
-      const continueButton = document.getElementById('continueButton');
-      const emailToggle = document.getElementById('emailToggle');
       const flowTrack = document.getElementById('flowTrack');
       const flowWindow = document.querySelector('.flow-window');
       const flowCount = document.getElementById('flowCount');
@@ -176,7 +177,6 @@
       const bookingFlow = document.getElementById('bookingFlow');
       const backToYears = document.getElementById('backToYears');
       const backToMonths = document.getElementById('backToMonths');
-      const changeWeek = document.getElementById('changeWeek');
       const changeDates = document.getElementById('changeDates');
       const previousButton = document.getElementById('previousMonth');
       const nextButton = document.getElementById('nextMonth');
@@ -187,6 +187,7 @@
       const emailCheckOut = document.getElementById('emailCheckOut');
       const emailForm = document.getElementById('emailEnquiry');
       const emailStatus = document.getElementById('emailStatus');
+      const guestMessage = document.getElementById('guestMessage');
       const enquirySuccess = document.getElementById('enquirySuccess');
       const enquiryReference = document.getElementById('enquiryReference');
       let activeFlowStep = 0;
@@ -201,7 +202,7 @@
       const setFlowStep = (step, shouldScroll = false) => {
         activeFlowStep = step;
         flowTrack.style.transform = `translateX(-${step * 100}%)`;
-        flowCount.textContent = `Step ${step + 1} of 5`;
+        flowCount.textContent = `Step ${step + 1} of 4`;
         flowDots.forEach((dot, index) => {
           dot.classList.toggle('is-active', index === step);
           dot.classList.toggle('is-done', index < step);
@@ -212,13 +213,14 @@
       const setSelectedWeek = (week) => {
         selectedWeek = week;
         selectionDate.textContent = `${formatDate(week.start)} – ${formatDate(new Date(week.end - oneDay))}`;
+        selectionPrice.textContent = week.price ? `7 nights · ${formatPrice(week.price)} direct total` : '7 nights · Price confirmed personally';
         emailWeek.value = selectionDate.textContent;
         emailCheckIn.value = toIsoDate(week.start);
         emailCheckOut.value = toIsoDate(week.end);
+        guestMessage.value = `Hello, I am interested in staying at Villa Tullia from ${formatDate(week.start)} to ${formatDate(new Date(week.end - oneDay))}.`;
         selectionDate.classList.remove('selection-empty');
-        emailForm.hidden = true;
+        emailForm.hidden = false;
         enquirySuccess.hidden = true;
-        emailToggle.hidden = false;
         renderWeeks();
         setFlowStep(3, true);
       };
@@ -300,23 +302,7 @@
       nextButton.addEventListener('click', () => { visibleMonth = monthOffset(1); renderWeeks(); setFlowStep(2); });
       backToYears.addEventListener('click', () => setFlowStep(0, true));
       backToMonths.addEventListener('click', () => setFlowStep(1));
-      changeWeek.addEventListener('click', () => setFlowStep(2));
       changeDates.addEventListener('click', () => setFlowStep(2));
-      continueButton.addEventListener('click', () => {
-        if (!selectedWeek) return;
-        cro.track('contact_step_reached');
-        setFlowStep(4);
-      });
-      emailToggle.addEventListener('click', () => {
-        cro.track('email_form_started');
-        emailForm.hidden = false;
-        enquirySuccess.hidden = true;
-        emailStatus.className = 'email-status';
-        emailStatus.textContent = '';
-        emailToggle.innerHTML = '<i class="bi bi-envelope-open"></i> Email form open below';
-        fitFlow();
-        document.getElementById('guestName').focus({ preventScroll: false });
-      });
       window.addEventListener('resize', fitFlow);
       inquireButton.addEventListener('click', () => {
         if (!selectedWeek) return;
@@ -332,7 +318,6 @@
         submitButton.disabled = true;
         try {
           const payload = Object.fromEntries(new FormData(emailForm).entries());
-          if (!payload.guestsCount) delete payload.guestsCount;
           const response = await fetch('/api/enquiries', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(payload) });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || 'Could not send enquiry');
@@ -341,7 +326,6 @@
           emailStatus.textContent = '';
           enquiryReference.textContent = data.reference;
           emailForm.hidden = true;
-          emailToggle.hidden = true;
           enquirySuccess.hidden = false;
           emailForm.reset();
           emailWeek.value = selectedWeek ? selectionDate.textContent : 'General enquiry';
