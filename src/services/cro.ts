@@ -197,6 +197,8 @@ export function croDashboard(db: Database, siteId: string) {
     gallery_opened:'Opened gallery', gallery_interacted:'Used gallery', reviews_viewed:'Viewed reviews',
     reviews_interacted:'Used reviews', section_viewed:'Viewed section', scroll_depth_reached:'Reached scroll depth',
     language_suggestion_shown:'Saw language suggestion', language_selected:'Changed language',
+    returning_visit:'Returned to the website', returning_prompt_shown:'Saw welcome-back prompt',
+    returning_prompt_clicked:'Used welcome-back prompt', returning_prompt_dismissed:'Dismissed welcome-back prompt',
   };
   const formatJourneyTime = (value:string) => new Intl.DateTimeFormat('en-GB', {
     timeZone:'Europe/Rome', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit',

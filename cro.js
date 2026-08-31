@@ -7,8 +7,13 @@
   const uuid = () => crypto.randomUUID();
   const read = (key, storage) => { try { return storage.getItem(key); } catch { return null; } };
   const write = (key, value, storage) => { try { storage.setItem(key, value); } catch {} };
-  let visitorId = read('cro_visitor_id', localStorage) || uuid(); write('cro_visitor_id', visitorId, localStorage);
+  const existingVisitorId = read('cro_visitor_id', localStorage);
+  let visitorId = existingVisitorId || uuid(); write('cro_visitor_id', visitorId, localStorage);
   let sessionId = read('cro_session_id', sessionStorage) || uuid(); write('cro_session_id', sessionId, sessionStorage);
+  const firstSessionKey = `cro_first_session_${siteId}`;
+  const firstSessionId = read(firstSessionKey, localStorage);
+  const isReturningVisitor = firstSessionId ? firstSessionId !== sessionId : Boolean(existingVisitorId);
+  if (!firstSessionId) write(firstSessionKey, existingVisitorId ? 'prior-session' : sessionId, localStorage);
   const params = new URLSearchParams(location.search);
   const firstTouchKey = `cro_utm_${siteId}`;
   let utm = {}; try { utm = JSON.parse(read(firstTouchKey, localStorage) || '{}'); } catch {}
@@ -52,6 +57,11 @@
   });
   global.addEventListener('pagehide', () => { settleVisibleTime(); reportVisitDuration(); });
   global.setInterval(() => { if (document.visibilityState === 'visible') reportVisitDuration(); }, 30000);
-  global.cro={track,trackOnce,visitorId,sessionId};
+  global.cro={track,trackOnce,visitorId,sessionId,isReturningVisitor};
   track('page_view');
+  const returningTrackedKey = `cro_returning_tracked_${siteId}`;
+  if (isReturningVisitor && !read(returningTrackedKey, sessionStorage)) {
+    write(returningTrackedKey, '1', sessionStorage);
+    track('returning_visit');
+  }
 })(window);

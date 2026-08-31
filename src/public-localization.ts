@@ -14,21 +14,21 @@ const routes = {
 const common: Record<PublicLocale, Array<[string, string]>> = {
   nl: [
     ['Language', 'Taal'], ['Book direct', 'Direct boeken'], ['Availability', 'Beschikbaarheid'], ['Email enquiry', 'Aanvraag per e-mail'], ['Local guide', 'Lokale gids'],
-    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'],
+    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'], ['Dismiss', 'Sluiten'],
     ['Previous review', 'Vorige beoordeling'], ['Next review', 'Volgende beoordeling'], ['Verified Booking.com guest', 'Geverifieerde gast van Booking.com'], ['Verified Vrbo guest', 'Geverifieerde gast van Vrbo'],
   ],
   de: [
     ['Language', 'Sprache'],
     ['Book direct', 'Direkt buchen'], ['Availability', 'Verfügbarkeit'], ['Email enquiry', 'E-Mail-Anfrage'], ['Local guide', 'Reiseführer'],
     ['Privacy notice', 'Datenschutzerklärung'], ['Privacy', 'Datenschutz'], ['Villa home', 'Zur Villa'],
-    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
+    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Dismiss', 'Schließen'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
     ['Verified Booking.com guest', 'Verifizierter Booking.com-Gast'], ['Verified Vrbo guest', 'Verifizierter Vrbo-Gast'],
   ],
   it: [
     ['Language', 'Lingua'],
     ['Book direct', 'Prenota direttamente'], ['Availability', 'Disponibilità'], ['Email enquiry', 'Richiesta via e-mail'], ['Local guide', 'Guida locale'],
     ['Privacy notice', 'Informativa sulla privacy'], ['Villa home', 'Torna alla villa'],
-    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
+    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Dismiss', 'Chiudi'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
     ['Verified Booking.com guest', 'Ospite verificato Booking.com'], ['Verified Vrbo guest', 'Ospite verificato Vrbo'],
   ],
 };
@@ -115,6 +115,22 @@ home.it.unshift(
   ['The veranda', 'La veranda'], ['Pool days', 'Giornate in piscina'], ['Living room', 'Soggiorno'], ['Long lunches', 'Lunghi pranzi'], ['Rest well', 'Dolce riposo'], ['Fresh starts', 'Un nuovo giorno'], ['Evening barbecue', 'Barbecue serale'], ['Private garden', 'Giardino privato'], ['For family time', 'Tempo in famiglia'], ['Slow afternoons', 'Pomeriggi lenti'], ['Inside Villa Tullia', 'Dentro Villa Tullia'], ['A place to unwind', 'Un luogo dove rilassarsi'], ['Kitchen details', 'Dettagli della cucina'], ['A restful corner', 'Un angolo di quiete'], ['A quiet bedroom', 'Una camera tranquilla'], ['Bathroom details', 'Dettagli del bagno'], ['A little comfort', 'Un po’ di comfort'], ['Everything in its place', 'Tutto al suo posto'], ['More room to settle in', 'Ancora più spazio'], ['A tucked-away corner', 'Un angolo appartato'], ['Villa details', 'Dettagli della villa'], ['Garden views', 'Vista sul giardino'], ['Small details', 'Piccoli dettagli'], ['At home, even away', 'Come a casa, anche in vacanza'], ['Room for family', 'Spazio per la famiglia'],
 );
 
+home.nl.unshift(
+  ['Welcome back', 'Welkom terug'], ['Still considering Villa Tullia?', 'Denkt u nog aan Villa Tullia?'],
+  ['See the latest availability, or ask us anything. Your enquiry is personal and non-binding.', 'Bekijk de actuele beschikbaarheid of stel ons gerust een vraag. Uw aanvraag is persoonlijk en vrijblijvend.'],
+  ['Continue your enquiry', 'Ga verder met uw aanvraag'], ['Ask a question', 'Stel een vraag'],
+);
+home.de.unshift(
+  ['Welcome back', 'Willkommen zurück'], ['Still considering Villa Tullia?', 'Denken Sie noch über Villa Tullia nach?'],
+  ['See the latest availability, or ask us anything. Your enquiry is personal and non-binding.', 'Sehen Sie die aktuelle Verfügbarkeit oder fragen Sie uns einfach. Ihre Anfrage ist persönlich und unverbindlich.'],
+  ['Continue your enquiry', 'Anfrage fortsetzen'], ['Ask a question', 'Frage stellen'],
+);
+home.it.unshift(
+  ['Welcome back', 'Bentornato'], ['Still considering Villa Tullia?', 'Stai ancora pensando a Villa Tullia?'],
+  ['See the latest availability, or ask us anything. Your enquiry is personal and non-binding.', 'Controlla la disponibilità aggiornata o chiedici qualsiasi cosa. La richiesta è personale e non vincolante.'],
+  ['Continue your enquiry', 'Continua la richiesta'], ['Ask a question', 'Fai una domanda'],
+);
+
 const availability: Record<PublicLocale, Array<[string, string]>> = {
   nl: [
     ['Check live weekly availability and enquire directly for Villa Tullia, a four-bedroom Lake Garda holiday villa in Padenghe sul Garda for up to 8 guests.', 'Bekijk de actuele beschikbaarheid per week en vraag Villa Tullia direct aan: een vakantievilla met vier slaapkamers aan het Gardameer in Padenghe sul Garda voor maximaal 8 gasten.'], ['Lake Garda Villa Availability | Villa Tullia', 'Beschikbaarheid villa Gardameer | Villa Tullia'], ['Check Villa Tullia Availability', 'Bekijk de beschikbaarheid van Villa Tullia'], ['Choose an available week and enquire directly for Villa Tullia on Lake Garda.', 'Kies een beschikbare week en vraag Villa Tullia aan het Gardameer direct aan.'],
@@ -136,6 +152,9 @@ const availability: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 availability.nl.unshift(
+  ['Welcome back', 'Welkom terug'], ['Still planning your Lake Garda stay?', 'Plant u nog steeds uw verblijf aan het Gardameer?'],
+  ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'Uw aanvraag is persoonlijk en vrijblijvend. Ga verder waar u gebleven was zodra u er klaar voor bent.'],
+  ['Continue your enquiry', 'Ga verder met uw aanvraag'],
   ['Step 1 of 4', 'Stap 1 van 4'], ['Step ${step + 1} of 4', 'Stap ${step + 1} van 4'],
   ['Step 1 · Choose a year', 'Stap 1 · Kies een jaar'], ['Step 3 · Pick a week', 'Stap 3 · Kies een week'], ['Step 4 · Your enquiry', 'Stap 4 · Uw aanvraag'],
   ['Your stay at a glance.', 'Uw verblijf in één oogopslag.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Laat uw naam en e-mailadres achter. Wij bevestigen persoonlijk de beschikbaarheid en de volgende stappen.'],
@@ -145,6 +164,9 @@ availability.nl.unshift(
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
+  ['Welcome back', 'Willkommen zurück'], ['Still planning your Lake Garda stay?', 'Planen Sie noch Ihren Aufenthalt am Gardasee?'],
+  ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'Ihre Anfrage ist persönlich und unverbindlich. Setzen Sie einfach dort fort, wo Sie aufgehört haben.'],
+  ['Continue your enquiry', 'Anfrage fortsetzen'],
   ['Step 1 of 4', 'Schritt 1 von 4'], ['Step ${step + 1} of 4', 'Schritt ${step + 1} von 4'],
   ['Step 1 · Choose a year', 'Schritt 1 · Jahr wählen'], ['Step 3 · Pick a week', 'Schritt 3 · Woche wählen'], ['Step 4 · Your enquiry', 'Schritt 4 · Ihre Anfrage'],
   ['Your stay at a glance.', 'Ihr Aufenthalt auf einen Blick.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Hinterlassen Sie Ihren Namen und Ihre E-Mail-Adresse. Wir bestätigen die Verfügbarkeit und die nächsten Schritte persönlich.'],
@@ -159,6 +181,9 @@ availability.de.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Buchen Sie hier direkt und bei Ihrer Ankunft wartet ein Willkommensgeschenk auf Sie.'],
 );
 availability.it.unshift(
+  ['Welcome back', 'Bentornato'], ['Still planning your Lake Garda stay?', 'Stai ancora organizzando il tuo soggiorno sul Lago di Garda?'],
+  ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'La richiesta è personale e non vincolante. Quando vuoi, riprendi da dove avevi lasciato.'],
+  ['Continue your enquiry', 'Continua la richiesta'],
   ['Step 1 of 4', 'Passaggio 1 di 4'], ['Step ${step + 1} of 4', 'Passaggio ${step + 1} di 4'],
   ['Step 1 · Choose a year', 'Passaggio 1 · Scegli l’anno'], ['Step 3 · Pick a week', 'Passaggio 3 · Scegli la settimana'], ['Step 4 · Your enquiry', 'Passaggio 4 · La tua richiesta'],
   ['Your stay at a glance.', 'Il tuo soggiorno in sintesi.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Lascia nome e indirizzo e-mail: confermeremo personalmente la disponibilità e i prossimi passi.'],

@@ -62,8 +62,9 @@
     .booking-assurance strong { color:var(--ink); }
     .booking-assurance-featured { border-left:4px solid var(--terracotta); background:#fff6f0; }
     .welcome-note { display:block; margin-top:7px; color:var(--forest); font-weight:700; }
+    .returning-prompt { position:fixed; z-index:30; left:21px; bottom:21px; width:min(410px,calc(100% - 42px)); padding:20px 48px 20px 20px; border-left:4px solid var(--terracotta); background:#fff; box-shadow:0 16px 48px rgba(9,32,28,.24); }.returning-prompt[hidden] { display:none; }.returning-prompt small,.returning-prompt strong { display:block; }.returning-prompt small { margin-bottom:3px; color:var(--terracotta); font-size:.65rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; }.returning-prompt strong { font:600 1.25rem/1.2 "Playfair Display",serif; }.returning-prompt p { margin:7px 0 14px; color:#5d6865; font-size:.8rem; line-height:1.5; }.returning-resume { min-height:38px; padding:0 13px; border:0; color:#fff; background:var(--forest); cursor:pointer; font:700 .67rem "DM Sans",sans-serif; letter-spacing:.07em; text-transform:uppercase; }.returning-close { position:absolute; top:10px; right:10px; display:grid; width:30px; height:30px; place-items:center; border:0; background:transparent; color:#65716d; cursor:pointer; font-size:1rem; }
     .amenities-open { display:flex; width:100%; align-items:center; justify-content:space-between; gap:16px; margin-top:12px; padding:12px 13px; border:1px solid var(--line); color:var(--forest); background:#fff; cursor:pointer; font:700 .68rem "DM Sans",sans-serif; letter-spacing:.09em; text-transform:uppercase; }.amenities-open:hover { border-color:var(--forest); background:#f1f7f3; }.amenities-open i { color:var(--terracotta); font-size:1rem; }.amenities-dialog { width:min(900px,calc(100% - 32px)); max-height:min(84vh,820px); padding:0; border:0; color:var(--ink); background:var(--cream); box-shadow:0 28px 80px rgba(9,32,28,.32); }.amenities-dialog::backdrop { background:rgba(9,32,28,.72); backdrop-filter:blur(4px); }.amenities-dialog-header { position:sticky; z-index:1; top:0; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:25px 30px 20px; border-bottom:1px solid var(--line); background:var(--cream); }.amenities-dialog-kicker { margin-bottom:7px; color:var(--terracotta); font-size:.65rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }.amenities-dialog-header h2 { margin:0; font:600 clamp(2rem,4vw,3rem)/1.05 "Playfair Display",serif; }.amenities-close { flex:0 0 auto; width:42px; height:42px; border:1px solid var(--line); border-radius:50%; color:var(--ink); background:#fff; cursor:pointer; font-size:1.35rem; }.all-amenities-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 26px; margin:0; padding:24px 30px 32px; list-style:none; color:#53625f; font-size:.86rem; }.all-amenities-list li { display:flex; align-items:center; gap:11px; min-width:0; padding:13px 0; border-bottom:1px solid var(--line); }.all-amenities-list i { flex:0 0 22px; color:var(--terracotta); font-size:1.05rem; text-align:center; }
-    @media (max-width:820px) { .amenities-dialog { width:calc(100% - 20px); max-height:90vh; }.amenities-dialog-header { padding:20px 18px 16px; }.all-amenities-list { grid-template-columns:1fr; padding:12px 20px 24px; } }
+    @media (max-width:820px) { .amenities-dialog { width:calc(100% - 20px); max-height:90vh; }.amenities-dialog-header { padding:20px 18px 16px; }.all-amenities-list { grid-template-columns:1fr; padding:12px 20px 24px; }.returning-prompt { left:12px; bottom:12px; width:calc(100% - 24px); } }
   </style>
 </head>
 <body>
@@ -102,10 +103,11 @@
       <p id="syncStatus" class="calendar-note">Checking live calendar…</p>
     </aside>
   </main>
+  <aside id="returningPrompt" class="returning-prompt" hidden aria-live="polite"><button id="returningPromptClose" class="returning-close" type="button" aria-label="Dismiss"><i class="bi bi-x-lg"></i></button><small>Welcome back</small><strong id="returningPromptTitle">Still planning your Lake Garda stay?</strong><p id="returningPromptCopy">Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.</p><button id="returningPromptResume" class="returning-resume" type="button">Continue your enquiry</button></aside>
   <dialog class="amenities-dialog" id="amenitiesDialog" aria-labelledby="amenitiesDialogTitle"><div class="amenities-dialog-header"><div><div class="amenities-dialog-kicker">Everything you need</div><h2 id="amenitiesDialogTitle">All amenities</h2></div><button class="amenities-close" type="button" aria-label="Close amenities"><i class="bi bi-x-lg"></i></button></div><ul class="all-amenities-list"><li><i class="bi bi-cup-hot"></i>Kitchen</li><li><i class="bi bi-droplet"></i>Bidet</li><li><i class="bi bi-water"></i>Washing machine</li><li><i class="bi bi-badge-wc"></i>Toilet</li><li><i class="bi bi-house-heart"></i>Sofa</li><li><i class="bi bi-fire"></i>Fireplace</li><li><i class="bi bi-droplet-half"></i>Bath or shower</li><li><i class="bi bi-grid-3x3-gap"></i>Hardwood or parquet floors</li><li><i class="bi bi-plug"></i>Socket near the bed</li><li><i class="bi bi-grid"></i>Tile/marble floor</li><li><i class="bi bi-laptop"></i>Desk</li><li><i class="bi bi-person-arms-up"></i>Children's high chair</li><li><i class="bi bi-lamp"></i>Seating area</li><li><i class="bi bi-door-open"></i>Private entrance</li><li><i class="bi bi-tv"></i>TV</li><li><i class="bi bi-snow2"></i>Refrigerator</li><li><i class="bi bi-thermometer-high"></i>Ironing facilities</li><li><i class="bi bi-cup-hot"></i>Tea/Coffee maker</li><li><i class="bi bi-triangle"></i>Iron</li><li><i class="bi bi-box"></i>Microwave</li><li><i class="bi bi-thermometer-sun"></i>Heating</li><li><i class="bi bi-wind"></i>Hairdryer</li><li><i class="bi bi-egg-fried"></i>Kitchenware</li><li><i class="bi bi-cup-straw"></i>Kitchenette</li><li><i class="bi bi-arrows-expand"></i>Extra long beds (&gt; 80 inches)</li><li><i class="bi bi-stack"></i>Towels and bed sheets</li><li><i class="bi bi-cup"></i>Electric kettle</li><li><i class="bi bi-tree"></i>Outdoor furniture</li><li><i class="bi bi-sun"></i>Outdoor dining area</li><li><i class="bi bi-door-closed"></i>Wardrobe or closet</li><li><i class="bi bi-box2"></i>Oven</li><li><i class="bi bi-fire"></i>Stovetop</li><li><i class="bi bi-bread-slice"></i>Toaster</li><li><i class="bi bi-people"></i>Dining area</li><li><i class="bi bi-layout-text-window"></i>Dining table</li><li><i class="bi bi-ladder"></i>Upper floors accessible by stairs only</li><li><i class="bi bi-house"></i>Detached</li><li><i class="bi bi-person-standing-dress"></i>Clothes rack</li><li><i class="bi bi-wind"></i>Drying rack for clothing</li><li><i class="bi bi-paperclip"></i>Toilet paper</li><li><i class="bi bi-moon-stars"></i>Sofa bed</li><li><i class="bi bi-shield-check"></i>Carbon monoxide detector</li></ul></dialog>
   <footer class="site-footer"><span>© 2026 Villa Tullia · Padenghe sul Garda</span><span class="footer-links"><a href="index.html">Villa home</a><a href="https://wa.me/393466733267" target="_blank" rel="noopener">WhatsApp</a></span></footer>
   <script>window.CRO_CONFIG={siteId:'villa-tullia',debug:location.hostname==='localhost'||location.hostname==='127.0.0.1'};</script>
-  <script src="/cro.js"></script>
+  <script src="/cro.js?v=20260831-returning"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       cro.track('availability_page_view');
@@ -190,6 +192,12 @@
       const guestMessage = document.getElementById('guestMessage');
       const enquirySuccess = document.getElementById('enquirySuccess');
       const enquiryReference = document.getElementById('enquiryReference');
+      const returningPrompt = document.getElementById('returningPrompt');
+      const returningPromptTitle = document.getElementById('returningPromptTitle');
+      const returningPromptResume = document.getElementById('returningPromptResume');
+      const returningPromptClose = document.getElementById('returningPromptClose');
+      let savedWeek;
+      try { savedWeek = JSON.parse(localStorage.getItem('villa_selected_week') || 'null'); } catch {}
       let activeFlowStep = 0;
 
       const monthOffset = (amount) => new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + amount, 1);
@@ -218,6 +226,7 @@
         emailCheckIn.value = toIsoDate(week.start);
         emailCheckOut.value = toIsoDate(week.end);
         guestMessage.value = `Hello, I am interested in staying at Villa Tullia from ${formatDate(week.start)} to ${formatDate(new Date(week.end - oneDay))}.`;
+        try { localStorage.setItem('villa_selected_week', JSON.stringify({ checkIn:toIsoDate(week.start), checkOut:toIsoDate(week.end) })); } catch {}
         selectionDate.classList.remove('selection-empty');
         emailForm.hidden = false;
         enquirySuccess.hidden = true;
@@ -225,6 +234,19 @@
         cro.track('contact_step_reached');
         setFlowStep(3, true);
       };
+      const showReturningPrompt = () => {
+        if (!returningPrompt || !cro.isReturningVisitor) return;
+        try { if (sessionStorage.getItem('villa_returning_prompt_dismissed') || localStorage.getItem('villa_enquiry_completed')) return; } catch {}
+        const previousWeek = savedWeek?.checkIn ? inventory.find((week) => toIsoDate(week.start) === savedWeek.checkIn && week.status === 'available' && week.start >= today) : null;
+        if (previousWeek) returningPromptTitle.textContent = `${formatDate(previousWeek.start)} – ${formatDate(new Date(previousWeek.end - oneDay))}`;
+        window.setTimeout(() => { returningPrompt.hidden = false; cro.track('returning_prompt_shown', { placement:'availability', hasSavedWeek:Boolean(previousWeek) }); }, 900);
+        returningPromptResume.onclick = () => {
+          returningPrompt.hidden = true;
+          cro.track('returning_prompt_clicked', { placement:'availability', action:previousWeek ? 'resume_week' : 'choose_dates', hasSavedWeek:Boolean(previousWeek) });
+          if (previousWeek) setSelectedWeek(previousWeek); else { setFlowStep(0, true); bookingFlow.scrollIntoView({ behavior:'smooth', block:'start' }); }
+        };
+      };
+      returningPromptClose?.addEventListener('click', () => { returningPrompt.hidden = true; try { sessionStorage.setItem('villa_returning_prompt_dismissed','1'); } catch {} cro.track('returning_prompt_dismissed', { placement:'availability' }); });
       const renderYearChoices = () => {
         const years = [...new Set(inventory.map((week) => week.start.getFullYear()))];
         yearChoices.innerHTML = '';
@@ -326,6 +348,8 @@
           cro.track('enquiry_completed', { method:'email' });
           emailStatus.textContent = '';
           enquiryReference.textContent = data.reference;
+          try { localStorage.setItem('villa_enquiry_completed','1'); localStorage.removeItem('villa_selected_week'); } catch {}
+          returningPrompt.hidden = true;
           emailForm.hidden = true;
           enquirySuccess.hidden = false;
           emailForm.reset();
@@ -346,8 +370,9 @@
           inventory = buildInventory(authoritativeBlocks, softBlocks, Array.isArray(data.localBlockedRanges) ? data.localBlockedRanges : [], Array.isArray(data.directRates) ? data.directRates : []);
           syncStatus.textContent = data.lastUpdated ? `Live calendar checked ${formatDate(new Date(data.lastUpdated), { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}.` : 'Live calendar connected.';
           renderWeeks();
+          showReturningPrompt();
         })
-        .catch(() => { syncStatus.textContent = 'Live calendar could not be reached; please check again shortly.'; renderWeeks(); });
+        .catch(() => { syncStatus.textContent = 'Live calendar could not be reached; please check again shortly.'; renderWeeks(); showReturningPrompt(); });
     });
   </script>
 </body>
