@@ -103,7 +103,7 @@
       <p id="syncStatus" class="calendar-note">Checking live calendar…</p>
     </aside>
   </main>
-  <aside id="returningPrompt" class="returning-prompt" hidden aria-live="polite"><button id="returningPromptClose" class="returning-close" type="button" aria-label="Dismiss"><i class="bi bi-x-lg"></i></button><small>Welcome back</small><strong id="returningPromptTitle">Still planning your Lake Garda stay?</strong><p id="returningPromptCopy">Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.</p><button id="returningPromptResume" class="returning-resume" type="button">Continue your enquiry</button></aside>
+  <aside id="returningPrompt" class="returning-prompt" hidden aria-live="polite"><button id="returningPromptClose" class="returning-close" type="button" aria-label="Dismiss"><i class="bi bi-x-lg"></i></button><small>Welcome back</small><strong id="returningPromptTitle">Still planning your Lake Garda stay?</strong><p id="returningPromptCopy">See the current available weeks or ask us anything. Your enquiry is personal and non-binding.</p><button id="returningPromptResume" class="returning-resume" type="button">See current availability</button></aside>
   <dialog class="amenities-dialog" id="amenitiesDialog" aria-labelledby="amenitiesDialogTitle"><div class="amenities-dialog-header"><div><div class="amenities-dialog-kicker">Everything you need</div><h2 id="amenitiesDialogTitle">All amenities</h2></div><button class="amenities-close" type="button" aria-label="Close amenities"><i class="bi bi-x-lg"></i></button></div><ul class="all-amenities-list"><li><i class="bi bi-cup-hot"></i>Kitchen</li><li><i class="bi bi-droplet"></i>Bidet</li><li><i class="bi bi-water"></i>Washing machine</li><li><i class="bi bi-badge-wc"></i>Toilet</li><li><i class="bi bi-house-heart"></i>Sofa</li><li><i class="bi bi-fire"></i>Fireplace</li><li><i class="bi bi-droplet-half"></i>Bath or shower</li><li><i class="bi bi-grid-3x3-gap"></i>Hardwood or parquet floors</li><li><i class="bi bi-plug"></i>Socket near the bed</li><li><i class="bi bi-grid"></i>Tile/marble floor</li><li><i class="bi bi-laptop"></i>Desk</li><li><i class="bi bi-person-arms-up"></i>Children's high chair</li><li><i class="bi bi-lamp"></i>Seating area</li><li><i class="bi bi-door-open"></i>Private entrance</li><li><i class="bi bi-tv"></i>TV</li><li><i class="bi bi-snow2"></i>Refrigerator</li><li><i class="bi bi-thermometer-high"></i>Ironing facilities</li><li><i class="bi bi-cup-hot"></i>Tea/Coffee maker</li><li><i class="bi bi-triangle"></i>Iron</li><li><i class="bi bi-box"></i>Microwave</li><li><i class="bi bi-thermometer-sun"></i>Heating</li><li><i class="bi bi-wind"></i>Hairdryer</li><li><i class="bi bi-egg-fried"></i>Kitchenware</li><li><i class="bi bi-cup-straw"></i>Kitchenette</li><li><i class="bi bi-arrows-expand"></i>Extra long beds (&gt; 80 inches)</li><li><i class="bi bi-stack"></i>Towels and bed sheets</li><li><i class="bi bi-cup"></i>Electric kettle</li><li><i class="bi bi-tree"></i>Outdoor furniture</li><li><i class="bi bi-sun"></i>Outdoor dining area</li><li><i class="bi bi-door-closed"></i>Wardrobe or closet</li><li><i class="bi bi-box2"></i>Oven</li><li><i class="bi bi-fire"></i>Stovetop</li><li><i class="bi bi-bread-slice"></i>Toaster</li><li><i class="bi bi-people"></i>Dining area</li><li><i class="bi bi-layout-text-window"></i>Dining table</li><li><i class="bi bi-ladder"></i>Upper floors accessible by stairs only</li><li><i class="bi bi-house"></i>Detached</li><li><i class="bi bi-person-standing-dress"></i>Clothes rack</li><li><i class="bi bi-wind"></i>Drying rack for clothing</li><li><i class="bi bi-paperclip"></i>Toilet paper</li><li><i class="bi bi-moon-stars"></i>Sofa bed</li><li><i class="bi bi-shield-check"></i>Carbon monoxide detector</li></ul></dialog>
   <footer class="site-footer"><span>© 2026 Villa Tullia · Padenghe sul Garda</span><span class="footer-links"><a href="index.html">Villa home</a><a href="https://wa.me/393466733267" target="_blank" rel="noopener">WhatsApp</a></span></footer>
   <script>window.CRO_CONFIG={siteId:'villa-tullia',debug:location.hostname==='localhost'||location.hostname==='127.0.0.1'};</script>
@@ -194,10 +194,13 @@
       const enquiryReference = document.getElementById('enquiryReference');
       const returningPrompt = document.getElementById('returningPrompt');
       const returningPromptTitle = document.getElementById('returningPromptTitle');
+      const returningPromptCopy = document.getElementById('returningPromptCopy');
       const returningPromptResume = document.getElementById('returningPromptResume');
       const returningPromptClose = document.getElementById('returningPromptClose');
       let savedWeek;
       try { savedWeek = JSON.parse(localStorage.getItem('villa_selected_week') || 'null'); } catch {}
+      let bookingProgress;
+      try { bookingProgress = JSON.parse(localStorage.getItem('villa_booking_progress') || 'null'); } catch {}
       let activeFlowStep = 0;
 
       const monthOffset = (amount) => new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + amount, 1);
@@ -238,12 +241,30 @@
         if (!returningPrompt || !cro.isReturningVisitor) return;
         try { if (sessionStorage.getItem('villa_returning_prompt_dismissed') || localStorage.getItem('villa_enquiry_completed')) return; } catch {}
         const previousWeek = savedWeek?.checkIn ? inventory.find((week) => toIsoDate(week.start) === savedWeek.checkIn && week.status === 'available' && week.start >= today) : null;
-        if (previousWeek) returningPromptTitle.textContent = `${formatDate(previousWeek.start)} – ${formatDate(new Date(previousWeek.end - oneDay))}`;
-        window.setTimeout(() => { returningPrompt.hidden = false; cro.track('returning_prompt_shown', { placement:'availability', hasSavedWeek:Boolean(previousWeek) }); }, 900);
+        const hasDateProgress = !previousWeek && bookingProgress?.stage === 'dates';
+        if (previousWeek) {
+          returningPromptTitle.textContent = `${formatDate(previousWeek.start)} – ${formatDate(new Date(previousWeek.end - oneDay))}`;
+          returningPromptCopy.textContent = 'Your chosen week is ready. Continue to the short, non-binding enquiry form whenever you are ready.';
+          returningPromptResume.textContent = 'Continue your enquiry';
+        } else if (hasDateProgress) {
+          returningPromptTitle.textContent = 'You were choosing your dates.';
+          returningPromptCopy.textContent = 'Pick up where you left off and see the available weeks. Your enquiry remains non-binding.';
+          returningPromptResume.textContent = 'Continue choosing dates';
+        }
+        const promptState = previousWeek ? 'selected_week' : hasDateProgress ? 'choosing_dates' : 'no_progress';
+        window.setTimeout(() => { returningPrompt.hidden = false; cro.track('returning_prompt_shown', { placement:'availability', state:promptState }); }, 900);
         returningPromptResume.onclick = () => {
           returningPrompt.hidden = true;
-          cro.track('returning_prompt_clicked', { placement:'availability', action:previousWeek ? 'resume_week' : 'choose_dates', hasSavedWeek:Boolean(previousWeek) });
-          if (previousWeek) setSelectedWeek(previousWeek); else { setFlowStep(0, true); bookingFlow.scrollIntoView({ behavior:'smooth', block:'start' }); }
+          cro.track('returning_prompt_clicked', { placement:'availability', action:previousWeek ? 'resume_week' : hasDateProgress ? 'resume_dates' : 'see_availability', state:promptState });
+          if (previousWeek) setSelectedWeek(previousWeek);
+          else if (hasDateProgress) {
+            const progressYear = Number(bookingProgress.year);
+            const progressMonth = Number(bookingProgress.month);
+            if (inventory.some((week) => week.start.getFullYear() === progressYear)) selectedYear = progressYear;
+            if (Number.isInteger(progressMonth) && progressMonth >= 1 && progressMonth <= 12) visibleMonth = new Date(selectedYear, progressMonth - 1, 1);
+            renderWeeks();
+            setFlowStep(Number.isInteger(progressMonth) ? 2 : 1, true);
+          } else { setFlowStep(0, true); bookingFlow.scrollIntoView({ behavior:'smooth', block:'start' }); }
         };
       };
       returningPromptClose?.addEventListener('click', () => { returningPrompt.hidden = true; try { sessionStorage.setItem('villa_returning_prompt_dismissed','1'); } catch {} cro.track('returning_prompt_dismissed', { placement:'availability' }); });
@@ -260,6 +281,8 @@
           button.innerHTML = `<strong>${year}</strong><small>${openCount ? `${openCount} open ${openCount === 1 ? 'week' : 'weeks'}` : 'No open weeks'}</small>`;
           button.addEventListener('click', () => {
             selectedYear = year;
+            bookingProgress = { stage:'dates', year };
+            try { localStorage.setItem('villa_booking_progress', JSON.stringify(bookingProgress)); } catch {}
             cro.track('year_selected', { year });
             const firstOpenWeek = yearWeeks.find((week) => week.status === 'available' && week.start >= today);
             visibleMonth = new Date(firstOpenWeek.start.getFullYear(), firstOpenWeek.start.getMonth(), 1);
@@ -287,6 +310,8 @@
           button.innerHTML = `<strong>${formatDate(month, { month:'short', year:'numeric' })}</strong><small>${openCount ? `${openCount} open ${openCount === 1 ? 'week' : 'weeks'}` : 'No open weeks'}</small>`;
           button.addEventListener('click', () => {
             visibleMonth = month;
+            bookingProgress = { stage:'dates', year:month.getFullYear(), month:month.getMonth()+1 };
+            try { localStorage.setItem('villa_booking_progress', JSON.stringify(bookingProgress)); } catch {}
             cro.track('month_selected', { year:month.getFullYear(), month:month.getMonth()+1 });
             renderWeeks();
             setFlowStep(2);
@@ -348,7 +373,7 @@
           cro.track('enquiry_completed', { method:'email' });
           emailStatus.textContent = '';
           enquiryReference.textContent = data.reference;
-          try { localStorage.setItem('villa_enquiry_completed','1'); localStorage.removeItem('villa_selected_week'); } catch {}
+          try { localStorage.setItem('villa_enquiry_completed','1'); localStorage.removeItem('villa_selected_week'); localStorage.removeItem('villa_booking_progress'); } catch {}
           returningPrompt.hidden = true;
           emailForm.hidden = true;
           enquirySuccess.hidden = false;
