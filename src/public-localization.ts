@@ -87,14 +87,12 @@ const home: Record<PublicLocale, Array<[string, string]>> = {
 home.nl.unshift(
   ['See weekly prices from €2,975', 'Bekijk weekprijzen vanaf €2.975'],
   ['Save €368–€646 per week', 'Bespaar €368–€646 per week'],
-  ['Compared with Villa Tullia’s lowest non-refundable Booking.com prices checked 26 August 2026.', 'Vergeleken met de laagste niet-restitueerbare Booking.com-prijzen van Villa Tullia, gecontroleerd op 26 augustus 2026.'],
-  ['See every week.', 'Bekijk elke week.'],
+  ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Vergeleken met de laagste prijzen van Villa Tullia op boekingsplatforms.'],
 );
 home.de.unshift(
   ['See weekly prices from €2,975', 'Wochenpreise ab 2.975 € ansehen'],
   ['Save €368–€646 per week', 'Sparen Sie 368–646 € pro Woche'],
-  ['Compared with Villa Tullia’s lowest non-refundable Booking.com prices checked 26 August 2026.', 'Verglichen mit den günstigsten nicht erstattungsfähigen Booking.com-Preisen der Villa Tullia, geprüft am 26. August 2026.'],
-  ['See every week.', 'Alle Wochen ansehen.'],
+  ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Verglichen mit den niedrigsten Preisen der Villa Tullia auf Buchungsplattformen.'],
   ['Ask on WhatsApp', 'Auf WhatsApp fragen'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Guten%20Tag%2C%20ich%20interessiere%20mich%20für%20die%20Villa%20Tullia.'],
   ['Villa Tullia is made for slowing down.', 'Villa Tullia lädt zum Entschleunigen ein.'],
@@ -105,8 +103,7 @@ home.de.unshift(
 home.it.unshift(
   ['See weekly prices from €2,975', 'Prezzi settimanali da 2.975 €'],
   ['Save €368–€646 per week', 'Risparmia 368–646 € a settimana'],
-  ['Compared with Villa Tullia’s lowest non-refundable Booking.com prices checked 26 August 2026.', 'Confronto con i prezzi non rimborsabili più bassi di Villa Tullia su Booking.com verificati il 26 agosto 2026.'],
-  ['See every week.', 'Vedi tutte le settimane.'],
+  ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Rispetto ai prezzi più bassi di Villa Tullia sulle piattaforme di prenotazione.'],
   ['Ask on WhatsApp', 'Chiedi su WhatsApp'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Buongiorno%2C%20sono%20interessato%20a%20Villa%20Tullia.'],
   ['Villa Tullia is made for slowing down.', 'Villa Tullia è fatta per rallentare.'],
