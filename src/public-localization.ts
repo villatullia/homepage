@@ -14,21 +14,21 @@ const routes = {
 const common: Record<PublicLocale, Array<[string, string]>> = {
   nl: [
     ['Language', 'Taal'], ['Book direct', 'Direct boeken'], ['Availability', 'Beschikbaarheid'], ['Email enquiry', 'Aanvraag per e-mail'], ['Local guide', 'Lokale gids'],
-    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'], ['Dismiss', 'Sluiten'],
+    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'], ['Choose language', 'Kies taal'], ['Dismiss', 'Sluiten'],
     ['Previous review', 'Vorige beoordeling'], ['Next review', 'Volgende beoordeling'], ['Verified Booking.com guest', 'Geverifieerde gast van Booking.com'], ['Verified Vrbo guest', 'Geverifieerde gast van Vrbo'],
   ],
   de: [
     ['Language', 'Sprache'],
     ['Book direct', 'Direkt buchen'], ['Availability', 'Verfügbarkeit'], ['Email enquiry', 'E-Mail-Anfrage'], ['Local guide', 'Reiseführer'],
     ['Privacy notice', 'Datenschutzerklärung'], ['Privacy', 'Datenschutz'], ['Villa home', 'Zur Villa'],
-    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Dismiss', 'Schließen'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
+    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Choose language', 'Sprache wählen'], ['Dismiss', 'Schließen'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
     ['Verified Booking.com guest', 'Verifizierter Booking.com-Gast'], ['Verified Vrbo guest', 'Verifizierter Vrbo-Gast'],
   ],
   it: [
     ['Language', 'Lingua'],
     ['Book direct', 'Prenota direttamente'], ['Availability', 'Disponibilità'], ['Email enquiry', 'Richiesta via e-mail'], ['Local guide', 'Guida locale'],
     ['Privacy notice', 'Informativa sulla privacy'], ['Villa home', 'Torna alla villa'],
-    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Dismiss', 'Chiudi'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
+    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Choose language', 'Scegli la lingua'], ['Dismiss', 'Chiudi'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
     ['Verified Booking.com guest', 'Ospite verificato Booking.com'], ['Verified Vrbo guest', 'Ospite verificato Vrbo'],
   ],
 };
@@ -152,6 +152,7 @@ const availability: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 availability.nl.unshift(
+  ['We answer within 30 minutes.', 'We antwoorden binnen 30 minuten.'],
   ['Welcome back', 'Welkom terug'], ['Still planning your Lake Garda stay?', 'Plant u nog steeds uw verblijf aan het Gardameer?'],
   ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'Uw aanvraag is persoonlijk en vrijblijvend. Ga verder waar u gebleven was zodra u er klaar voor bent.'],
   ['See the current available weeks or ask us anything. Your enquiry is personal and non-binding.', 'Bekijk de momenteel beschikbare weken of stel ons gerust een vraag. Uw aanvraag is persoonlijk en vrijblijvend.'], ['See current availability', 'Bekijk de actuele beschikbaarheid'],
@@ -166,6 +167,7 @@ availability.nl.unshift(
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
+  ['We answer within 30 minutes.', 'Wir antworten innerhalb von 30 Minuten.'],
   ['Welcome back', 'Willkommen zurück'], ['Still planning your Lake Garda stay?', 'Planen Sie noch Ihren Aufenthalt am Gardasee?'],
   ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'Ihre Anfrage ist persönlich und unverbindlich. Setzen Sie einfach dort fort, wo Sie aufgehört haben.'],
   ['See the current available weeks or ask us anything. Your enquiry is personal and non-binding.', 'Sehen Sie die aktuell verfügbaren Wochen oder fragen Sie uns einfach. Ihre Anfrage ist persönlich und unverbindlich.'], ['See current availability', 'Aktuelle Verfügbarkeit ansehen'],
@@ -185,6 +187,7 @@ availability.de.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Buchen Sie hier direkt und bei Ihrer Ankunft wartet ein Willkommensgeschenk auf Sie.'],
 );
 availability.it.unshift(
+  ['We answer within 30 minutes.', 'Rispondiamo entro 30 minuti.'],
   ['Welcome back', 'Bentornato'], ['Still planning your Lake Garda stay?', 'Stai ancora organizzando il tuo soggiorno sul Lago di Garda?'],
   ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'La richiesta è personale e non vincolante. Quando vuoi, riprendi da dove avevi lasciato.'],
   ['See the current available weeks or ask us anything. Your enquiry is personal and non-binding.', 'Guarda le settimane attualmente disponibili o chiedici qualsiasi cosa. La richiesta è personale e non vincolante.'], ['See current availability', 'Vedi la disponibilità attuale'],
@@ -241,7 +244,8 @@ function alternates(page: Page, canonical: string) {
 
 function languageSwitcher(page: Page, locale: PublicLocale) {
   const links = (['en', 'de', 'it', 'nl'] as const).map((language) => `<a href="${routes[language][page]}" lang="${language}" hreflang="${language}"${language === locale ? ' aria-current="page"' : ''}>${language.toUpperCase()}</a>`).join('<span aria-hidden="true">·</span>');
-  return `<nav class="language-switcher" aria-label="Language">${links}</nav>`;
+  if (page === 'privacy') return `<nav class="language-switcher" aria-label="Language">${links}</nav>`;
+  return `<nav class="language-switcher" aria-label="Language"><button class="language-current" type="button" aria-label="Choose language" aria-expanded="false" aria-controls="languageOptions">${locale.toUpperCase()}<i class="bi bi-chevron-down" aria-hidden="true"></i></button><div class="language-options" id="languageOptions">${links}</div></nav>`;
 }
 
 export function localizedPublicPage(file: 'index.html' | 'calendarw.html' | 'privacy.html', locale: PublicLocale) {
