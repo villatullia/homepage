@@ -152,6 +152,7 @@ const availability: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 availability.nl.unshift(
+  ['Our season runs from May to October, with Saturday-to-Saturday stays.', 'Ons seizoen loopt van mei tot oktober, met verblijven van zaterdag tot zaterdag.'],
   ['We answer within 30 minutes.', 'We antwoorden binnen 30 minuten.'],
   ['Welcome back', 'Welkom terug'], ['Still planning your Lake Garda stay?', 'Plant u nog steeds uw verblijf aan het Gardameer?'],
   ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'Uw aanvraag is persoonlijk en vrijblijvend. Ga verder waar u gebleven was zodra u er klaar voor bent.'],
@@ -167,6 +168,7 @@ availability.nl.unshift(
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
+  ['Our season runs from May to October, with Saturday-to-Saturday stays.', 'Unsere Saison dauert von Mai bis Oktober, mit Aufenthalten von Samstag bis Samstag.'],
   ['We answer within 30 minutes.', 'Wir antworten innerhalb von 30 Minuten.'],
   ['Welcome back', 'Willkommen zurück'], ['Still planning your Lake Garda stay?', 'Planen Sie noch Ihren Aufenthalt am Gardasee?'],
   ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'Ihre Anfrage ist persönlich und unverbindlich. Setzen Sie einfach dort fort, wo Sie aufgehört haben.'],
@@ -187,6 +189,7 @@ availability.de.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Buchen Sie hier direkt und bei Ihrer Ankunft wartet ein Willkommensgeschenk auf Sie.'],
 );
 availability.it.unshift(
+  ['Our season runs from May to October, with Saturday-to-Saturday stays.', 'La stagione va da maggio a ottobre, con soggiorni da sabato a sabato.'],
   ['We answer within 30 minutes.', 'Rispondiamo entro 30 minuti.'],
   ['Welcome back', 'Bentornato'], ['Still planning your Lake Garda stay?', 'Stai ancora organizzando il tuo soggiorno sul Lago di Garda?'],
   ['Your enquiry is personal and non-binding. Continue where you left off whenever you are ready.', 'La richiesta è personale e non vincolante. Quando vuoi, riprendi da dove avevi lasciato.'],
