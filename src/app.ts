@@ -63,7 +63,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     allowedPath(pathName) {
       const normalized = pathName.replace(/^[/\\]+/, '').replace(/\\/g, '/');
       return (
-        ['index.html', 'calendarw.html', 'privacy.html', 'robots.txt', 'sitemap.xml', 'favicon.svg', 'testcam.html', 'CNAME', 'guide/things-to-do-padenghe-sul-garda/index.html'].includes(normalized) ||
+        ['index.html', 'calendarw.html', 'booking-process-test.html', 'privacy.html', 'robots.txt', 'sitemap.xml', 'favicon.svg', 'testcam.html', 'CNAME', 'guide/things-to-do-padenghe-sul-garda/index.html'].includes(normalized) ||
         normalized.startsWith('imgs/Foto/') ||
         normalized === 'imgs/flowers.jpg' || normalized === 'cro.js'
       );

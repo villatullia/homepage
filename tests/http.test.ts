@@ -25,7 +25,10 @@ describe('public HTTP surface', () => {
     const german = await app.inject({ method: 'GET', url: '/de/' });
     expect(german.statusCode).toBe(200);
     expect(german.body).toContain('<html lang="de"');
-    expect(german.body).toContain('Ferienvilla am Gardasee für 8 Personen');
+    expect(german.body).toContain('Villa in Padenghe nahe Sirmione');
+    expect(german.body).toContain('Eine Ferienvilla nahe Sirmione, Desenzano, Moniga und Lonato.');
+    expect(german.body).toContain('"inLanguage":"de"');
+    expect(german.body).toContain('"@type":"LocationFeatureSpecification"');
     expect(german.body).toContain('rel="canonical" href="https://villatullia.it/de/"');
     expect(german.body).toContain('hreflang="it" href="https://villatullia.it/it/"');
     const italianAvailability = await app.inject({ method: 'GET', url: '/it/disponibilita/' });
@@ -81,6 +84,19 @@ describe('public HTTP surface', () => {
     expect(response.body).toContain('SUMMARY:Villa Tullia - Unavailable');
     expect(response.body).not.toContain('Ada Lovelace');
     expect(response.body).not.toContain(booking.reference);
+  });
+
+  it('serves the unlisted booking-process prototype', async () => {
+    const context = createTestContext();
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => {
+      await app.close();
+      context.close();
+    });
+    const response = await app.inject({ method: 'GET', url: '/booking-process-test.html' });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toContain('Booking process prototype');
+    expect(response.body).toContain('Prototype only');
   });
 
   it('exports manually closed weeks and removes them after reopening', async () => {

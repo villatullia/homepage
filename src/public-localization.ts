@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { nearbyTranslations } from './nearby-translations.js';
 
 export type PublicLocale = 'de' | 'it' | 'nl';
 type Page = 'home' | 'availability' | 'privacy';
@@ -266,12 +267,14 @@ export function localizedPublicPage(file: 'index.html' | 'calendarw.html' | 'pri
     .replaceAll('src="imgs/', 'src="/imgs/')
     .replaceAll('href="imgs/', 'href="/imgs/')
     .replaceAll("url('imgs/", "url('/imgs/");
-  html = replaceAll(html, [...(page === 'home' ? home[locale] : page === 'availability' ? availability[locale] : privacy[locale]), ...common[locale]]);
+  html = replaceAll(html, [...(page === 'home' ? [...nearbyTranslations[locale], ...home[locale]] : page === 'availability' ? availability[locale] : privacy[locale]), ...common[locale]]);
   html = html
     .replaceAll('href="calendarw.html#emailEnquiry"', `href="${routes[locale].availability}#emailEnquiry"`)
     .replaceAll('href="calendarw.html"', `href="${routes[locale].availability}"`)
     .replaceAll('href="index.html"', `href="${routes[locale].home}"`)
     .replaceAll('href="privacy.html"', `href="${routes[locale].privacy}"`)
-    .replaceAll("link.href.includes('calendarw.html')", `link.href.includes('${routes[locale].availability}')`);
+    .replaceAll("link.href.includes('calendarw.html')", `link.href.includes('${routes[locale].availability}')`)
+    .replace(/"in(?:Sprache|Lingua|Taal)"/g, '"inLanguage"')
+    .replace(/(?:Lage|Posizione|Locatie)FeatureSpecification/g, 'LocationFeatureSpecification');
   return html;
 }
