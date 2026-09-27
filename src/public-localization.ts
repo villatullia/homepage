@@ -153,6 +153,7 @@ const availability: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 availability.nl.unshift(
+  ['Hello, I am interested in staying at Villa Tullia from', 'Hallo, ik ben geïnteresseerd in een verblijf in Villa Tullia van'], [' to ${formatDate(week.end)}.', ' tot ${formatDate(week.end)}.'], ['Hello! I am interested in Villa Tullia from', 'Hallo! Ik ben geïnteresseerd in Villa Tullia van'], [' to ${formatDate(selectedWeek.end)}.', ' tot ${formatDate(selectedWeek.end)}.'],
   ['Portrait of Alex Pellegrini', 'Portret van Alex Pellegrini'],
   ['This is the week you chose.', 'Dit is de week die u hebt gekozen.'], ['Check the stay details below, then ask Villa Tullia to confirm availability.', 'Controleer hieronder de verblijfsgegevens en vraag Villa Tullia daarna om de beschikbaarheid te bevestigen.'],
   ['Length of stay', 'Verblijfsduur'], ['<small>Saturday to Saturday</small>', '<small>Zaterdag tot zaterdag</small>'], ['Total price', 'Totale prijs'], ['For the entire villa', 'Voor de hele villa'], ['Mandatory extras', 'Verplichte extra’s'], ['>None<', '>Geen<'], ['No mandatory charges on arrival', 'Geen verplichte kosten bij aankomst'],
@@ -176,6 +177,7 @@ availability.nl.unshift(
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
+  ['Hello, I am interested in staying at Villa Tullia from', 'Guten Tag, ich interessiere mich für einen Aufenthalt in der Villa Tullia vom'], [' to ${formatDate(week.end)}.', ' bis ${formatDate(week.end)}.'], ['Hello! I am interested in Villa Tullia from', 'Guten Tag! Ich interessiere mich für die Villa Tullia vom'], [' to ${formatDate(selectedWeek.end)}.', ' bis ${formatDate(selectedWeek.end)}.'],
   ['Portrait of Alex Pellegrini', 'Porträt von Alex Pellegrini'],
   ['This is the week you chose.', 'Das ist die Woche, die Sie gewählt haben.'], ['Check the stay details below, then ask Villa Tullia to confirm availability.', 'Prüfen Sie unten die Aufenthaltsdetails und bitten Sie Villa Tullia anschließend, die Verfügbarkeit zu bestätigen.'],
   ['Length of stay', 'Aufenthaltsdauer'], ['<small>Saturday to Saturday</small>', '<small>Samstag bis Samstag</small>'], ['Total price', 'Gesamtpreis'], ['For the entire villa', 'Für die gesamte Villa'], ['Mandatory extras', 'Obligatorische Extras'], ['>None<', '>Keine<'], ['No mandatory charges on arrival', 'Keine obligatorischen Kosten bei der Anreise'],
@@ -204,6 +206,7 @@ availability.de.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Buchen Sie hier direkt und bei Ihrer Ankunft wartet ein Willkommensgeschenk auf Sie.'],
 );
 availability.it.unshift(
+  ['Hello, I am interested in staying at Villa Tullia from', 'Buongiorno, sono interessato a soggiornare a Villa Tullia dal'], [' to ${formatDate(week.end)}.', ' al ${formatDate(week.end)}.'], ['Hello! I am interested in Villa Tullia from', 'Buongiorno! Sono interessato a Villa Tullia dal'], [' to ${formatDate(selectedWeek.end)}.', ' al ${formatDate(selectedWeek.end)}.'],
   ['Portrait of Alex Pellegrini', 'Ritratto di Alex Pellegrini'],
   ['This is the week you chose.', 'Questa è la settimana che hai scelto.'], ['Check the stay details below, then ask Villa Tullia to confirm availability.', 'Controlla qui sotto i dettagli del soggiorno, poi chiedi a Villa Tullia di confermare la disponibilità.'],
   ['Length of stay', 'Durata del soggiorno'], ['<small>Saturday to Saturday</small>', '<small>Da sabato a sabato</small>'], ['Total price', 'Prezzo totale'], ['For the entire villa', 'Per l’intera villa'], ['Mandatory extras', 'Supplementi obbligatori'], ['>None<', '>Nessuno<'], ['No mandatory charges on arrival', 'Nessun costo obbligatorio all’arrivo'],

@@ -43,6 +43,9 @@ describe('public HTTP surface', () => {
     expect((await app.inject({ method: 'GET', url: '/imgs/Foto/alex-pellegrini.png' })).statusCode).toBe(200);
     expect(englishAvailability.body).toContain('Veronika · Czech Republic · Verified Booking.com guest');
     expect(englishAvailability.body).not.toContain('We answer within 30 minutes.');
+    expect(englishAvailability.body).not.toContain('end - oneDay');
+    expect(englishAvailability.body).toContain('formatDate(week.end)');
+    expect(englishAvailability.body).toContain('formatDate(selectedWeek.end)');
     const germanAvailability = await app.inject({ method: 'GET', url: '/de/verfuegbarkeit/' });
     expect(germanAvailability.body).toContain('Diese Woche anfragen — keine Zahlung');
     expect(germanAvailability.body).toContain('Für die gesamte Villa');

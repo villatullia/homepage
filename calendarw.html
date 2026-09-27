@@ -261,12 +261,12 @@
       };
       const setSelectedWeek = (week) => {
         selectedWeek = week;
-        selectionDate.textContent = `${formatDate(week.start)} – ${formatDate(new Date(week.end - oneDay))}`;
+        selectionDate.textContent = `${formatDate(week.start)} – ${formatDate(week.end)}`;
         selectionPrice.textContent = week.price ? formatPrice(week.price) : 'Confirmed personally';
         emailWeek.value = selectionDate.textContent;
         emailCheckIn.value = toIsoDate(week.start);
         emailCheckOut.value = toIsoDate(week.end);
-        guestMessage.value = `Hello, I am interested in staying at Villa Tullia from ${formatDate(week.start)} to ${formatDate(new Date(week.end - oneDay))}.`;
+        guestMessage.value = `Hello, I am interested in staying at Villa Tullia from ${formatDate(week.start)} to ${formatDate(week.end)}.`;
         try { localStorage.setItem('villa_selected_week', JSON.stringify({ checkIn:toIsoDate(week.start), checkOut:toIsoDate(week.end) })); } catch {}
         selectionDate.classList.remove('selection-empty');
         emailForm.hidden = false;
@@ -281,7 +281,7 @@
         const previousWeek = savedWeek?.checkIn ? inventory.find((week) => toIsoDate(week.start) === savedWeek.checkIn && week.status === 'available' && week.start >= today) : null;
         const hasDateProgress = !previousWeek && bookingProgress?.stage === 'dates';
         if (previousWeek) {
-          returningPromptTitle.textContent = `${formatDate(previousWeek.start)} – ${formatDate(new Date(previousWeek.end - oneDay))}`;
+          returningPromptTitle.textContent = `${formatDate(previousWeek.start)} – ${formatDate(previousWeek.end)}`;
           returningPromptCopy.textContent = 'Your chosen week is ready. Continue to the short, non-binding enquiry form whenever you are ready.';
           returningPromptResume.textContent = 'Continue your enquiry';
         } else if (hasDateProgress) {
@@ -371,14 +371,14 @@
         thisMonth.forEach((week) => {
           const past = week.start < today;
           const selectable = week.status === 'available' && !past;
-          const endOfStay = new Date(week.end - oneDay);
+          const checkOut = week.end;
           const card = document.createElement(selectable ? 'button' : 'div');
           if (selectable) card.type = 'button';
           card.className = `week ${selectable ? 'available' : past ? 'past' : 'reserved'}${selectedWeek === week ? ' selected' : ''}`;
           const state = selectable ? 'Available' : past ? 'Past' : 'Unavailable';
           const saving = week.price && week.bookingComPrice ? week.bookingComPrice - week.price : null;
           const priceText = week.price ? `<span class="week-price"><b>${formatPrice(week.price)} direct</b>${week.bookingComPrice ? `<s>${formatPrice(week.bookingComPrice)} Booking.com</s><em class="week-saving">Save ${formatPrice(saving)}</em>` : ''}</span>` : '';
-          card.innerHTML = `<div class="week-date"><b>${formatDate(week.start, { day:'numeric', month:'short' })}</b>Saturday</div><div class="week-info"><strong>${formatDate(week.start, { day:'numeric', month:'long' })} – ${formatDate(endOfStay, { day:'numeric', month:'long' })}</strong><span>7 nights · Saturday to Saturday</span>${priceText}</div><span class="status ${selectable ? 'available' : past ? 'past' : 'reserved'}">${state}</span>`;
+          card.innerHTML = `<div class="week-date"><b>${formatDate(week.start, { day:'numeric', month:'short' })}</b>Saturday</div><div class="week-info"><strong>${formatDate(week.start, { day:'numeric', month:'long' })} – ${formatDate(checkOut, { day:'numeric', month:'long' })}</strong><span>7 nights · Saturday to Saturday</span>${priceText}</div><span class="status ${selectable ? 'available' : past ? 'past' : 'reserved'}">${state}</span>`;
           if (selectable) card.addEventListener('click', () => { cro.track('week_selected', { checkIn:toIsoDate(week.start), checkOut:toIsoDate(week.end) }); setSelectedWeek(week); });
           weeksElement.appendChild(card);
         });
@@ -393,7 +393,7 @@
       inquireButton.addEventListener('click', () => {
         if (!selectedWeek) return;
         cro.track('whatsapp_clicked', { placement:'availability_contact_step' });
-        const message = `Hello! I am interested in Villa Tullia from ${formatDate(selectedWeek.start)} to ${formatDate(new Date(selectedWeek.end - oneDay))}.`;
+        const message = `Hello! I am interested in Villa Tullia from ${formatDate(selectedWeek.start)} to ${formatDate(selectedWeek.end)}.`;
         window.open(`https://wa.me/393466733267?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
       });
       document.getElementById('floatingWhatsapp')?.addEventListener('click', () => { cro.track('whatsapp_clicked', { placement:'availability_floating' }); cro.track('contact_clicked', { method:'whatsapp', placement:'availability_floating' }); });
