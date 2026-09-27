@@ -153,6 +153,13 @@ const availability: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 availability.nl.unshift(
+  ['Portrait of Alex Pellegrini', 'Portret van Alex Pellegrini'],
+  ['This is the week you chose.', 'Dit is de week die u hebt gekozen.'], ['Check the stay details below, then ask Villa Tullia to confirm availability.', 'Controleer hieronder de verblijfsgegevens en vraag Villa Tullia daarna om de beschikbaarheid te bevestigen.'],
+  ['Length of stay', 'Verblijfsduur'], ['<small>Saturday to Saturday</small>', '<small>Zaterdag tot zaterdag</small>'], ['Total price', 'Totale prijs'], ['For the entire villa', 'Voor de hele villa'], ['Mandatory extras', 'Verplichte extra’s'], ['>None<', '>Geen<'], ['No mandatory charges on arrival', 'Geen verplichte kosten bij aankomst'],
+  ['Included in the total:</strong> bed linen, bath towels, utilities, final cleaning and all applicable taxes.', 'Inbegrepen in het totaal:</strong> beddengoed, badhanddoeken, nutsvoorzieningen, eindschoonmaak en alle toepasselijke belastingen.'],
+  ['A personal reply from Alex Pellegrini', 'Een persoonlijk antwoord van Alex Pellegrini'], ['Your enquiry goes directly to Alex at Villa Tullia. Alex will personally confirm availability and the next steps before any booking.', 'Uw aanvraag gaat rechtstreeks naar Alex bij Villa Tullia. Alex bevestigt persoonlijk de beschikbaarheid en de volgende stappen voordat er een boeking is.'],
+  ['Quiet, beautifully positioned, with a lovely pool and an exceptionally kind host.', 'Rustig en prachtig gelegen, met een heerlijk zwembad en een bijzonder vriendelijke gastvrouw.'], ['Czech Republic', 'Tsjechië'],
+  ['Ask about this week — no payment', 'Vraag naar deze week — nu niet betalen'], ['Non-binding · No payment now', 'Vrijblijvend · Nu niet betalen'], ['Confirmed personally', 'Persoonlijk bevestigd'],
   ['Our season runs from May to October, with Saturday-to-Saturday stays.', 'Ons seizoen loopt van mei tot oktober, met verblijven van zaterdag tot zaterdag.'],
   ['We answer within 30 minutes.', 'We antwoorden binnen 30 minuten.'],
   ['Welcome back', 'Welkom terug'], ['Still planning your Lake Garda stay?', 'Plant u nog steeds uw verblijf aan het Gardameer?'],
@@ -169,6 +176,13 @@ availability.nl.unshift(
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
+  ['Portrait of Alex Pellegrini', 'Porträt von Alex Pellegrini'],
+  ['This is the week you chose.', 'Das ist die Woche, die Sie gewählt haben.'], ['Check the stay details below, then ask Villa Tullia to confirm availability.', 'Prüfen Sie unten die Aufenthaltsdetails und bitten Sie Villa Tullia anschließend, die Verfügbarkeit zu bestätigen.'],
+  ['Length of stay', 'Aufenthaltsdauer'], ['<small>Saturday to Saturday</small>', '<small>Samstag bis Samstag</small>'], ['Total price', 'Gesamtpreis'], ['For the entire villa', 'Für die gesamte Villa'], ['Mandatory extras', 'Obligatorische Extras'], ['>None<', '>Keine<'], ['No mandatory charges on arrival', 'Keine obligatorischen Kosten bei der Anreise'],
+  ['Included in the total:</strong> bed linen, bath towels, utilities, final cleaning and all applicable taxes.', 'Im Gesamtpreis enthalten:</strong> Bettwäsche, Handtücher, Nebenkosten, Endreinigung und alle anfallenden Steuern.'],
+  ['A personal reply from Alex Pellegrini', 'Eine persönliche Antwort von Alex Pellegrini'], ['Your enquiry goes directly to Alex at Villa Tullia. Alex will personally confirm availability and the next steps before any booking.', 'Ihre Anfrage geht direkt an Alex bei Villa Tullia. Alex bestätigt persönlich die Verfügbarkeit und die nächsten Schritte, bevor eine Buchung entsteht.'],
+  ['Quiet, beautifully positioned, with a lovely pool and an exceptionally kind host.', 'Ruhig und wunderschön gelegen, mit einem tollen Pool und einer außergewöhnlich freundlichen Gastgeberin.'], ['Czech Republic', 'Tschechien'],
+  ['Ask about this week — no payment', 'Diese Woche anfragen — keine Zahlung'], ['Non-binding · No payment now', 'Unverbindlich · Jetzt keine Zahlung'], ['Confirmed personally', 'Persönlich bestätigt'],
   ['Our season runs from May to October, with Saturday-to-Saturday stays.', 'Unsere Saison dauert von Mai bis Oktober, mit Aufenthalten von Samstag bis Samstag.'],
   ['We answer within 30 minutes.', 'Wir antworten innerhalb von 30 Minuten.'],
   ['Welcome back', 'Willkommen zurück'], ['Still planning your Lake Garda stay?', 'Planen Sie noch Ihren Aufenthalt am Gardasee?'],
@@ -190,6 +204,13 @@ availability.de.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Buchen Sie hier direkt und bei Ihrer Ankunft wartet ein Willkommensgeschenk auf Sie.'],
 );
 availability.it.unshift(
+  ['Portrait of Alex Pellegrini', 'Ritratto di Alex Pellegrini'],
+  ['This is the week you chose.', 'Questa è la settimana che hai scelto.'], ['Check the stay details below, then ask Villa Tullia to confirm availability.', 'Controlla qui sotto i dettagli del soggiorno, poi chiedi a Villa Tullia di confermare la disponibilità.'],
+  ['Length of stay', 'Durata del soggiorno'], ['<small>Saturday to Saturday</small>', '<small>Da sabato a sabato</small>'], ['Total price', 'Prezzo totale'], ['For the entire villa', 'Per l’intera villa'], ['Mandatory extras', 'Supplementi obbligatori'], ['>None<', '>Nessuno<'], ['No mandatory charges on arrival', 'Nessun costo obbligatorio all’arrivo'],
+  ['Included in the total:</strong> bed linen, bath towels, utilities, final cleaning and all applicable taxes.', 'Incluso nel totale:</strong> biancheria da letto, asciugamani da bagno, utenze, pulizia finale e tutte le imposte applicabili.'],
+  ['A personal reply from Alex Pellegrini', 'Una risposta personale da Alex Pellegrini'], ['Your enquiry goes directly to Alex at Villa Tullia. Alex will personally confirm availability and the next steps before any booking.', 'La tua richiesta arriva direttamente ad Alex di Villa Tullia. Alex confermerà personalmente la disponibilità e i prossimi passi prima di qualsiasi prenotazione.'],
+  ['Quiet, beautifully positioned, with a lovely pool and an exceptionally kind host.', 'Tranquilla, in una posizione splendida, con una bella piscina e una proprietaria eccezionalmente gentile.'], ['Czech Republic', 'Repubblica Ceca'],
+  ['Ask about this week — no payment', 'Chiedi informazioni per questa settimana — nessun pagamento'], ['Non-binding · No payment now', 'Non vincolante · Nessun pagamento ora'], ['Confirmed personally', 'Confermato personalmente'],
   ['Our season runs from May to October, with Saturday-to-Saturday stays.', 'La stagione va da maggio a ottobre, con soggiorni da sabato a sabato.'],
   ['We answer within 30 minutes.', 'Rispondiamo entro 30 minuti.'],
   ['Welcome back', 'Bentornato'], ['Still planning your Lake Garda stay?', 'Stai ancora organizzando il tuo soggiorno sul Lago di Garda?'],
