@@ -13,6 +13,7 @@ import {
   forwardVisitorTyping,
   getMessages,
   telegramEnabled,
+  wasForwardedToTelegram,
 } from '../services/chat.js';
 
 const messageSchema = z.string().trim().min(1).max(1000);
@@ -21,7 +22,14 @@ const contextSchema = z.object({
   selectedWeek: z.string().max(100).optional(),
   price: z.string().max(50).optional(),
 }).default({});
-const createSchema = z.object({ message: messageSchema, locale: z.enum(['en', 'de', 'it', 'nl']).default('en'), context: contextSchema });
+const clientMessageIdSchema = z.string().uuid().optional();
+const createSchema = z.object({
+  message: messageSchema,
+  locale: z.enum(['en', 'de', 'it', 'nl']).default('en'),
+  context: contextSchema,
+  clientMessageId: clientMessageIdSchema,
+  clientToken: z.string().min(32).max(200).optional(),
+});
 
 export async function registerChatRoutes(app: FastifyInstance, deps: { db: Database; config: AppConfig }): Promise<void> {
   const { db, config } = deps;
@@ -30,13 +38,15 @@ export async function registerChatRoutes(app: FastifyInstance, deps: { db: Datab
     const parsed = createSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Please enter a shorter message.' });
     const conversation = createConversation(db, parsed.data);
-    let telegramForwarded = false;
-    try {
-      telegramForwarded = await forwardVisitorMessage(db, config, conversation.conversationId, parsed.data.message, parsed.data.locale, parsed.data.context);
-    } catch (error) {
-      request.log.error({ err: error, conversationId: conversation.conversationId }, 'Telegram chat notification failed');
+    let telegramForwarded = wasForwardedToTelegram(db, conversation.conversationId);
+    if (conversation.created) {
+      try {
+        telegramForwarded = await forwardVisitorMessage(db, config, conversation.conversationId, parsed.data.message, parsed.data.locale, parsed.data.context);
+      } catch (error) {
+        request.log.error({ err: error, conversationId: conversation.conversationId }, 'Telegram chat notification failed');
+      }
     }
-    return reply.code(201).send({ ...conversation, telegramForwarded });
+    return reply.code(conversation.created ? 201 : 200).send({ ...conversation, telegramForwarded });
   });
 
   app.get('/api/chat/conversations/:id/messages', { config: { rateLimit: { max: 120, timeWindow: '1 minute' } } }, async (request, reply) => {
@@ -51,16 +61,18 @@ export async function registerChatRoutes(app: FastifyInstance, deps: { db: Datab
     const token = request.headers['x-chat-token'];
     const conversation = authorizedConversation(db, id, typeof token === 'string' ? token : undefined);
     if (!conversation) return reply.code(404).send({ error: 'Conversation unavailable' });
-    const parsed = z.object({ message: messageSchema }).safeParse(request.body);
+    const parsed = z.object({ message: messageSchema, clientMessageId: clientMessageIdSchema }).safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Please enter a shorter message.' });
-    const messages = addVisitorMessage(db, id, parsed.data.message);
-    let telegramForwarded = false;
-    try {
-      telegramForwarded = await forwardVisitorMessage(db, config, id, parsed.data.message, conversation.locale, JSON.parse(conversation.context_json));
-    } catch (error) {
-      request.log.error({ err: error, conversationId: id }, 'Telegram chat notification failed');
+    const result = addVisitorMessage(db, id, parsed.data.message, parsed.data.clientMessageId);
+    let telegramForwarded = wasForwardedToTelegram(db, id);
+    if (result.created) {
+      try {
+        telegramForwarded = await forwardVisitorMessage(db, config, id, parsed.data.message, conversation.locale, JSON.parse(conversation.context_json));
+      } catch (error) {
+        request.log.error({ err: error, conversationId: id }, 'Telegram chat notification failed');
+      }
     }
-    return reply.code(201).send({ messages, telegramForwarded });
+    return reply.code(result.created ? 201 : 200).send({ messages: result.messages, telegramForwarded });
   });
 
   app.post('/api/chat/conversations/:id/typing', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (request, reply) => {

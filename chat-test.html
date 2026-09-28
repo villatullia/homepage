@@ -35,6 +35,7 @@
   <script>
     (() => {
       const storageKey = 'villa_chat_prototype_session';
+      const pendingKey = 'villa_chat_pending_message';
       const launcher = document.getElementById('chatLauncher');
       const panel = document.getElementById('chatPanel');
       const close = document.getElementById('chatClose');
@@ -54,9 +55,14 @@
       let lastTypingSignal = 0;
       const knownMessageIds = new Set();
       try { session = JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch {}
+      let pendingMessage = null;
+      try { pendingMessage = JSON.parse(localStorage.getItem(pendingKey) || 'null'); } catch {}
 
       const formatTime = (value) => value ? new Intl.DateTimeFormat('en-GB', { hour:'2-digit', minute:'2-digit' }).format(new Date(value)) : 'Now';
       const saveSession = () => { try { localStorage.setItem(storageKey, JSON.stringify(session)); } catch {} };
+      const savePending = () => { try { localStorage.setItem(pendingKey, JSON.stringify(pendingMessage)); } catch {} };
+      const clearPending = () => { pendingMessage = null; try { localStorage.removeItem(pendingKey); } catch {} };
+      const newVisitorToken = () => Array.from(crypto.getRandomValues(new Uint8Array(32)), (byte) => byte.toString(16).padStart(2, '0')).join('');
       const authenticatedFetch = (url, options = {}) => fetch(url, {
         ...options,
         headers: { 'Content-Type':'application/json', 'X-Chat-Token':session?.token || '', ...(options.headers || {}) },
@@ -143,12 +149,22 @@
         sendButton.disabled = true;
         delivery.hidden = true;
         try {
+          if (!pendingMessage || pendingMessage.message !== message || pendingMessage.conversationId !== (session?.conversationId || null)) {
+            pendingMessage = {
+              message,
+              conversationId:session?.conversationId || null,
+              clientMessageId:crypto.randomUUID(),
+              clientToken:session?.token || newVisitorToken(),
+            };
+            savePending();
+          }
           const response = session
-            ? await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/messages`, { method:'POST', body:JSON.stringify({ message }) })
-            : await fetch('/api/chat/conversations', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ message, locale:'en', context:{ page:'/chat-test.html', selectedWeek:'15–22 May 2027 · 7 nights', price:'€3,675' } }) });
+            ? await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/messages`, { method:'POST', body:JSON.stringify({ message, clientMessageId:pendingMessage.clientMessageId }) })
+            : await fetch('/api/chat/conversations', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ message, clientMessageId:pendingMessage.clientMessageId, clientToken:pendingMessage.clientToken, locale:'en', context:{ page:'/chat-test.html', selectedWeek:'15–22 May 2027 · 7 nights', price:'€3,675' } }) });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || 'Message could not be sent');
           if (!session) { session = { conversationId:data.conversationId, token:data.token }; saveSession(); }
+          clearPending();
           history = data.messages || [];
           rememberMessages(history);
           initializedMessages = true;
@@ -159,7 +175,9 @@
           delivery.hidden = false;
           render();
         } catch (error) {
-          delivery.textContent = error instanceof Error ? error.message : 'Message could not be sent';
+          delivery.textContent = error instanceof TypeError
+            ? 'Connection interrupted. Please try again—your question will not be sent twice.'
+            : error instanceof Error ? error.message : 'Message could not be sent';
           delivery.hidden = false;
         } finally { sendButton.disabled = false; }
       });

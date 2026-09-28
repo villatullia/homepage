@@ -22,6 +22,8 @@ describe('anonymous website chat', () => {
         message: 'Is the pool open in May?',
         locale: 'en',
         context: { page: '/calendarw.html', selectedWeek: '15–22 May 2027', price: '€3,675' },
+        clientMessageId: '2df85d8c-6011-4bbb-958d-99cb85e865ab',
+        clientToken: 'visitor-generated-token-that-is-long-enough',
       },
     });
     expect(created.statusCode).toBe(201);
@@ -32,14 +34,36 @@ describe('anonymous website chat', () => {
     expect(stored.visitor_token_hash).toBe(sha256(body.token));
     expect(stored.context_json).not.toContain('email');
 
+    const retried = await app.inject({
+      method: 'POST',
+      url: '/api/chat/conversations',
+      payload: {
+        message: 'Is the pool open in May?',
+        locale: 'en',
+        context: { page: '/calendarw.html' },
+        clientMessageId: '2df85d8c-6011-4bbb-958d-99cb85e865ab',
+        clientToken: 'visitor-generated-token-that-is-long-enough',
+      },
+    });
+    expect(retried.statusCode).toBe(200);
+    expect(retried.json().conversationId).toBe(body.conversationId);
+    expect(context.db.prepare("SELECT COUNT(*) count FROM chat_messages WHERE sender = 'VISITOR'").get()).toEqual({ count: 1 });
+
     expect((await app.inject({ method: 'GET', url: `/api/chat/conversations/${body.conversationId}/messages` })).statusCode).toBe(404);
     const followUp = await app.inject({
       method: 'POST',
       url: `/api/chat/conversations/${body.conversationId}/messages`,
       headers: { 'x-chat-token': body.token },
-      payload: { message: 'And is it heated?' },
+      payload: { message: 'And is it heated?', clientMessageId: 'bbf78ad5-04bb-4137-8e27-a335805a90df' },
     });
     expect(followUp.statusCode).toBe(201);
+    const repeatedFollowUp = await app.inject({
+      method: 'POST',
+      url: `/api/chat/conversations/${body.conversationId}/messages`,
+      headers: { 'x-chat-token': body.token },
+      payload: { message: 'And is it heated?', clientMessageId: 'bbf78ad5-04bb-4137-8e27-a335805a90df' },
+    });
+    expect(repeatedFollowUp.statusCode).toBe(200);
     const testReply = await app.inject({
       method: 'POST',
       url: `/api/chat/conversations/${body.conversationId}/test-reply`,

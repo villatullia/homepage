@@ -39,10 +39,18 @@ export function authorizedConversation(db: Database, conversationId: string, tok
 
 export function createConversation(
   db: Database,
-  input: { message: string; locale: string; context: ChatContext },
-): { conversationId: string; token: string; messages: ChatMessage[] } {
+  input: { message: string; locale: string; context: ChatContext; clientMessageId?: string; clientToken?: string },
+): { conversationId: string; token: string; messages: ChatMessage[]; created: boolean } {
+  if (input.clientMessageId && input.clientToken) {
+    const existing = db.prepare(`
+      SELECT c.id FROM chat_conversations c
+      JOIN chat_messages m ON m.conversation_id = c.id
+      WHERE c.visitor_token_hash = ? AND m.client_message_id = ?
+    `).get(sha256(input.clientToken), input.clientMessageId) as { id: string } | undefined;
+    if (existing) return { conversationId: existing.id, token: input.clientToken, messages: publicMessages(db, existing.id), created: false };
+  }
   const conversationId = randomUUID();
-  const token = randomToken();
+  const token = input.clientToken ?? randomToken();
   const timestamp = nowIso();
   db.prepare(`
     INSERT INTO chat_conversations
@@ -50,19 +58,22 @@ export function createConversation(
     VALUES (?, ?, ?, ?, 'OPEN', ?, ?, ?)
   `).run(conversationId, sha256(token), input.locale, JSON.stringify(input.context), timestamp, timestamp, timestamp);
   db.prepare(`
-    INSERT INTO chat_messages (id, conversation_id, sender, body, created_at)
-    VALUES (?, ?, 'VISITOR', ?, ?)
-  `).run(randomUUID(), conversationId, input.message, timestamp);
-  return { conversationId, token, messages: publicMessages(db, conversationId) };
+    INSERT INTO chat_messages (id, conversation_id, sender, body, client_message_id, created_at)
+    VALUES (?, ?, 'VISITOR', ?, ?, ?)
+  `).run(randomUUID(), conversationId, input.message, input.clientMessageId ?? null, timestamp);
+  return { conversationId, token, messages: publicMessages(db, conversationId), created: true };
 }
 
-export function addVisitorMessage(db: Database, conversationId: string, body: string): ChatMessage[] {
+export function addVisitorMessage(db: Database, conversationId: string, body: string, clientMessageId?: string): { messages: ChatMessage[]; created: boolean } {
+  if (clientMessageId && db.prepare('SELECT 1 FROM chat_messages WHERE client_message_id = ?').get(clientMessageId)) {
+    return { messages: publicMessages(db, conversationId), created: false };
+  }
   const timestamp = nowIso();
-  db.prepare(`INSERT INTO chat_messages (id, conversation_id, sender, body, created_at) VALUES (?, ?, 'VISITOR', ?, ?)`)
-    .run(randomUUID(), conversationId, body, timestamp);
+  db.prepare(`INSERT INTO chat_messages (id, conversation_id, sender, body, client_message_id, created_at) VALUES (?, ?, 'VISITOR', ?, ?, ?)`)
+    .run(randomUUID(), conversationId, body, clientMessageId ?? null, timestamp);
   db.prepare(`UPDATE chat_conversations SET updated_at = ?, last_visitor_message_at = ? WHERE id = ?`)
     .run(timestamp, timestamp, conversationId);
-  return publicMessages(db, conversationId);
+  return { messages: publicMessages(db, conversationId), created: true };
 }
 
 export function addOwnerMessage(db: Database, conversationId: string, body: string, telegramUpdateId?: number): ChatMessage[] {
@@ -80,6 +91,10 @@ export function getMessages(db: Database, conversationId: string): ChatMessage[]
 
 export function telegramEnabled(config: AppConfig): boolean {
   return Boolean(config.TELEGRAM_BOT_TOKEN && config.TELEGRAM_CHAT_ID && config.TELEGRAM_WEBHOOK_SECRET);
+}
+
+export function wasForwardedToTelegram(db: Database, conversationId: string): boolean {
+  return Boolean(db.prepare('SELECT 1 FROM chat_telegram_links WHERE conversation_id = ? LIMIT 1').get(conversationId));
 }
 
 export async function forwardVisitorMessage(
