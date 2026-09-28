@@ -46,3 +46,17 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
         run: ssh "$DEPLOY_USER@$DEPLOY_HOST" 'cd /opt/villa-tullia && sh ./deploy/update-production.sh'
+      - name: Configure Telegram chat
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ] || [ -z "$TELEGRAM_WEBHOOK_SECRET" ]; then
+            echo 'Telegram production secrets are incomplete; skipping configuration.'
+            exit 0
+          fi
+          printf '%s\n%s\n%s\n' "$TELEGRAM_BOT_TOKEN" "$TELEGRAM_CHAT_ID" "$TELEGRAM_WEBHOOK_SECRET" |
+            ssh "$DEPLOY_USER@$DEPLOY_HOST" 'cd /opt/villa-tullia && sh ./deploy/configure-telegram.sh'
