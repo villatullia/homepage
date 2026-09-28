@@ -120,6 +120,19 @@ export async function forwardVisitorMessage(
   return true;
 }
 
+export async function forwardVisitorTyping(config: AppConfig): Promise<boolean> {
+  if (!telegramEnabled(config)) return false;
+  const response = await fetch(`https://api.telegram.org/bot${config.TELEGRAM_BOT_TOKEN}/sendChatAction`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: config.TELEGRAM_CHAT_ID, action: 'typing' }),
+    signal: AbortSignal.timeout(7000),
+  });
+  const payload = await response.json() as { ok?: boolean; description?: string };
+  if (!response.ok || !payload.ok) throw new Error(payload.description || 'Telegram typing notification failed');
+  return true;
+}
+
 export function conversationForTelegramReply(db: Database, telegramMessageId: number): string | undefined {
   return (db.prepare(`SELECT conversation_id FROM chat_telegram_links WHERE telegram_message_id = ?`).get(telegramMessageId) as { conversation_id: string } | undefined)?.conversation_id;
 }

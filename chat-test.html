@@ -48,6 +48,11 @@
       let history = [];
       let session = null;
       let polling;
+      let revealTimer;
+      let initializedMessages = false;
+      let pendingHistory = null;
+      let lastTypingSignal = 0;
+      const knownMessageIds = new Set();
       try { session = JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch {}
 
       const formatTime = (value) => value ? new Intl.DateTimeFormat('en-GB', { hour:'2-digit', minute:'2-digit' }).format(new Date(value)) : 'Now';
@@ -56,7 +61,8 @@
         ...options,
         headers: { 'Content-Type':'application/json', 'X-Chat-Token':session?.token || '', ...(options.headers || {}) },
       });
-      const render = () => {
+      const rememberMessages = (items) => items.forEach((item) => { if (item.id) knownMessageIds.add(item.id); });
+      const render = (showTyping = false) => {
         messages.innerHTML = '';
         const visibleHistory = [{ sender:'owner', body:'Hi, I’m Alex. Ask me anything about Villa Tullia, availability or your stay.', createdAt:null }, ...history];
         visibleHistory.forEach((item) => {
@@ -71,10 +77,41 @@
           row.appendChild(bubble);
           messages.appendChild(row);
         });
+        if (showTyping) {
+          const row = document.createElement('div');
+          row.className = 'message alex';
+          const bubble = document.createElement('div');
+          bubble.className = 'typing';
+          bubble.setAttribute('role', 'status');
+          bubble.setAttribute('aria-label', 'Alex is typing');
+          bubble.innerHTML = '<i></i><i></i><i></i>';
+          row.appendChild(bubble);
+          messages.appendChild(row);
+        }
         messages.scrollTop = messages.scrollHeight;
         const last = history.at(-1);
         simulateReply.disabled = !session || !last || last.sender === 'owner';
         notifyOption.hidden = !history.some((item) => item.sender === 'visitor');
+      };
+      const receiveHistory = (incoming, animate = true) => {
+        const hasNewOwnerReply = initializedMessages && incoming.some((item) => item.sender === 'owner' && item.id && !knownMessageIds.has(item.id));
+        rememberMessages(incoming);
+        initializedMessages = true;
+        if (!hasNewOwnerReply || !animate) {
+          clearTimeout(revealTimer);
+          pendingHistory = null;
+          history = incoming;
+          render();
+          return;
+        }
+        pendingHistory = incoming;
+        render(true);
+        clearTimeout(revealTimer);
+        revealTimer = window.setTimeout(() => {
+          history = pendingHistory || history;
+          pendingHistory = null;
+          render();
+        }, 1400);
       };
       const refresh = async () => {
         if (!session?.conversationId || document.hidden) return;
@@ -83,8 +120,7 @@
           if (response.status === 404) { session = null; localStorage.removeItem(storageKey); history = []; render(); return; }
           if (!response.ok) return;
           const data = await response.json();
-          history = data.messages || [];
-          render();
+          receiveHistory(data.messages || []);
         } catch {}
       };
       const openChat = () => {
@@ -114,6 +150,8 @@
           if (!response.ok) throw new Error(data.error || 'Message could not be sent');
           if (!session) { session = { conversationId:data.conversationId, token:data.token }; saveSession(); }
           history = data.messages || [];
+          rememberMessages(history);
+          initializedMessages = true;
           input.value = '';
           delivery.innerHTML = data.telegramForwarded
             ? '<i class="bi bi-check2-circle"></i> Message delivered to Alex on Telegram'
@@ -126,6 +164,13 @@
         } finally { sendButton.disabled = false; }
       });
       input.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); composer.requestSubmit(); } });
+      input.addEventListener('input', () => {
+        if (!session || !input.value.trim()) return;
+        const now = Date.now();
+        if (now - lastTypingSignal < 4000) return;
+        lastTypingSignal = now;
+        void authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/typing`, { method:'POST' }).catch(() => {});
+      });
       simulateReply.addEventListener('click', async () => {
         if (!session) return;
         simulateReply.disabled = true;
@@ -133,8 +178,8 @@
           method:'POST',
           body:JSON.stringify({ message:'Thanks for your message. This is how my Telegram reply would appear in the visitor’s chat.' }),
         });
-        if (response.ok) history = (await response.json()).messages || history;
-        openChat();
+        if (response.ok) receiveHistory((await response.json()).messages || history);
+        if (panel.hidden) openChat();
       });
       document.querySelector('.notify-option button').addEventListener('click', () => { window.alert('In the real version, a small optional email field would open here. The visitor could ignore it and continue chatting anonymously.'); });
       render();

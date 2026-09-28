@@ -10,6 +10,7 @@ import {
   conversationForTelegramReply,
   createConversation,
   forwardVisitorMessage,
+  forwardVisitorTyping,
   getMessages,
   telegramEnabled,
 } from '../services/chat.js';
@@ -60,6 +61,18 @@ export async function registerChatRoutes(app: FastifyInstance, deps: { db: Datab
       request.log.error({ err: error, conversationId: id }, 'Telegram chat notification failed');
     }
     return reply.code(201).send({ messages, telegramForwarded });
+  });
+
+  app.post('/api/chat/conversations/:id/typing', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const id = (request.params as { id: string }).id;
+    const token = request.headers['x-chat-token'];
+    if (!authorizedConversation(db, id, typeof token === 'string' ? token : undefined)) return reply.code(404).send({ error: 'Conversation unavailable' });
+    try {
+      await forwardVisitorTyping(config);
+    } catch (error) {
+      request.log.warn({ err: error, conversationId: id }, 'Telegram typing notification failed');
+    }
+    return reply.code(204).send();
   });
 
   app.post('/api/chat/conversations/:id/test-reply', async (request, reply) => {

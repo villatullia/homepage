@@ -51,7 +51,8 @@ describe('anonymous website chat', () => {
   });
 
   it('forwards visitor messages and accepts only authenticated Telegram replies from the configured chat', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ ok: true, result: { message_id: 987 } }), { status: 200 })));
+    const telegramFetch = vi.fn(async () => new Response(JSON.stringify({ ok: true, result: { message_id: 987 } }), { status: 200 }));
+    vi.stubGlobal('fetch', telegramFetch);
     const context = createTestContext({
       TELEGRAM_BOT_TOKEN: 'test-bot-token',
       TELEGRAM_CHAT_ID: '123456',
@@ -67,6 +68,14 @@ describe('anonymous website chat', () => {
     });
     const chat = created.json() as { conversationId: string; token: string; telegramForwarded: boolean };
     expect(chat.telegramForwarded).toBe(true);
+    expect((await app.inject({
+      method: 'POST',
+      url: `/api/chat/conversations/${chat.conversationId}/typing`,
+      headers: { 'x-chat-token': chat.token },
+    })).statusCode).toBe(204);
+    expect(telegramFetch).toHaveBeenCalledWith(expect.stringContaining('/sendChatAction'), expect.objectContaining({
+      body: JSON.stringify({ chat_id: '123456', action: 'typing' }),
+    }));
     expect((await app.inject({ method: 'POST', url: '/webhooks/telegram', payload: {} })).statusCode).toBe(401);
     expect((await app.inject({
       method: 'POST',
