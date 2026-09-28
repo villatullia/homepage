@@ -47,4 +47,17 @@ until curl --fail --silent --show-error http://127.0.0.1:3100/healthz >/dev/null
   sleep 2
 done
 
+site_domain="$(sed -n 's/^SITE_DOMAIN=//p' .env.production | tail -n 1)"
+site_domain="${site_domain:-villatullia.it}"
+webhook_response="$(curl --fail --silent --show-error \
+  --request POST "https://api.telegram.org/bot${telegram_bot_token}/setWebhook" \
+  --data-urlencode "url=https://${site_domain}/webhooks/telegram" \
+  --data-urlencode "secret_token=${telegram_webhook_secret}" \
+  --data-urlencode 'drop_pending_updates=true')"
+
+printf '%s' "$webhook_response" | grep -q '"ok":true' || {
+  echo 'Telegram rejected the webhook configuration' >&2
+  exit 1
+}
+
 echo 'Telegram production configuration applied.'
