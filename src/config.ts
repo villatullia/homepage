@@ -42,6 +42,9 @@ const schema = z.object({
   SMTP_SECURE: booleanValue,
   SMTP_USER: z.string().default(''),
   SMTP_PASSWORD: z.string().default(''),
+  TELEGRAM_BOT_TOKEN: z.string().default(''),
+  TELEGRAM_CHAT_ID: z.string().default(''),
+  TELEGRAM_WEBHOOK_SECRET: z.string().regex(/^[A-Za-z0-9_-]*$/).default(''),
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;

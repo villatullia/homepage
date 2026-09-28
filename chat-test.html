@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Anonymous chat prototype | Villa Tullia</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root{--ink:#183632;--forest:#23544d;--sand:#f4f0e8;--cream:#fcfaf6;--terra:#c87451;--line:rgba(24,54,50,.14);--muted:#63716d;--green:#3c856f}
+    [hidden]{display:none!important}
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--cream);font-family:"DM Sans",sans-serif}.prototype-bar{display:flex;align-items:center;justify-content:center;gap:9px;min-height:39px;padding:8px 18px;color:#fff;background:#a94f35;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-align:center;text-transform:uppercase}.site-nav{display:flex;align-items:center;justify-content:space-between;min-height:74px;padding:0 7vw;color:#fff;background:var(--ink)}.logo{color:#fff;text-decoration:none;font:600 1.5rem "Playfair Display",serif}.logo small{display:block;opacity:.72;font:600 .55rem "DM Sans",sans-serif;letter-spacing:.15em;text-transform:uppercase}.back{color:#fff;text-decoration:none;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.hero{min-height:calc(100vh - 113px);padding:70px 7vw 150px;background:linear-gradient(90deg,rgba(24,54,50,.84),rgba(24,54,50,.25)),url('/imgs/Foto/veranda3.webp') center/cover}.hero-copy{max-width:650px;color:#fff}.eyebrow{font-size:.67rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}.hero h1{margin:14px 0;font:600 clamp(2.8rem,6vw,5.2rem)/1.02 "Playfair Display",serif}.hero p{max-width:570px;margin:0;color:#eef3f0;font-size:1rem;line-height:1.65}.week-card{display:inline-grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;margin-top:27px;padding:13px 16px;color:var(--ink);background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.16)}.week-card i{color:var(--terra);font-size:1.25rem}.week-card small,.week-card strong{display:block}.week-card small{color:var(--muted);font-size:.61rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.week-card strong{margin-top:2px;font:600 .98rem "Playfair Display",serif}.chat-launcher{position:fixed;z-index:30;right:24px;bottom:24px;display:flex;align-items:center;gap:10px;min-height:54px;padding:0 18px;border:0;border-radius:28px;color:#fff;background:var(--terra);box-shadow:0 12px 34px rgba(24,54,50,.3);cursor:pointer;font:700 .75rem "DM Sans",sans-serif;letter-spacing:.04em}.chat-launcher i{font-size:1.2rem}.chat-panel{position:fixed;z-index:40;right:24px;bottom:24px;display:grid;grid-template-rows:auto auto minmax(150px,1fr) auto;width:min(390px,calc(100% - 32px));height:min(650px,calc(100vh - 70px));overflow:hidden;border:1px solid var(--line);border-radius:17px;background:#fff;box-shadow:0 24px 70px rgba(9,32,28,.3);transform-origin:bottom right;transition:.2s}.chat-panel[hidden]{display:none}.chat-head{display:grid;grid-template-columns:52px 1fr auto;gap:11px;align-items:center;padding:15px 16px;color:#fff;background:var(--ink)}.alex-photo{width:52px;height:52px;border:2px solid rgba(255,255,255,.85);border-radius:50%;object-fit:cover;object-position:center 24%}.chat-head strong,.chat-head small{display:block}.chat-head strong{font:600 1.15rem "Playfair Display",serif}.chat-head small{margin-top:3px;color:#d9e3df;font-size:.68rem}.chat-close{display:grid;width:34px;height:34px;place-items:center;border:1px solid rgba(255,255,255,.3);border-radius:50%;color:#fff;background:transparent;cursor:pointer}.chat-context{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--sand);font-size:.68rem}.chat-context span{color:var(--muted)}.chat-context strong{display:block;margin-top:2px;color:var(--ink)}.chat-context b{color:var(--forest);white-space:nowrap}.messages{overflow-y:auto;padding:16px;background:#f8f6f1;scroll-behavior:smooth}.message{display:flex;margin:0 0 12px}.message.alex{justify-content:flex-start}.message.visitor{justify-content:flex-end}.bubble{max-width:82%;padding:10px 12px;border-radius:14px;font-size:.78rem;line-height:1.48;box-shadow:0 2px 8px rgba(24,54,50,.06)}.alex .bubble{border-bottom-left-radius:3px;background:#fff}.visitor .bubble{border-bottom-right-radius:3px;color:#fff;background:var(--forest)}.bubble small{display:block;margin-top:5px;opacity:.65;font-size:.58rem}.typing{display:flex;gap:4px;align-items:center;width:max-content;padding:10px 13px;border-radius:14px 14px 14px 3px;background:#fff}.typing i{width:5px;height:5px;border-radius:50%;background:#8f9a96;animation:pulse 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes pulse{0%,70%,100%{opacity:.35}35%{opacity:1}}.composer{padding:12px;border-top:1px solid var(--line);background:#fff}.composer-row{display:grid;grid-template-columns:1fr 44px;gap:8px}.composer textarea{width:100%;min-height:44px;max-height:100px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;resize:none;color:var(--ink);background:#fcfbf8;font:inherit;font-size:.78rem}.send{display:grid;width:44px;height:44px;place-items:center;border:0;border-radius:50%;color:#fff;background:var(--terra);cursor:pointer;font-size:1rem}.send:disabled{opacity:.45;cursor:not-allowed}.composer-note{margin:7px 2px 0;color:var(--muted);font-size:.6rem;line-height:1.4}.delivery{display:flex;align-items:center;gap:6px;margin:8px 2px 0;color:var(--green);font-size:.63rem;font-weight:700}.notify-option{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#f7f4ed;font-size:.67rem;line-height:1.45}.notify-option button{margin-top:7px;padding:0;border:0;color:var(--forest);background:transparent;cursor:pointer;font:700 .65rem "DM Sans",sans-serif;text-decoration:underline}.owner-controls{position:fixed;z-index:25;left:20px;bottom:20px;width:min(315px,calc(100% - 40px));padding:14px;border:1px dashed var(--terra);background:#fffaf5;box-shadow:0 8px 24px rgba(24,54,50,.12)}.owner-controls strong{display:block;font:600 1rem "Playfair Display",serif}.owner-controls p{margin:5px 0 9px;color:var(--muted);font-size:.67rem;line-height:1.45}.owner-controls button{width:100%;min-height:36px;border:0;color:#fff;background:var(--forest);cursor:pointer;font:700 .64rem "DM Sans",sans-serif;letter-spacing:.06em;text-transform:uppercase}.owner-controls button:disabled{opacity:.4;cursor:not-allowed}
+    @media(max-width:620px){.prototype-bar{font-size:.57rem}.site-nav{min-height:65px;padding:0 5vw}.logo{font-size:1.28rem}.back{font-size:0}.back i{font-size:1rem}.hero{min-height:calc(100vh - 104px);padding:48px 6vw 160px}.hero h1{font-size:2.8rem}.chat-launcher{right:15px;bottom:15px}.chat-panel{inset:0;width:100%;height:100%;max-height:none;border:0;border-radius:0}.owner-controls{left:12px;bottom:12px;width:calc(100% - 24px)}body.chat-open .owner-controls{display:none}}
+  </style>
+</head>
+<body>
+  <div class="prototype-bar"><i class="bi bi-cone-striped"></i> Private prototype · Messages are saved locally · Telegram is not connected yet</div>
+  <nav class="site-nav"><a class="logo" href="/"><span>Villa Tullia</span><small>Padenghe sul Garda</small></a><a class="back" href="/calendarw.html"><i class="bi bi-arrow-left"></i> Availability</a></nav>
+  <main class="hero"><div class="hero-copy"><div class="eyebrow">Anonymous website chat</div><h1>Ask Alex anything.</h1><p>This prototype shows how a visitor can start chatting immediately—without entering a name, email address or phone number.</p><div class="week-card"><i class="bi bi-calendar-check"></i><div><small>Selected week carried into chat</small><strong>15–22 May 2027 · 7 nights · €3,675</strong></div></div></div></main>
+
+  <button id="chatLauncher" class="chat-launcher" type="button"><i class="bi bi-chat-heart"></i> Ask Alex</button>
+  <section id="chatPanel" class="chat-panel" aria-label="Chat with Alex" hidden>
+    <header class="chat-head"><img class="alex-photo" src="imgs/Foto/alex-pellegrini.png" alt="Alex Pellegrini"><div><strong>Chat with Alex</strong><small>Ask about the villa or your selected week</small></div><button id="chatClose" class="chat-close" type="button" aria-label="Close chat"><i class="bi bi-x-lg"></i></button></header>
+    <div class="chat-context"><div><span>Your selected stay</span><strong>15–22 May 2027 · 7 nights</strong></div><b>€3,675</b></div>
+    <div id="messages" class="messages" aria-live="polite"></div>
+    <form id="composer" class="composer"><div class="composer-row"><textarea id="messageInput" aria-label="Your message" placeholder="Type your question…" maxlength="1000" required></textarea><button id="sendButton" class="send" type="submit" aria-label="Send message"><i class="bi bi-send-fill"></i></button></div><p class="composer-note">No contact details required. Keep this page open to receive Alex’s reply.</p><div id="delivery" class="delivery" hidden><i class="bi bi-check2-circle"></i> Message delivered to Alex</div><div id="notifyOption" class="notify-option" hidden>Leaving the website? You could optionally request an email notification after sending—never before.<br><button type="button">Preview optional notification step</button></div></form>
+  </section>
+
+  <aside class="owner-controls"><strong>Prototype controls</strong><p>Send a visitor message, then use this button to see how Alex’s Telegram reply would appear.</p><button id="simulateReply" type="button" disabled>Simulate Alex replying</button></aside>
+
+  <script>
+    (() => {
+      const storageKey = 'villa_chat_prototype_session';
+      const launcher = document.getElementById('chatLauncher');
+      const panel = document.getElementById('chatPanel');
+      const close = document.getElementById('chatClose');
+      const messages = document.getElementById('messages');
+      const composer = document.getElementById('composer');
+      const input = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      const delivery = document.getElementById('delivery');
+      const notifyOption = document.getElementById('notifyOption');
+      const simulateReply = document.getElementById('simulateReply');
+      let history = [];
+      let session = null;
+      let polling;
+      try { session = JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch {}
+
+      const formatTime = (value) => value ? new Intl.DateTimeFormat('en-GB', { hour:'2-digit', minute:'2-digit' }).format(new Date(value)) : 'Now';
+      const saveSession = () => { try { localStorage.setItem(storageKey, JSON.stringify(session)); } catch {} };
+      const authenticatedFetch = (url, options = {}) => fetch(url, {
+        ...options,
+        headers: { 'Content-Type':'application/json', 'X-Chat-Token':session?.token || '', ...(options.headers || {}) },
+      });
+      const render = () => {
+        messages.innerHTML = '';
+        const visibleHistory = [{ sender:'owner', body:'Hi, I’m Alex. Ask me anything about Villa Tullia, availability or your stay.', createdAt:null }, ...history];
+        visibleHistory.forEach((item) => {
+          const row = document.createElement('div');
+          row.className = `message ${item.sender === 'owner' ? 'alex' : 'visitor'}`;
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble';
+          bubble.textContent = item.body;
+          const time = document.createElement('small');
+          time.textContent = `${item.sender === 'owner' && item.createdAt ? 'Alex · ' : ''}${formatTime(item.createdAt)}`;
+          bubble.appendChild(time);
+          row.appendChild(bubble);
+          messages.appendChild(row);
+        });
+        messages.scrollTop = messages.scrollHeight;
+        const last = history.at(-1);
+        simulateReply.disabled = !session || !last || last.sender === 'owner';
+        notifyOption.hidden = !history.some((item) => item.sender === 'visitor');
+      };
+      const refresh = async () => {
+        if (!session?.conversationId || document.hidden) return;
+        try {
+          const response = await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/messages`);
+          if (response.status === 404) { session = null; localStorage.removeItem(storageKey); history = []; render(); return; }
+          if (!response.ok) return;
+          const data = await response.json();
+          history = data.messages || [];
+          render();
+        } catch {}
+      };
+      const openChat = () => {
+        panel.hidden = false;
+        launcher.hidden = true;
+        document.body.classList.add('chat-open');
+        render();
+        void refresh();
+        clearInterval(polling);
+        polling = window.setInterval(refresh, 4000);
+        window.setTimeout(() => input.focus(), 50);
+      };
+      const closeChat = () => { panel.hidden = true; launcher.hidden = false; document.body.classList.remove('chat-open'); clearInterval(polling); };
+      launcher.addEventListener('click', openChat);
+      close.addEventListener('click', closeChat);
+      composer.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message || sendButton.disabled) return;
+        sendButton.disabled = true;
+        delivery.hidden = true;
+        try {
+          const response = session
+            ? await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/messages`, { method:'POST', body:JSON.stringify({ message }) })
+            : await fetch('/api/chat/conversations', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ message, locale:'en', context:{ page:'/chat-test.html', selectedWeek:'15–22 May 2027 · 7 nights', price:'€3,675' } }) });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Message could not be sent');
+          if (!session) { session = { conversationId:data.conversationId, token:data.token }; saveSession(); }
+          history = data.messages || [];
+          input.value = '';
+          delivery.innerHTML = data.telegramForwarded
+            ? '<i class="bi bi-check2-circle"></i> Message delivered to Alex on Telegram'
+            : '<i class="bi bi-database-check"></i> Message saved · Telegram connection pending';
+          delivery.hidden = false;
+          render();
+        } catch (error) {
+          delivery.textContent = error instanceof Error ? error.message : 'Message could not be sent';
+          delivery.hidden = false;
+        } finally { sendButton.disabled = false; }
+      });
+      input.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); composer.requestSubmit(); } });
+      simulateReply.addEventListener('click', async () => {
+        if (!session) return;
+        simulateReply.disabled = true;
+        const response = await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/test-reply`, {
+          method:'POST',
+          body:JSON.stringify({ message:'Thanks for your message. This is how my Telegram reply would appear in the visitor’s chat.' }),
+        });
+        if (response.ok) history = (await response.json()).messages || history;
+        openChat();
+      });
+      document.querySelector('.notify-option button').addEventListener('click', () => { window.alert('In the real version, a small optional email field would open here. The visitor could ignore it and continue chatting anonymously.'); });
+      render();
+      void refresh();
+      window.setTimeout(openChat, 450);
+    })();
+  </script>
+</body>
+</html>

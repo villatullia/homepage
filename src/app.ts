@@ -18,6 +18,7 @@ import { registerAdminRoutes } from './routes/admin.js';
 import { registerPublicRoutes } from './routes/public.js';
 import { registerWebhookRoutes } from './routes/webhooks.js';
 import { localizedPublicPage, type PublicLocale } from './public-localization.js';
+import { registerChatRoutes } from './routes/chat.js';
 
 export interface BuildAppOptions {
   config?: AppConfig;
@@ -63,7 +64,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     allowedPath(pathName) {
       const normalized = pathName.replace(/^[/\\]+/, '').replace(/\\/g, '/');
       return (
-        ['index.html', 'calendarw.html', 'booking-process-test.html', 'privacy.html', 'robots.txt', 'sitemap.xml', 'favicon.svg', 'testcam.html', 'CNAME', 'guide/things-to-do-padenghe-sul-garda/index.html'].includes(normalized) ||
+        ['index.html', 'calendarw.html', 'booking-process-test.html', 'chat-test.html', 'privacy.html', 'robots.txt', 'sitemap.xml', 'favicon.svg', 'testcam.html', 'CNAME', 'guide/things-to-do-padenghe-sul-garda/index.html'].includes(normalized) ||
         normalized.startsWith('imgs/Foto/') ||
         normalized === 'imgs/flowers.jpg' || normalized === 'cro.js'
       );
@@ -98,6 +99,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   const email = new EmailService(db, config);
   const dependencies = { db, config, signatureProvider, paymentProvider, email };
   await registerPublicRoutes(app, dependencies);
+  await registerChatRoutes(app, dependencies);
   await registerAdminRoutes(app, dependencies);
   await registerWebhookRoutes(app, dependencies);
 

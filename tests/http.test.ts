@@ -121,6 +121,21 @@ describe('public HTTP surface', () => {
     expect(response.body).toContain('Prototype only');
   });
 
+  it('serves the unlisted anonymous chat prototype', async () => {
+    const context = createTestContext();
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => {
+      await app.close();
+      context.close();
+    });
+    const response = await app.inject({ method: 'GET', url: '/chat-test.html' });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toContain('Anonymous website chat');
+    expect(response.body).toContain('No contact details required');
+    expect(response.body).toContain('Simulate Alex replying');
+    expect(response.body).toContain('Messages are saved locally · Telegram is not connected yet');
+  });
+
   it('exports manually closed weeks and removes them after reopening', async () => {
     const context = createTestContext();
     context.db.prepare(`
