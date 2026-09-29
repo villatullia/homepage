@@ -54,7 +54,7 @@ describe('anonymous website chat', () => {
       method: 'POST',
       url: `/api/chat/conversations/${body.conversationId}/messages`,
       headers: { 'x-chat-token': body.token },
-      payload: { message: 'And is it heated?', clientMessageId: 'bbf78ad5-04bb-4137-8e27-a335805a90df' },
+      payload: { message: 'And is it heated?', clientMessageId: 'bbf78ad5-04bb-4137-8e27-a335805a90df', context: { page: '/calendarw.html', selectedWeek: '22–29 May 2027', price: '€3,850' } },
     });
     expect(followUp.statusCode).toBe(201);
     const repeatedFollowUp = await app.inject({
@@ -64,6 +64,8 @@ describe('anonymous website chat', () => {
       payload: { message: 'And is it heated?', clientMessageId: 'bbf78ad5-04bb-4137-8e27-a335805a90df' },
     });
     expect(repeatedFollowUp.statusCode).toBe(200);
+    expect((context.db.prepare('SELECT context_json FROM chat_conversations WHERE id = ?').get(body.conversationId) as { context_json: string }).context_json)
+      .toContain('22–29 May 2027');
     const testReply = await app.inject({
       method: 'POST',
       url: `/api/chat/conversations/${body.conversationId}/test-reply`,

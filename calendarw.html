@@ -32,6 +32,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/chat-widget.css?v=20260929">
   <style>
     :root { --ink:#183632; --forest:#23544d; --sand:#f4f0e8; --cream:#fcfaf6; --terracotta:#c87451; --available:#3c856f; --reserved:#bd6a4a; --line:rgba(24,54,50,.14); }
     * { box-sizing:border-box; } body { margin:0; color:var(--ink); background:var(--cream); font-family:"DM Sans",sans-serif; }
@@ -124,7 +125,7 @@
         <p class="privacy-copy">We use these details only to respond to your stay enquiry. See our <a href="privacy.html" target="_blank">privacy notice</a>.</p>
         <p id="emailStatus" class="email-status" role="status" aria-live="polite"></p>
       </form>
-        <div class="contact-divider"><span>or</span></div><button id="inquireButton" class="inquire" type="button"><i class="bi bi-whatsapp"></i> Contact us on WhatsApp</button>
+        <button class="enquiry-chat-button" type="button" data-villa-chat-open><i class="bi bi-chat-heart"></i> Ask Alex about this week — no contact details</button><div class="contact-divider"><span>or</span></div><button id="inquireButton" class="inquire" type="button"><i class="bi bi-whatsapp"></i> Contact us on WhatsApp</button>
         <div id="enquirySuccess" class="enquiry-success" hidden tabindex="-1" role="status" aria-live="polite"><span class="enquiry-success-icon"><i class="bi bi-check-lg"></i></span><strong>Enquiry sent successfully</strong><p>Your request is safely recorded. We have also notified Villa Tullia and will reply to you personally.</p><span class="enquiry-reference">Reference: <span id="enquiryReference"></span></span></div>
         <button id="changeDates" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change selected week</button></section>
       </div></div>
@@ -132,7 +133,6 @@
     </aside>
   </main>
   <aside id="returningPrompt" class="returning-prompt" hidden aria-live="polite"><button id="returningPromptClose" class="returning-close" type="button" aria-label="Dismiss"><i class="bi bi-x-lg"></i></button><small>Welcome back</small><strong id="returningPromptTitle">Still planning your Lake Garda stay?</strong><p id="returningPromptCopy">See the current available weeks or ask us anything. Your enquiry is personal and non-binding.</p><button id="returningPromptResume" class="returning-resume" type="button">See current availability</button></aside>
-  <a id="floatingWhatsapp" class="floating" href="https://wa.me/393466733267?text=Hello%20I%20am%20interested%20in%20Villa%20Tullia" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="bi bi-whatsapp"></i></a>
   <dialog class="amenities-dialog" id="amenitiesDialog" aria-labelledby="amenitiesDialogTitle"><div class="amenities-dialog-header"><div><div class="amenities-dialog-kicker">Everything you need</div><h2 id="amenitiesDialogTitle">All amenities</h2></div><button class="amenities-close" type="button" aria-label="Close amenities"><i class="bi bi-x-lg"></i></button></div><ul class="all-amenities-list"><li><i class="bi bi-cup-hot"></i>Kitchen</li><li><i class="bi bi-droplet"></i>Bidet</li><li><i class="bi bi-water"></i>Washing machine</li><li><i class="bi bi-badge-wc"></i>Toilet</li><li><i class="bi bi-house-heart"></i>Sofa</li><li><i class="bi bi-fire"></i>Fireplace</li><li><i class="bi bi-droplet-half"></i>Bath or shower</li><li><i class="bi bi-grid-3x3-gap"></i>Hardwood or parquet floors</li><li><i class="bi bi-plug"></i>Socket near the bed</li><li><i class="bi bi-grid"></i>Tile/marble floor</li><li><i class="bi bi-laptop"></i>Desk</li><li><i class="bi bi-person-arms-up"></i>Children's high chair</li><li><i class="bi bi-lamp"></i>Seating area</li><li><i class="bi bi-door-open"></i>Private entrance</li><li><i class="bi bi-tv"></i>TV</li><li><i class="bi bi-snow2"></i>Refrigerator</li><li><i class="bi bi-thermometer-high"></i>Ironing facilities</li><li><i class="bi bi-cup-hot"></i>Tea/Coffee maker</li><li><i class="bi bi-triangle"></i>Iron</li><li><i class="bi bi-box"></i>Microwave</li><li><i class="bi bi-thermometer-sun"></i>Heating</li><li><i class="bi bi-wind"></i>Hairdryer</li><li><i class="bi bi-egg-fried"></i>Kitchenware</li><li><i class="bi bi-cup-straw"></i>Kitchenette</li><li><i class="bi bi-arrows-expand"></i>Extra long beds (&gt; 80 inches)</li><li><i class="bi bi-stack"></i>Towels and bed sheets</li><li><i class="bi bi-cup"></i>Electric kettle</li><li><i class="bi bi-tree"></i>Outdoor furniture</li><li><i class="bi bi-sun"></i>Outdoor dining area</li><li><i class="bi bi-door-closed"></i>Wardrobe or closet</li><li><i class="bi bi-box2"></i>Oven</li><li><i class="bi bi-fire"></i>Stovetop</li><li><i class="bi bi-bread-slice"></i>Toaster</li><li><i class="bi bi-people"></i>Dining area</li><li><i class="bi bi-layout-text-window"></i>Dining table</li><li><i class="bi bi-ladder"></i>Upper floors accessible by stairs only</li><li><i class="bi bi-house"></i>Detached</li><li><i class="bi bi-person-standing-dress"></i>Clothes rack</li><li><i class="bi bi-wind"></i>Drying rack for clothing</li><li><i class="bi bi-paperclip"></i>Toilet paper</li><li><i class="bi bi-moon-stars"></i>Sofa bed</li><li><i class="bi bi-shield-check"></i>Carbon monoxide detector</li></ul></dialog>
   <footer class="site-footer"><span>© 2026 Villa Tullia · Padenghe sul Garda</span><span class="footer-links"><a href="index.html">Villa home</a><a href="https://wa.me/393466733267" target="_blank" rel="noopener">WhatsApp</a></span></footer>
   <script>window.CRO_CONFIG={siteId:'villa-tullia',debug:location.hostname==='localhost'||location.hostname==='127.0.0.1'};</script>
@@ -263,6 +263,7 @@
         selectedWeek = week;
         selectionDate.textContent = `${formatDate(week.start)} – ${formatDate(week.end)}`;
         selectionPrice.textContent = week.price ? formatPrice(week.price) : 'Confirmed personally';
+        window.VillaChat?.setContext({ selectedWeek:selectionDate.textContent, price:selectionPrice.textContent });
         emailWeek.value = selectionDate.textContent;
         emailCheckIn.value = toIsoDate(week.start);
         emailCheckOut.value = toIsoDate(week.end);
@@ -439,5 +440,7 @@
         .catch(() => { syncStatus.textContent = 'Live calendar could not be reached; please check again shortly.'; renderWeeks(); showReturningPrompt(); });
     });
   </script>
+  <script>window.VILLA_CHAT_CONFIG={locale:(document.documentElement.lang||'en').slice(0,2),placement:'availability',getContext:()=>{const week=document.getElementById('selectionDate');const price=document.getElementById('selectionPrice');return week&&!week.classList.contains('selection-empty')?{selectedWeek:week.textContent,price:price?.textContent||''}:{};}};</script>
+  <script src="/chat-widget.js?v=20260929"></script>
 </body>
 </html>

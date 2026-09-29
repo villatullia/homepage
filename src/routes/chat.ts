@@ -13,15 +13,17 @@ import {
   forwardVisitorTyping,
   getMessages,
   telegramEnabled,
+  updateConversationContext,
   wasForwardedToTelegram,
 } from '../services/chat.js';
 
 const messageSchema = z.string().trim().min(1).max(1000);
-const contextSchema = z.object({
+const contextFieldsSchema = z.object({
   page: z.string().max(300).optional(),
   selectedWeek: z.string().max(100).optional(),
   price: z.string().max(50).optional(),
-}).default({});
+});
+const contextSchema = contextFieldsSchema.default({});
 const clientMessageIdSchema = z.string().uuid().optional();
 const createSchema = z.object({
   message: messageSchema,
@@ -61,13 +63,14 @@ export async function registerChatRoutes(app: FastifyInstance, deps: { db: Datab
     const token = request.headers['x-chat-token'];
     const conversation = authorizedConversation(db, id, typeof token === 'string' ? token : undefined);
     if (!conversation) return reply.code(404).send({ error: 'Conversation unavailable' });
-    const parsed = z.object({ message: messageSchema, clientMessageId: clientMessageIdSchema }).safeParse(request.body);
+    const parsed = z.object({ message: messageSchema, clientMessageId: clientMessageIdSchema, context: contextFieldsSchema.optional() }).safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Please enter a shorter message.' });
     const result = addVisitorMessage(db, id, parsed.data.message, parsed.data.clientMessageId);
+    const messageContext = updateConversationContext(db, id, conversation.context_json, parsed.data.context);
     let telegramForwarded = wasForwardedToTelegram(db, id);
     if (result.created) {
       try {
-        telegramForwarded = await forwardVisitorMessage(db, config, id, parsed.data.message, conversation.locale, JSON.parse(conversation.context_json));
+        telegramForwarded = await forwardVisitorMessage(db, config, id, parsed.data.message, conversation.locale, messageContext);
       } catch (error) {
         request.log.error({ err: error, conversationId: id }, 'Telegram chat notification failed');
       }

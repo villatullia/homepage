@@ -20,7 +20,12 @@ describe('public HTTP surface', () => {
       context.close();
     });
 
-    expect((await app.inject({ method: 'GET', url: '/' })).statusCode).toBe(200);
+    const home = await app.inject({ method: 'GET', url: '/' });
+    expect(home.statusCode).toBe(200);
+    expect(home.body).toContain('data-villa-chat-open');
+    expect(home.body).toContain('/chat-widget.js?v=20260929');
+    expect((await app.inject({ method: 'GET', url: '/chat-widget.js' })).statusCode).toBe(200);
+    expect((await app.inject({ method: 'GET', url: '/chat-widget.css' })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url: '/privacy.html' })).statusCode).toBe(200);
     const german = await app.inject({ method: 'GET', url: '/de/' });
     expect(german.statusCode).toBe(200);
@@ -39,6 +44,8 @@ describe('public HTTP surface', () => {
     expect(englishAvailability.body).toContain('Ask about this week — no payment');
     expect(englishAvailability.body).toContain('Non-binding · No payment now');
     expect(englishAvailability.body).toContain('A personal reply from Alex Pellegrini');
+    expect(englishAvailability.body).toContain('Ask Alex about this week — no contact details');
+    expect(englishAvailability.body).toContain("selectedWeek:week.textContent");
     expect(englishAvailability.body).toContain('/imgs/Foto/alex-pellegrini.png');
     expect((await app.inject({ method: 'GET', url: '/imgs/Foto/alex-pellegrini.png' })).statusCode).toBe(200);
     expect(englishAvailability.body).toContain('Veronika · Czech Republic · Verified Booking.com guest');
@@ -49,15 +56,18 @@ describe('public HTTP surface', () => {
     const germanAvailability = await app.inject({ method: 'GET', url: '/de/verfuegbarkeit/' });
     expect(germanAvailability.body).toContain('Diese Woche anfragen — keine Zahlung');
     expect(germanAvailability.body).toContain('Für die gesamte Villa');
+    expect(germanAvailability.body).toContain('Alex zu dieser Woche fragen — ohne Kontaktdaten');
     const italianAvailability = await app.inject({ method: 'GET', url: '/it/disponibilita/' });
     expect(italianAvailability.statusCode).toBe(200);
     expect(italianAvailability.body).toContain('<html lang="it"');
     expect(italianAvailability.body).toContain('Scegli la tua settimana sul Garda.');
     expect(italianAvailability.body).toContain('Chiedi informazioni per questa settimana — nessun pagamento');
+    expect(italianAvailability.body).toContain('Chiedi ad Alex di questa settimana — senza dati di contatto');
     expect(italianAvailability.body).toContain("new Intl.DateTimeFormat('it-IT'");
     const dutchAvailability = await app.inject({ method: 'GET', url: '/nl/beschikbaarheid/' });
     expect(dutchAvailability.body).toContain('Vraag naar deze week — nu niet betalen');
     expect(dutchAvailability.body).toContain('Voor de hele villa');
+    expect(dutchAvailability.body).toContain('Vraag Alex naar deze week — geen contactgegevens nodig');
     expect((await app.inject({ method: 'GET', url: '/favicon.svg' })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url: '/.env.example' })).statusCode).toBe(404);
     expect((await app.inject({ method: 'GET', url: '/src/config.ts' })).statusCode).toBe(404);

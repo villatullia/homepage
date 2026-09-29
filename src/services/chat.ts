@@ -89,6 +89,15 @@ export function getMessages(db: Database, conversationId: string): ChatMessage[]
   return publicMessages(db, conversationId);
 }
 
+export function updateConversationContext(db: Database, conversationId: string, currentJson: string, next: ChatContext | undefined): ChatContext {
+  const current = JSON.parse(currentJson) as ChatContext;
+  if (!next) return current;
+  const merged = { ...current, ...next };
+  db.prepare('UPDATE chat_conversations SET context_json = ?, updated_at = ? WHERE id = ?')
+    .run(JSON.stringify(merged), nowIso(), conversationId);
+  return merged;
+}
+
 export function telegramEnabled(config: AppConfig): boolean {
   return Boolean(config.TELEGRAM_BOT_TOKEN && config.TELEGRAM_CHAT_ID && config.TELEGRAM_WEBHOOK_SECRET);
 }
