@@ -45,6 +45,9 @@ describe('public HTTP surface', () => {
     expect(englishAvailability.body).toContain('Non-binding · No payment now');
     expect(englishAvailability.body).toContain('A personal reply from Alex Pellegrini');
     expect(englishAvailability.body).toContain('Ask Alex about this week — no contact details');
+    expect(englishAvailability.body.indexOf('id="changeDates"')).toBeLessThan(englishAvailability.body.indexOf('class="flow-window"'));
+    expect(englishAvailability.body).not.toContain('id="syncStatus"');
+    expect(englishAvailability.body).not.toContain('Live calendar checked');
     expect(englishAvailability.body).toContain("selectedWeek:week.textContent");
     expect(englishAvailability.body).toContain('/imgs/Foto/alex-pellegrini.png');
     expect((await app.inject({ method: 'GET', url: '/imgs/Foto/alex-pellegrini.png' })).statusCode).toBe(200);

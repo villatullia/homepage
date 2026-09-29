@@ -15,21 +15,21 @@ const routes = {
 const common: Record<PublicLocale, Array<[string, string]>> = {
   nl: [
     ['Language', 'Taal'], ['Book direct', 'Direct boeken'], ['Availability', 'Beschikbaarheid'], ['Email enquiry', 'Aanvraag per e-mail'], ['Local guide', 'Lokale gids'],
-    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'], ['Website chat', 'Websitechat'], ['Message Alex', 'Stuur Alex een bericht'], ['Send an email', 'Stuur een e-mail'], ['Ask Alex about this week — no contact details', 'Vraag Alex naar deze week — geen contactgegevens nodig'], ['Choose language', 'Kies taal'], ['Dismiss', 'Sluiten'],
+    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'], ['Website chat', 'Websitechat'], ['Message Alex', 'Stuur Alex een bericht'], ['Send an email', 'Stuur een e-mail'], ['Change week', 'Week wijzigen'], ['Ask Alex about this week — no contact details', 'Vraag Alex naar deze week — geen contactgegevens nodig'], ['Choose language', 'Kies taal'], ['Dismiss', 'Sluiten'],
     ['Previous review', 'Vorige beoordeling'], ['Next review', 'Volgende beoordeling'], ['Verified Booking.com guest', 'Geverifieerde gast van Booking.com'], ['Verified Vrbo guest', 'Geverifieerde gast van Vrbo'],
   ],
   de: [
     ['Language', 'Sprache'],
     ['Book direct', 'Direkt buchen'], ['Availability', 'Verfügbarkeit'], ['Email enquiry', 'E-Mail-Anfrage'], ['Local guide', 'Reiseführer'],
     ['Privacy notice', 'Datenschutzerklärung'], ['Privacy', 'Datenschutz'], ['Villa home', 'Zur Villa'],
-    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Website chat', 'Website-Chat'], ['Message Alex', 'Alex schreiben'], ['Send an email', 'E-Mail senden'], ['Ask Alex about this week — no contact details', 'Alex zu dieser Woche fragen — ohne Kontaktdaten'], ['Choose language', 'Sprache wählen'], ['Dismiss', 'Schließen'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
+    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Website chat', 'Website-Chat'], ['Message Alex', 'Alex schreiben'], ['Send an email', 'E-Mail senden'], ['Change week', 'Woche ändern'], ['Ask Alex about this week — no contact details', 'Alex zu dieser Woche fragen — ohne Kontaktdaten'], ['Choose language', 'Sprache wählen'], ['Dismiss', 'Schließen'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
     ['Verified Booking.com guest', 'Verifizierter Booking.com-Gast'], ['Verified Vrbo guest', 'Verifizierter Vrbo-Gast'],
   ],
   it: [
     ['Language', 'Lingua'],
     ['Book direct', 'Prenota direttamente'], ['Availability', 'Disponibilità'], ['Email enquiry', 'Richiesta via e-mail'], ['Local guide', 'Guida locale'],
     ['Privacy notice', 'Informativa sulla privacy'], ['Villa home', 'Torna alla villa'],
-    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Website chat', 'Chat sul sito'], ['Message Alex', 'Scrivi ad Alex'], ['Send an email', 'Invia un’e-mail'], ['Ask Alex about this week — no contact details', 'Chiedi ad Alex di questa settimana — senza dati di contatto'], ['Choose language', 'Scegli la lingua'], ['Dismiss', 'Chiudi'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
+    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Website chat', 'Chat sul sito'], ['Message Alex', 'Scrivi ad Alex'], ['Send an email', 'Invia un’e-mail'], ['Change week', 'Cambia settimana'], ['Ask Alex about this week — no contact details', 'Chiedi ad Alex di questa settimana — senza dati di contatto'], ['Choose language', 'Scegli la lingua'], ['Dismiss', 'Chiudi'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
     ['Verified Booking.com guest', 'Ospite verificato Booking.com'], ['Verified Vrbo guest', 'Ospite verificato Vrbo'],
   ],
 };
