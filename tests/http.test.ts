@@ -43,8 +43,13 @@ describe('public HTTP surface', () => {
     expect(englishAvailability.body).toContain('No mandatory charges on arrival');
     expect(englishAvailability.body).toContain('Ask about this week — no payment');
     expect(englishAvailability.body).toContain('Non-binding · No payment now');
-    expect(englishAvailability.body).toContain('A personal reply from Alex Pellegrini');
-    expect(englishAvailability.body).toContain('Ask Alex about this week — no contact details');
+    expect(englishAvailability.body).not.toContain('A personal reply from Alex Pellegrini');
+    expect(englishAvailability.body).not.toContain('Veronika · Czech Republic · Verified Booking.com guest');
+    expect(englishAvailability.body).toContain('ALL INCLUSIVE');
+    expect(englishAvailability.body).toContain('openAmenitiesFromEnquiry');
+    expect(englishAvailability.body).not.toContain('Recommended');
+    expect(englishAvailability.body).not.toContain('No contact details required. Ask your question and receive Alex’s reply here.');
+    expect(englishAvailability.body).toContain('Chat with Alex');
     expect(englishAvailability.body.indexOf('id="flowBack"')).toBeLessThan(englishAvailability.body.indexOf('class="flow-window"'));
     expect(englishAvailability.body).not.toContain('id="backToYears"');
     expect(englishAvailability.body).not.toContain('id="backToMonths"');
@@ -53,9 +58,7 @@ describe('public HTTP surface', () => {
     expect(englishAvailability.body).not.toContain('id="syncStatus"');
     expect(englishAvailability.body).not.toContain('Live calendar checked');
     expect(englishAvailability.body).toContain("selectedWeek:week.textContent");
-    expect(englishAvailability.body).toContain('/imgs/Foto/alex-pellegrini.png');
     expect((await app.inject({ method: 'GET', url: '/imgs/Foto/alex-pellegrini.png' })).statusCode).toBe(200);
-    expect(englishAvailability.body).toContain('Veronika · Czech Republic · Verified Booking.com guest');
     expect(englishAvailability.body).not.toContain('We answer within 30 minutes.');
     expect(englishAvailability.body).not.toContain('end - oneDay');
     expect(englishAvailability.body).toContain('formatDate(week.end)');
@@ -63,7 +66,6 @@ describe('public HTTP surface', () => {
     const germanAvailability = await app.inject({ method: 'GET', url: '/de/verfuegbarkeit/' });
     expect(germanAvailability.body).toContain('Diese Woche anfragen — keine Zahlung');
     expect(germanAvailability.body).toContain('Für die gesamte Villa');
-    expect(germanAvailability.body).toContain('Alex zu dieser Woche fragen — ohne Kontaktdaten');
     expect(germanAvailability.body).toContain('Mit Alex chatten');
     expect(germanAvailability.body).toContain('Lieber E-Mail oder WhatsApp');
     expect(germanAvailability.body).toContain('Sparen Sie 530–913 € pro Woche.');
@@ -73,13 +75,11 @@ describe('public HTTP surface', () => {
     expect(italianAvailability.body).toContain('<html lang="it"');
     expect(italianAvailability.body).toContain('Scegli la tua settimana sul Garda.');
     expect(italianAvailability.body).toContain('Chiedi informazioni per questa settimana — nessun pagamento');
-    expect(italianAvailability.body).toContain('Chiedi ad Alex di questa settimana — senza dati di contatto');
     expect(italianAvailability.body).toContain('Chatta con Alex');
     expect(italianAvailability.body).toContain("new Intl.DateTimeFormat('it-IT'");
     const dutchAvailability = await app.inject({ method: 'GET', url: '/nl/beschikbaarheid/' });
     expect(dutchAvailability.body).toContain('Vraag naar deze week — nu niet betalen');
     expect(dutchAvailability.body).toContain('Voor de hele villa');
-    expect(dutchAvailability.body).toContain('Vraag Alex naar deze week — geen contactgegevens nodig');
     expect((await app.inject({ method: 'GET', url: '/favicon.svg' })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url: '/.env.example' })).statusCode).toBe(404);
     expect((await app.inject({ method: 'GET', url: '/src/config.ts' })).statusCode).toBe(404);
