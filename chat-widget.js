@@ -1,15 +1,16 @@
 (() => {
   const copy = {
-    en:{launcher:'Ask Alex',title:'Chat with Alex',subtitle:'Ask about the villa or your stay',greeting:'Hi, I’m Alex. Ask me anything about Villa Tullia, availability or your stay.',placeholder:'Type your question…',note:'No contact details required. Keep this page open to receive Alex’s reply.',selected:'Your selected stay',delivered:'Message delivered to Alex on Telegram',saved:'Message saved. Alex will see it shortly.',offline:'Connection interrupted. Please try again—your question will not be sent twice.',typing:'Alex is typing'},
-    de:{launcher:'Alex fragen',title:'Chat mit Alex',subtitle:'Fragen zur Villa oder zu Ihrem Aufenthalt',greeting:'Hallo, ich bin Alex. Fragen Sie mich alles über Villa Tullia, Verfügbarkeit oder Ihren Aufenthalt.',placeholder:'Ihre Frage…',note:'Keine Kontaktdaten erforderlich. Lassen Sie diese Seite geöffnet, um Alex’ Antwort zu erhalten.',selected:'Ihr gewählter Aufenthalt',delivered:'Nachricht über Telegram an Alex gesendet',saved:'Nachricht gespeichert. Alex sieht sie in Kürze.',offline:'Verbindung unterbrochen. Versuchen Sie es erneut – Ihre Frage wird nicht doppelt gesendet.',typing:'Alex schreibt'},
-    it:{launcher:'Chiedi ad Alex',title:'Chatta con Alex',subtitle:'Chiedi della villa o del tuo soggiorno',greeting:'Ciao, sono Alex. Chiedimi tutto su Villa Tullia, la disponibilità o il tuo soggiorno.',placeholder:'Scrivi la tua domanda…',note:'Non servono dati di contatto. Tieni aperta questa pagina per ricevere la risposta di Alex.',selected:'Il soggiorno scelto',delivered:'Messaggio inviato ad Alex su Telegram',saved:'Messaggio salvato. Alex lo vedrà a breve.',offline:'Connessione interrotta. Riprova: la domanda non verrà inviata due volte.',typing:'Alex sta scrivendo'},
-    nl:{launcher:'Vraag Alex',title:'Chat met Alex',subtitle:'Vraag naar de villa of uw verblijf',greeting:'Hallo, ik ben Alex. Vraag me alles over Villa Tullia, beschikbaarheid of uw verblijf.',placeholder:'Typ uw vraag…',note:'Geen contactgegevens nodig. Houd deze pagina open om het antwoord van Alex te ontvangen.',selected:'Uw gekozen verblijf',delivered:'Bericht via Telegram naar Alex gestuurd',saved:'Bericht opgeslagen. Alex ziet het binnenkort.',offline:'Verbinding verbroken. Probeer opnieuw—uw vraag wordt niet dubbel verzonden.',typing:'Alex typt'},
+    en:{launcher:'Ask Alex',title:'Chat with Alex',subtitle:'Ask about the villa or your stay',greeting:'Hi, I’m Alex. Ask me anything about Villa Tullia, availability or your stay.',placeholder:'Type your question…',note:'No contact details required. Keep this page open to receive Alex’s reply.',selected:'Your selected stay',interest:'I’m interested in this week.',delivered:'Message delivered to Alex on Telegram',saved:'Message saved. Alex will see it shortly.',offline:'Connection interrupted. Please try again—your question will not be sent twice.',typing:'Alex is typing'},
+    de:{launcher:'Alex fragen',title:'Chat mit Alex',subtitle:'Fragen zur Villa oder zu Ihrem Aufenthalt',greeting:'Hallo, ich bin Alex. Fragen Sie mich alles über Villa Tullia, Verfügbarkeit oder Ihren Aufenthalt.',placeholder:'Ihre Frage…',note:'Keine Kontaktdaten erforderlich. Lassen Sie diese Seite geöffnet, um Alex’ Antwort zu erhalten.',selected:'Ihr gewählter Aufenthalt',interest:'Ich interessiere mich für diese Woche.',delivered:'Nachricht über Telegram an Alex gesendet',saved:'Nachricht gespeichert. Alex sieht sie in Kürze.',offline:'Verbindung unterbrochen. Versuchen Sie es erneut – Ihre Frage wird nicht doppelt gesendet.',typing:'Alex schreibt'},
+    it:{launcher:'Chiedi ad Alex',title:'Chatta con Alex',subtitle:'Chiedi della villa o del tuo soggiorno',greeting:'Ciao, sono Alex. Chiedimi tutto su Villa Tullia, la disponibilità o il tuo soggiorno.',placeholder:'Scrivi la tua domanda…',note:'Non servono dati di contatto. Tieni aperta questa pagina per ricevere la risposta di Alex.',selected:'Il soggiorno scelto',interest:'Sono interessato a questa settimana.',delivered:'Messaggio inviato ad Alex su Telegram',saved:'Messaggio salvato. Alex lo vedrà a breve.',offline:'Connessione interrotta. Riprova: la domanda non verrà inviata due volte.',typing:'Alex sta scrivendo'},
+    nl:{launcher:'Vraag Alex',title:'Chat met Alex',subtitle:'Vraag naar de villa of uw verblijf',greeting:'Hallo, ik ben Alex. Vraag me alles over Villa Tullia, beschikbaarheid of uw verblijf.',placeholder:'Typ uw vraag…',note:'Geen contactgegevens nodig. Houd deze pagina open om het antwoord van Alex te ontvangen.',selected:'Uw gekozen verblijf',interest:'Ik ben geïnteresseerd in deze week.',delivered:'Bericht via Telegram naar Alex gestuurd',saved:'Bericht opgeslagen. Alex ziet het binnenkort.',offline:'Verbinding verbroken. Probeer opnieuw—uw vraag wordt niet dubbel verzonden.',typing:'Alex typt'},
   };
   const config = window.VILLA_CHAT_CONFIG || {};
   const locale = ['en','de','it','nl'].includes(config.locale) ? config.locale : (document.documentElement.lang || 'en').slice(0,2);
   const t = copy[locale] || copy.en;
   const sessionKey = 'villa_chat_session';
   const pendingKey = 'villa_chat_pending_message_v2';
+  const interestKey = 'villa_chat_interest_notified_v1';
   let session = null;
   let pendingMessage = null;
   let history = [];
@@ -19,6 +20,7 @@
   let initializedMessages = false;
   let pendingHistory = null;
   let lastTypingSignal = 0;
+  let pendingInterest = null;
   const knownMessageIds = new Set();
   try { session = JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch {}
   try { pendingMessage = JSON.parse(localStorage.getItem(pendingKey) || 'null'); } catch {}
@@ -77,7 +79,17 @@
   const open = (nextContext={}) => { context={...context,...nextContext}; updateContextBar(); panel.hidden=false; launcher.hidden=true; render(); void refresh(); clearInterval(polling); polling=window.setInterval(refresh,4000); window.setTimeout(()=>input.focus(),50); if(window.cro) cro.track('chat_opened',{placement:config.placement||'site'}); };
   const closeChat = () => { panel.hidden=true; launcher.hidden=false; clearInterval(polling); };
   launcher.addEventListener('click',()=>open()); close.addEventListener('click',closeChat);
-  document.querySelectorAll('[data-villa-chat-open]').forEach((trigger)=>trigger.addEventListener('click',()=>open()));
+  document.querySelectorAll('[data-villa-chat-open]').forEach((trigger)=>trigger.addEventListener('click',()=>{
+    open();
+    if(config.placement!=='availability'||sendButton.disabled)return;
+    const messageContext=currentContext();
+    if(!messageContext.selectedWeek)return;
+    const notificationKey=`${messageContext.selectedWeek}|${messageContext.price||''}`;
+    try{if(localStorage.getItem(interestKey)===notificationKey)return;}catch{}
+    pendingInterest=notificationKey;
+    input.value=t.interest;
+    composer.requestSubmit();
+  }));
   composer.addEventListener('submit',async(event)=>{
     event.preventDefault(); const message=input.value.trim(); if(!message||sendButton.disabled)return;
     sendButton.disabled=true; delivery.hidden=true;
@@ -86,7 +98,7 @@
       const messageContext=currentContext();
       const response=session ? await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/messages`,{method:'POST',body:JSON.stringify({message,clientMessageId:pendingMessage.clientMessageId,context:messageContext})}) : await fetch('/api/chat/conversations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,clientMessageId:pendingMessage.clientMessageId,clientToken:pendingMessage.clientToken,locale,context:messageContext})});
       const data=await response.json(); if(!response.ok)throw new Error(data.error||'Message could not be sent');
-      if(!session){session={conversationId:data.conversationId,token:data.token};saveSession();} clearPending(); history=data.messages||[];remember(history);initializedMessages=true;input.value='';delivery.innerHTML=`<i class="bi bi-check2-circle"></i> ${data.telegramForwarded?t.delivered:t.saved}`;delivery.hidden=false;render(); if(window.cro) cro.track('chat_message_sent',{placement:config.placement||'site',has_selected_week:Boolean(messageContext.selectedWeek)});
+      if(!session){session={conversationId:data.conversationId,token:data.token};saveSession();} clearPending(); history=data.messages||[];remember(history);initializedMessages=true;input.value='';delivery.innerHTML=`<i class="bi bi-check2-circle"></i> ${data.telegramForwarded?t.delivered:t.saved}`;delivery.hidden=false;render(); if(pendingInterest){try{localStorage.setItem(interestKey,pendingInterest);}catch{}pendingInterest=null;} if(window.cro) cro.track('chat_message_sent',{placement:config.placement||'site',has_selected_week:Boolean(messageContext.selectedWeek)});
     } catch(error){delivery.textContent=error instanceof TypeError?t.offline:error instanceof Error?error.message:'Message could not be sent';delivery.hidden=false;} finally{sendButton.disabled=false;}
   });
   input.addEventListener('keydown',(event)=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();composer.requestSubmit();}});
