@@ -45,7 +45,11 @@ describe('public HTTP surface', () => {
     expect(englishAvailability.body).toContain('Non-binding · No payment now');
     expect(englishAvailability.body).toContain('A personal reply from Alex Pellegrini');
     expect(englishAvailability.body).toContain('Ask Alex about this week — no contact details');
-    expect(englishAvailability.body.indexOf('id="changeDates"')).toBeLessThan(englishAvailability.body.indexOf('class="flow-window"'));
+    expect(englishAvailability.body.indexOf('id="flowBack"')).toBeLessThan(englishAvailability.body.indexOf('class="flow-window"'));
+    expect(englishAvailability.body).not.toContain('id="backToYears"');
+    expect(englishAvailability.body).not.toContain('id="backToMonths"');
+    expect(englishAvailability.body.indexOf('class="contact-primary"')).toBeLessThan(englishAvailability.body.indexOf('id="emailEnquiry"'));
+    expect(englishAvailability.body).toContain('Email or WhatsApp instead');
     expect(englishAvailability.body).not.toContain('id="syncStatus"');
     expect(englishAvailability.body).not.toContain('Live calendar checked');
     expect(englishAvailability.body).toContain("selectedWeek:week.textContent");
@@ -60,12 +64,17 @@ describe('public HTTP surface', () => {
     expect(germanAvailability.body).toContain('Diese Woche anfragen — keine Zahlung');
     expect(germanAvailability.body).toContain('Für die gesamte Villa');
     expect(germanAvailability.body).toContain('Alex zu dieser Woche fragen — ohne Kontaktdaten');
+    expect(germanAvailability.body).toContain('Mit Alex chatten');
+    expect(germanAvailability.body).toContain('Lieber E-Mail oder WhatsApp');
+    expect(germanAvailability.body).toContain('Sparen Sie 530–913 € pro Woche.');
+    expect(germanAvailability.body).toContain("'Woche ändern'");
     const italianAvailability = await app.inject({ method: 'GET', url: '/it/disponibilita/' });
     expect(italianAvailability.statusCode).toBe(200);
     expect(italianAvailability.body).toContain('<html lang="it"');
     expect(italianAvailability.body).toContain('Scegli la tua settimana sul Garda.');
     expect(italianAvailability.body).toContain('Chiedi informazioni per questa settimana — nessun pagamento');
     expect(italianAvailability.body).toContain('Chiedi ad Alex di questa settimana — senza dati di contatto');
+    expect(italianAvailability.body).toContain('Chatta con Alex');
     expect(italianAvailability.body).toContain("new Intl.DateTimeFormat('it-IT'");
     const dutchAvailability = await app.inject({ method: 'GET', url: '/nl/beschikbaarheid/' });
     expect(dutchAvailability.body).toContain('Vraag naar deze week — nu niet betalen');
@@ -195,8 +204,10 @@ describe('public HTTP surface', () => {
     });
     const rates = response.json().directRates as Array<{ start: string; end: string; weeklyPrice: number; bookingComPrice?: number; currency: string }>;
     expect(rates).toHaveLength(21);
-    expect(rates[0]).toEqual({ start: '2027-05-15', end: '2027-05-22', weeklyPrice: 3675, bookingComPrice: 4134, currency: 'EUR' });
-    expect(rates.at(-1)).toEqual({ start: '2027-10-02', end: '2027-10-09', weeklyPrice: 2975, bookingComPrice: 3518, currency: 'EUR' });
+    const previousPrices = [3675, 3675, 4113, 4375, 4375, 4375, 4638, 4900, 4900, 4900, 4900, 5075, 5338, 5338, 5075, 4638, 4113, 4113, 3675, 3238, 2975];
+    expect(rates.map((rate) => rate.weeklyPrice)).toEqual(previousPrices.map((price) => Math.round(price * 0.95)));
+    expect(rates[0]).toEqual({ start: '2027-05-15', end: '2027-05-22', weeklyPrice: 3491, bookingComPrice: 4134, currency: 'EUR' });
+    expect(rates.at(-1)).toEqual({ start: '2027-10-02', end: '2027-10-09', weeklyPrice: 2826, bookingComPrice: 3518, currency: 'EUR' });
   });
 
   it('silently discards honeypot submissions', async () => {

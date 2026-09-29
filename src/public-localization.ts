@@ -15,21 +15,21 @@ const routes = {
 const common: Record<PublicLocale, Array<[string, string]>> = {
   nl: [
     ['Language', 'Taal'], ['Book direct', 'Direct boeken'], ['Availability', 'Beschikbaarheid'], ['Email enquiry', 'Aanvraag per e-mail'], ['Local guide', 'Lokale gids'],
-    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'], ['Website chat', 'Websitechat'], ['Message Alex', 'Stuur Alex een bericht'], ['Send an email', 'Stuur een e-mail'], ['Change week', 'Week wijzigen'], ['Ask Alex about this week — no contact details', 'Vraag Alex naar deze week — geen contactgegevens nodig'], ['Choose language', 'Kies taal'], ['Dismiss', 'Sluiten'],
+    ['Privacy notice', 'Privacyverklaring'], ['Privacy', 'Privacy'], ['Villa home', 'Naar de villa'], ['Chat on WhatsApp', 'Chat via WhatsApp'], ['Website chat', 'Websitechat'], ['Message Alex', 'Stuur Alex een bericht'], ['Send an email', 'Stuur een e-mail'], ['Change week', 'Week wijzigen'], ['Recommended', 'Aanbevolen'], ['Chat with Alex', 'Chat met Alex'], ['No contact details required. Ask your question and receive Alex’s reply here.', 'Geen contactgegevens nodig. Stel uw vraag en ontvang hier het antwoord van Alex.'], ['Email or WhatsApp instead', 'Liever e-mail of WhatsApp'], ['Ask Alex about this week — no contact details', 'Vraag Alex naar deze week — geen contactgegevens nodig'], ['Choose language', 'Kies taal'], ['Dismiss', 'Sluiten'],
     ['Previous review', 'Vorige beoordeling'], ['Next review', 'Volgende beoordeling'], ['Verified Booking.com guest', 'Geverifieerde gast van Booking.com'], ['Verified Vrbo guest', 'Geverifieerde gast van Vrbo'],
   ],
   de: [
     ['Language', 'Sprache'],
     ['Book direct', 'Direkt buchen'], ['Availability', 'Verfügbarkeit'], ['Email enquiry', 'E-Mail-Anfrage'], ['Local guide', 'Reiseführer'],
     ['Privacy notice', 'Datenschutzerklärung'], ['Privacy', 'Datenschutz'], ['Villa home', 'Zur Villa'],
-    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Website chat', 'Website-Chat'], ['Message Alex', 'Alex schreiben'], ['Send an email', 'E-Mail senden'], ['Change week', 'Woche ändern'], ['Ask Alex about this week — no contact details', 'Alex zu dieser Woche fragen — ohne Kontaktdaten'], ['Choose language', 'Sprache wählen'], ['Dismiss', 'Schließen'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
+    ['Chat on WhatsApp', 'Auf WhatsApp schreiben'], ['Website chat', 'Website-Chat'], ['Message Alex', 'Alex schreiben'], ['Send an email', 'E-Mail senden'], ['Change week', 'Woche ändern'], ['Recommended', 'Empfohlen'], ['Chat with Alex', 'Mit Alex chatten'], ['No contact details required. Ask your question and receive Alex’s reply here.', 'Keine Kontaktdaten erforderlich. Stellen Sie Ihre Frage und erhalten Sie hier Alex’ Antwort.'], ['Email or WhatsApp instead', 'Lieber E-Mail oder WhatsApp'], ['Ask Alex about this week — no contact details', 'Alex zu dieser Woche fragen — ohne Kontaktdaten'], ['Choose language', 'Sprache wählen'], ['Dismiss', 'Schließen'], ['Previous review', 'Vorherige Bewertung'], ['Next review', 'Nächste Bewertung'],
     ['Verified Booking.com guest', 'Verifizierter Booking.com-Gast'], ['Verified Vrbo guest', 'Verifizierter Vrbo-Gast'],
   ],
   it: [
     ['Language', 'Lingua'],
     ['Book direct', 'Prenota direttamente'], ['Availability', 'Disponibilità'], ['Email enquiry', 'Richiesta via e-mail'], ['Local guide', 'Guida locale'],
     ['Privacy notice', 'Informativa sulla privacy'], ['Villa home', 'Torna alla villa'],
-    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Website chat', 'Chat sul sito'], ['Message Alex', 'Scrivi ad Alex'], ['Send an email', 'Invia un’e-mail'], ['Change week', 'Cambia settimana'], ['Ask Alex about this week — no contact details', 'Chiedi ad Alex di questa settimana — senza dati di contatto'], ['Choose language', 'Scegli la lingua'], ['Dismiss', 'Chiudi'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
+    ['Chat on WhatsApp', 'Scrivici su WhatsApp'], ['Website chat', 'Chat sul sito'], ['Message Alex', 'Scrivi ad Alex'], ['Send an email', 'Invia un’e-mail'], ['Change week', 'Cambia settimana'], ['Recommended', 'Consigliato'], ['Chat with Alex', 'Chatta con Alex'], ['No contact details required. Ask your question and receive Alex’s reply here.', 'Non servono dati di contatto. Fai la tua domanda e ricevi qui la risposta di Alex.'], ['Email or WhatsApp instead', 'Preferisci e-mail o WhatsApp'], ['Ask Alex about this week — no contact details', 'Chiedi ad Alex di questa settimana — senza dati di contatto'], ['Choose language', 'Scegli la lingua'], ['Dismiss', 'Chiudi'], ['Previous review', 'Recensione precedente'], ['Next review', 'Recensione successiva'],
     ['Verified Booking.com guest', 'Ospite verificato Booking.com'], ['Verified Vrbo guest', 'Ospite verificato Vrbo'],
   ],
 };
@@ -86,13 +86,13 @@ const home: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 home.nl.unshift(
-  ['See weekly prices from €2,975', 'Bekijk weekprijzen vanaf €2.975'],
-  ['Save €368–€646 per week', 'Bespaar €368–€646 per week'],
+  ['See weekly prices from €2,826', 'Bekijk weekprijzen vanaf €2.826'],
+  ['Save €530–€913 per week', 'Bespaar €530–€913 per week'],
   ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Vergeleken met de laagste prijzen van Villa Tullia op boekingsplatforms.'],
 );
 home.de.unshift(
-  ['See weekly prices from €2,975', 'Wochenpreise ab 2.975 € ansehen'],
-  ['Save €368–€646 per week', 'Sparen Sie 368–646 € pro Woche'],
+  ['See weekly prices from €2,826', 'Wochenpreise ab 2.826 € ansehen'],
+  ['Save €530–€913 per week', 'Sparen Sie 530–913 € pro Woche'],
   ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Verglichen mit den niedrigsten Preisen der Villa Tullia auf Buchungsplattformen.'],
   ['Ask on WhatsApp', 'Auf WhatsApp fragen'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Guten%20Tag%2C%20ich%20interessiere%20mich%20für%20die%20Villa%20Tullia.'],
@@ -102,8 +102,8 @@ home.de.unshift(
   ['The veranda', 'Die Veranda'], ['Pool days', 'Tage am Pool'], ['Living room', 'Wohnzimmer'], ['Long lunches', 'Lange Mittagessen'], ['Rest well', 'Erholsame Nächte'], ['Fresh starts', 'Frisch in den Tag'], ['Evening barbecue', 'Grillabend'], ['Private garden', 'Privater Garten'], ['For family time', 'Zeit mit der Familie'], ['Slow afternoons', 'Entspannte Nachmittage'], ['Inside Villa Tullia', 'In der Villa Tullia'], ['A place to unwind', 'Ein Ort zum Entspannen'], ['Kitchen details', 'Details der Küche'], ['A restful corner', 'Eine ruhige Ecke'], ['A quiet bedroom', 'Ein ruhiges Schlafzimmer'], ['Bathroom details', 'Details des Badezimmers'], ['A little comfort', 'Ein wenig Komfort'], ['Everything in its place', 'Alles an seinem Platz'], ['More room to settle in', 'Noch mehr Platz zum Wohlfühlen'], ['A tucked-away corner', 'Eine geschützte Ecke'], ['Villa details', 'Details der Villa'], ['Garden views', 'Blick in den Garten'], ['Small details', 'Liebevolle Details'], ['At home, even away', 'Auch im Urlaub wie zu Hause'], ['Room for family', 'Platz für die Familie'],
 );
 home.it.unshift(
-  ['See weekly prices from €2,975', 'Prezzi settimanali da 2.975 €'],
-  ['Save €368–€646 per week', 'Risparmia 368–646 € a settimana'],
+  ['See weekly prices from €2,826', 'Prezzi settimanali da 2.826 €'],
+  ['Save €530–€913 per week', 'Risparmia 530–913 € a settimana'],
   ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Rispetto ai prezzi più bassi di Villa Tullia sulle piattaforme di prenotazione.'],
   ['Ask on WhatsApp', 'Chiedi su WhatsApp'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Buongiorno%2C%20sono%20interessato%20a%20Villa%20Tullia.'],
@@ -173,7 +173,7 @@ availability.nl.unshift(
   ['Your stay at a glance.', 'Uw verblijf in één oogopslag.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Laat uw naam en e-mailadres achter. Wij bevestigen persoonlijk de beschikbaarheid en de volgende stappen.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 nachten · ${formatPrice(week.price)} direct totaal'], ['7 nights · Price confirmed personally', '7 nachten · Prijs persoonlijk bevestigd'],
   ['Send enquiry', 'Aanvraag versturen'], ['Contact us on WhatsApp', 'Neem contact op via WhatsApp'], ['>or<', '>of<'],
-  ['Save €368–€646 per week.', 'Bespaar €368–€646 per week.'],
+  ['Save €530–€913 per week.', 'Bespaar €530–€913 per week.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
@@ -197,7 +197,7 @@ availability.de.unshift(
   ['Your stay at a glance.', 'Ihr Aufenthalt auf einen Blick.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Hinterlassen Sie Ihren Namen und Ihre E-Mail-Adresse. Wir bestätigen die Verfügbarkeit und die nächsten Schritte persönlich.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 Nächte · ${formatPrice(week.price)} Direktpreis gesamt'], ['7 nights · Price confirmed personally', '7 Nächte · Preis wird persönlich bestätigt'],
   ['Send enquiry', 'Anfrage senden'], ['Contact us on WhatsApp', 'Kontakt über WhatsApp'], ['>or<', '>oder<'],
-  ['Save €368–€646 per week.', 'Sparen Sie 368–646 € pro Woche.'],
+  ['Save €530–€913 per week.', 'Sparen Sie 530–913 € pro Woche.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direkt'], ['Save ${formatPrice(saving)}', '${formatPrice(saving)} sparen'],
   ['No commitment at this stage.', 'In diesem Schritt gehen Sie keine Verpflichtung ein.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Diese Anfrage ist unverbindlich. Eine Buchung wird erst verbindlich, wenn der Mietvertrag von Ihnen und Villa Tullia unterzeichnet wurde.'],
@@ -226,7 +226,7 @@ availability.it.unshift(
   ['Your stay at a glance.', 'Il tuo soggiorno in sintesi.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Lascia nome e indirizzo e-mail: confermeremo personalmente la disponibilità e i prossimi passi.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 notti · totale diretto ${formatPrice(week.price)}'], ['7 nights · Price confirmed personally', '7 notti · Prezzo confermato personalmente'],
   ['Send enquiry', 'Invia la richiesta'], ['Contact us on WhatsApp', 'Contattaci su WhatsApp'], ['>or<', '>oppure<'],
-  ['Save €368–€646 per week.', 'Risparmia 368–646 € a settimana.'],
+  ['Save €530–€913 per week.', 'Risparmia 530–913 € a settimana.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} diretto'], ['Save ${formatPrice(saving)}', 'Risparmia ${formatPrice(saving)}'],
   ['No commitment at this stage.', 'In questa fase non assumi alcun impegno.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Questa richiesta non è vincolante. La prenotazione diventa vincolante solo quando il contratto di locazione è stato firmato sia da te sia da Villa Tullia.'],

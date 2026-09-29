@@ -68,6 +68,15 @@
     .guest-proof { margin:14px 0 0; padding:14px 16px; border:1px solid var(--line); color:#41514c; background:#f7f4ed; font:500 .78rem/1.5 "DM Sans",sans-serif; }
     .guest-proof:before { content:"\201C"; margin-right:4px; color:var(--terracotta); font:600 1.35rem/0 "Playfair Display",serif; vertical-align:-.18em; }
     .guest-proof cite { display:block; margin-top:6px; color:#6b7773; font-size:.62rem; font-style:normal; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+    .contact-primary { margin-top:18px; padding:18px; border:1px solid #dfb39f; background:#fff6f0; text-align:center; }
+    .contact-primary > span { display:block; color:var(--terracotta); font-size:.62rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
+    .contact-primary h3 { margin:5px 0 4px; font:600 1.2rem "Playfair Display",serif; }
+    .contact-primary p { margin:0!important; color:#596863!important; font-size:.72rem!important; line-height:1.45!important; }
+    .contact-primary .enquiry-chat-button { margin-top:13px; }
+    .alternative-contacts { margin-top:12px; border:1px solid var(--line); background:#fff; }
+    .alternative-contacts summary { padding:14px 16px; color:var(--forest); cursor:pointer; font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .alternative-contacts summary::marker { color:var(--terracotta); }
+    .alternative-contacts-body { padding:0 16px 16px; border-top:1px solid var(--line); }
     .primary-action { margin-top:12px; }
     .primary-action .email-button { margin-top:0; background:var(--terracotta); }
     .primary-action .email-button:hover { background:#aa6042; }
@@ -109,12 +118,12 @@
   </header>
   <main class="booking-area">
     <aside class="info-panel" id="bookingFlow">
-      <div class="flow-progress"><div class="flow-progress-main"><span id="flowCount" class="flow-count">Step 1 of 4</span><button id="changeDates" class="flow-progress-back" type="button" aria-label="Change selected week" hidden><i class="bi bi-arrow-left" aria-hidden="true"></i> Change week</button></div><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></span></div>
+      <div class="flow-progress"><div class="flow-progress-main"><span id="flowCount" class="flow-count">Step 1 of 4</span><button id="flowBack" class="flow-progress-back" type="button" hidden><i class="bi bi-arrow-left" aria-hidden="true"></i><span id="flowBackLabel">Change year</span></button></div><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></span></div>
       <div class="flow-window"><div id="flowTrack" class="flow-track">
-        <section class="flow-slide"><div class="flow-kicker">Step 1 · Choose a year</div><h2>Save €368–€646 per week.</h2><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="yearChoices" class="year-choices"></div></section>
-        <section class="flow-slide"><div class="flow-kicker">Step 2 · Choose a month</div><h2>When would you like to stay?</h2><p class="slide-copy">Choose a month in our May-to-October season. We will then show you its available Saturday-to-Saturday weeks.</p><div id="monthChoices" class="month-choices"></div><button id="backToYears" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change year</button></section>
-        <section class="flow-slide"><div class="flow-kicker">Step 3 · Pick a week</div><h2>Choose a green week.</h2><p class="slide-copy">Each green option is a complete seven-night stay.</p><div class="picker-card" aria-label="Villa Tullia availability"><div class="picker-head"><div><strong id="monthTitle">Availability</strong><span>Choose an available week to enquire</span></div><div class="month-control"><button id="previousMonth" type="button" aria-label="Previous month"><i class="bi bi-arrow-left"></i></button><button id="nextMonth" type="button" aria-label="Next month"><i class="bi bi-arrow-right"></i></button></div></div><div id="weeks" class="weeks"></div></div><button id="backToMonths" class="slider-back" type="button"><i class="bi bi-arrow-left"></i> Change month</button></section>
-        <section class="flow-slide"><div class="flow-kicker">Step 4 · Your enquiry</div><h2>This is the week you chose.</h2><p class="slide-copy">Check the stay details below, then ask Villa Tullia to confirm availability.</p><div class="stay-summary" aria-live="polite"><div class="stay-summary-head"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div></div><div class="stay-summary-grid"><div class="stay-summary-item"><span>Length of stay</span><strong>7 nights</strong><small>Saturday to Saturday</small></div><div class="stay-summary-item"><span>Total price</span><strong id="selectionPrice" class="selection-price">—</strong><small>For the entire villa</small></div><div class="stay-summary-item"><span>Mandatory extras</span><strong>None</strong><small>No mandatory charges on arrival</small></div></div><p class="included-value"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span><strong>Included in the total:</strong> bed linen, bath towels, utilities, final cleaning and all applicable taxes.</span></p></div><div class="human-reassurance"><img class="human-reassurance-photo" src="/imgs/Foto/alex-pellegrini.png" alt="Portrait of Alex Pellegrini"><div><strong>A personal reply from Alex Pellegrini</strong><p>Your enquiry goes directly to Alex at Villa Tullia. Alex will personally confirm availability and the next steps before any booking.</p></div></div><blockquote class="guest-proof">Quiet, beautifully positioned, with a lovely pool and an exceptionally kind host.<cite>Veronika · Czech Republic · Verified Booking.com guest</cite></blockquote><form id="emailEnquiry" class="email-form">
+        <section class="flow-slide"><div class="flow-kicker">Step 1 · Choose a year</div><h2>Save €530–€913 per week.</h2><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="yearChoices" class="year-choices"></div></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 2 · Choose a month</div><h2>When would you like to stay?</h2><p class="slide-copy">Choose a month in our May-to-October season. We will then show you its available Saturday-to-Saturday weeks.</p><div id="monthChoices" class="month-choices"></div></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 3 · Pick a week</div><h2>Choose a green week.</h2><p class="slide-copy">Each green option is a complete seven-night stay.</p><div class="picker-card" aria-label="Villa Tullia availability"><div class="picker-head"><div><strong id="monthTitle">Availability</strong><span>Choose an available week to enquire</span></div><div class="month-control"><button id="previousMonth" type="button" aria-label="Previous month"><i class="bi bi-arrow-left"></i></button><button id="nextMonth" type="button" aria-label="Next month"><i class="bi bi-arrow-right"></i></button></div></div><div id="weeks" class="weeks"></div></div></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 4 · Your enquiry</div><h2>This is the week you chose.</h2><p class="slide-copy">Check the stay details below, then ask Villa Tullia to confirm availability.</p><div class="stay-summary" aria-live="polite"><div class="stay-summary-head"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div></div><div class="stay-summary-grid"><div class="stay-summary-item"><span>Length of stay</span><strong>7 nights</strong><small>Saturday to Saturday</small></div><div class="stay-summary-item"><span>Total price</span><strong id="selectionPrice" class="selection-price">—</strong><small>For the entire villa</small></div><div class="stay-summary-item"><span>Mandatory extras</span><strong>None</strong><small>No mandatory charges on arrival</small></div></div><p class="included-value"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span><strong>Included in the total:</strong> bed linen, bath towels, utilities, final cleaning and all applicable taxes.</span></p></div><div class="human-reassurance"><img class="human-reassurance-photo" src="/imgs/Foto/alex-pellegrini.png" alt="Portrait of Alex Pellegrini"><div><strong>A personal reply from Alex Pellegrini</strong><p>Your enquiry goes directly to Alex at Villa Tullia. Alex will personally confirm availability and the next steps before any booking.</p></div></div><blockquote class="guest-proof">Quiet, beautifully positioned, with a lovely pool and an exceptionally kind host.<cite>Veronika · Czech Republic · Verified Booking.com guest</cite></blockquote><div class="contact-primary"><span>Recommended</span><h3>Chat with Alex</h3><p>No contact details required. Ask your question and receive Alex’s reply here.</p><button class="enquiry-chat-button" type="button" data-villa-chat-open><i class="bi bi-chat-heart"></i> Ask Alex about this week — no contact details</button></div><details id="alternativeContacts" class="alternative-contacts"><summary>Email or WhatsApp instead</summary><div class="alternative-contacts-body"><form id="emailEnquiry" class="email-form">
         <input id="emailWeek" type="hidden" value="General enquiry">
         <input id="emailCheckIn" type="hidden" name="checkIn"><input id="emailCheckOut" type="hidden" name="checkOut">
         <label for="guestName">Your name</label><input id="guestName" name="name" required autocomplete="name">
@@ -125,8 +134,7 @@
         <p class="privacy-copy">We use these details only to respond to your stay enquiry. See our <a href="privacy.html" target="_blank">privacy notice</a>.</p>
         <p id="emailStatus" class="email-status" role="status" aria-live="polite"></p>
       </form>
-        <button class="enquiry-chat-button" type="button" data-villa-chat-open><i class="bi bi-chat-heart"></i> Ask Alex about this week — no contact details</button><div class="contact-divider"><span>or</span></div><button id="inquireButton" class="inquire" type="button"><i class="bi bi-whatsapp"></i> Contact us on WhatsApp</button>
-        <div id="enquirySuccess" class="enquiry-success" hidden tabindex="-1" role="status" aria-live="polite"><span class="enquiry-success-icon"><i class="bi bi-check-lg"></i></span><strong>Enquiry sent successfully</strong><p>Your request is safely recorded. We have also notified Villa Tullia and will reply to you personally.</p><span class="enquiry-reference">Reference: <span id="enquiryReference"></span></span></div>
+        <div id="enquirySuccess" class="enquiry-success" hidden tabindex="-1" role="status" aria-live="polite"><span class="enquiry-success-icon"><i class="bi bi-check-lg"></i></span><strong>Enquiry sent successfully</strong><p>Your request is safely recorded. We have also notified Villa Tullia and will reply to you personally.</p><span class="enquiry-reference">Reference: <span id="enquiryReference"></span></span></div><div class="contact-divider"><span>or</span></div><button id="inquireButton" class="inquire" type="button"><i class="bi bi-whatsapp"></i> Contact us on WhatsApp</button></div></details>
         </section>
       </div></div>
     </aside>
@@ -213,9 +221,8 @@
       const yearChoices = document.getElementById('yearChoices');
       const monthChoices = document.getElementById('monthChoices');
       const bookingFlow = document.getElementById('bookingFlow');
-      const backToYears = document.getElementById('backToYears');
-      const backToMonths = document.getElementById('backToMonths');
-      const changeDates = document.getElementById('changeDates');
+      const flowBack = document.getElementById('flowBack');
+      const flowBackLabel = document.getElementById('flowBackLabel');
       const previousButton = document.getElementById('previousMonth');
       const nextButton = document.getElementById('nextMonth');
       const firstAvailable = document.getElementById('firstAvailable');
@@ -224,6 +231,7 @@
       const emailCheckOut = document.getElementById('emailCheckOut');
       const emailForm = document.getElementById('emailEnquiry');
       const emailStatus = document.getElementById('emailStatus');
+      const alternativeContacts = document.getElementById('alternativeContacts');
       const guestMessage = document.getElementById('guestMessage');
       const enquirySuccess = document.getElementById('enquirySuccess');
       const enquiryReference = document.getElementById('enquiryReference');
@@ -250,7 +258,10 @@
         document.body.classList.toggle('is-enquiry-step', step === 3);
         flowTrack.style.transform = `translateX(-${step * 100}%)`;
         flowCount.textContent = `Step ${step + 1} of 4`;
-        changeDates.hidden = step !== 3;
+        const backLabels = ['', 'Change year', 'Change month', 'Change week'];
+        flowBack.hidden = step === 0;
+        flowBackLabel.textContent = backLabels[step];
+        flowBack.setAttribute('aria-label', backLabels[step]);
         flowDots.forEach((dot, index) => {
           dot.classList.toggle('is-active', index === step);
           dot.classList.toggle('is-done', index < step);
@@ -386,9 +397,8 @@
       };
       previousButton.addEventListener('click', () => { visibleMonth = monthOffset(-1); renderWeeks(); setFlowStep(2); });
       nextButton.addEventListener('click', () => { visibleMonth = monthOffset(1); renderWeeks(); setFlowStep(2); });
-      backToYears.addEventListener('click', () => setFlowStep(0, true));
-      backToMonths.addEventListener('click', () => setFlowStep(1));
-      changeDates.addEventListener('click', () => setFlowStep(2));
+      flowBack.addEventListener('click', () => setFlowStep(Math.max(0, activeFlowStep - 1)));
+      alternativeContacts.addEventListener('toggle', fitFlow);
       window.addEventListener('resize', fitFlow);
       inquireButton.addEventListener('click', () => {
         if (!selectedWeek) return;
