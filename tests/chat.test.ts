@@ -76,6 +76,48 @@ describe('anonymous website chat', () => {
     expect(testReply.json().messages).toHaveLength(3);
   });
 
+  it('notifies Telegram when a visitor shows interest without adding a fake visitor message', async () => {
+    const telegramFetch = vi.fn(async () => new Response(JSON.stringify({ ok: true, result: { message_id: 765 } }), { status: 200 }));
+    vi.stubGlobal('fetch', telegramFetch);
+    const context = createTestContext({
+      TELEGRAM_BOT_TOKEN: 'test-bot-token',
+      TELEGRAM_CHAT_ID: '123456',
+      TELEGRAM_WEBHOOK_SECRET: 'test_webhook_secret',
+    });
+    const app = await buildApp({ config: context.config, db: context.db, logger: false });
+    cleanup.push(async () => { await app.close(); context.close(); });
+
+    const interest = await app.inject({
+      method: 'POST',
+      url: '/api/chat/interests',
+      payload: {
+        interestId: '8fd8b80e-e71f-49e4-aa83-37d97c52a910',
+        clientToken: 'visitor-generated-interest-token-long-enough',
+        locale: 'en',
+        context: { page: '/calendarw.html', selectedWeek: '15–22 May 2027', price: '€3,675' },
+      },
+    });
+    expect(interest.statusCode).toBe(201);
+    expect(interest.json()).toMatchObject({ telegramForwarded: true, messages: [] });
+    expect(context.db.prepare("SELECT COUNT(*) count FROM chat_messages WHERE sender = 'VISITOR'").get()).toEqual({ count: 0 });
+    expect(telegramFetch).toHaveBeenCalledWith(expect.stringContaining('/sendMessage'), expect.objectContaining({
+      body: expect.stringContaining('They have not written a message yet.'),
+    }));
+
+    const repeated = await app.inject({
+      method: 'POST',
+      url: '/api/chat/interests',
+      payload: {
+        interestId: '8fd8b80e-e71f-49e4-aa83-37d97c52a910',
+        clientToken: 'visitor-generated-interest-token-long-enough',
+        locale: 'en',
+        context: { page: '/calendarw.html', selectedWeek: '15–22 May 2027', price: '€3,675' },
+      },
+    });
+    expect(repeated.statusCode).toBe(200);
+    expect(telegramFetch).toHaveBeenCalledTimes(1);
+  });
+
   it('forwards visitor messages and accepts only authenticated Telegram replies from the configured chat', async () => {
     const telegramFetch = vi.fn(async () => new Response(JSON.stringify({ ok: true, result: { message_id: 987 } }), { status: 200 }));
     vi.stubGlobal('fetch', telegramFetch);

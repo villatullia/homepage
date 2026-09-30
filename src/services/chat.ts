@@ -64,6 +64,28 @@ export function createConversation(
   return { conversationId, token, messages: publicMessages(db, conversationId), created: true };
 }
 
+export function ensureConversation(
+  db: Database,
+  input: { locale: string; context: ChatContext; clientToken: string },
+): { conversationId: string; token: string; messages: ChatMessage[]; created: boolean } {
+  const tokenHash = sha256(input.clientToken);
+  const existing = db.prepare('SELECT id FROM chat_conversations WHERE visitor_token_hash = ?')
+    .get(tokenHash) as { id: string } | undefined;
+  if (existing) {
+    db.prepare("UPDATE chat_conversations SET locale = ?, context_json = ?, status = 'OPEN', updated_at = ? WHERE id = ?")
+      .run(input.locale, JSON.stringify(input.context), nowIso(), existing.id);
+    return { conversationId: existing.id, token: input.clientToken, messages: publicMessages(db, existing.id), created: false };
+  }
+  const conversationId = randomUUID();
+  const timestamp = nowIso();
+  db.prepare(`
+    INSERT INTO chat_conversations
+      (id, visitor_token_hash, locale, context_json, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'OPEN', ?, ?)
+  `).run(conversationId, tokenHash, input.locale, JSON.stringify(input.context), timestamp, timestamp);
+  return { conversationId, token: input.clientToken, messages: [], created: true };
+}
+
 export function addVisitorMessage(db: Database, conversationId: string, body: string, clientMessageId?: string): { messages: ChatMessage[]; created: boolean } {
   if (clientMessageId && db.prepare('SELECT 1 FROM chat_messages WHERE client_message_id = ?').get(clientMessageId)) {
     return { messages: publicMessages(db, conversationId), created: false };
@@ -104,6 +126,49 @@ export function telegramEnabled(config: AppConfig): boolean {
 
 export function wasForwardedToTelegram(db: Database, conversationId: string): boolean {
   return Boolean(db.prepare('SELECT 1 FROM chat_telegram_links WHERE conversation_id = ? LIMIT 1').get(conversationId));
+}
+
+export function wasInterestForwarded(db: Database, interestId: string): boolean {
+  return Boolean(db.prepare('SELECT 1 FROM chat_interest_notifications WHERE id = ?').get(interestId));
+}
+
+export async function forwardInterestNotification(
+  db: Database,
+  config: AppConfig,
+  conversationId: string,
+  interestId: string,
+  locale: string,
+  context: ChatContext,
+): Promise<boolean> {
+  if (!telegramEnabled(config)) return false;
+  const details = [
+    '🔔 Someone clicked “Let’s make it happen”',
+    '',
+    context.selectedWeek ? `Selected week: ${context.selectedWeek}` : undefined,
+    context.price ? `Price: ${context.price}` : undefined,
+    `Language: ${locale.toUpperCase()}`,
+    context.page ? `Page: ${context.page}` : undefined,
+    '',
+    'They have not written a message yet. Reply here to greet them in the website chat.',
+  ].filter((line) => line !== undefined).join('\n');
+  const response = await fetch(`https://api.telegram.org/bot${config.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: config.TELEGRAM_CHAT_ID,
+      text: details,
+      reply_markup: { force_reply: true, input_field_placeholder: 'Reply to this visitor' },
+    }),
+    signal: AbortSignal.timeout(7000),
+  });
+  const payload = await response.json() as { ok?: boolean; description?: string; result?: { message_id?: number } };
+  if (!response.ok || !payload.ok || !payload.result?.message_id) throw new Error(payload.description || 'Telegram delivery failed');
+  const timestamp = nowIso();
+  db.prepare('INSERT OR IGNORE INTO chat_interest_notifications (id, conversation_id, created_at) VALUES (?, ?, ?)')
+    .run(interestId, conversationId, timestamp);
+  db.prepare('INSERT OR REPLACE INTO chat_telegram_links (telegram_message_id, conversation_id, created_at) VALUES (?, ?, ?)')
+    .run(payload.result.message_id, conversationId, timestamp);
+  return true;
 }
 
 export async function forwardVisitorMessage(

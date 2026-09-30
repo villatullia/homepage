@@ -9,11 +9,14 @@ import {
   authorizedConversation,
   conversationForTelegramReply,
   createConversation,
+  ensureConversation,
+  forwardInterestNotification,
   forwardVisitorMessage,
   forwardVisitorTyping,
   getMessages,
   telegramEnabled,
   updateConversationContext,
+  wasInterestForwarded,
   wasForwardedToTelegram,
 } from '../services/chat.js';
 
@@ -32,9 +35,30 @@ const createSchema = z.object({
   clientMessageId: clientMessageIdSchema,
   clientToken: z.string().min(32).max(200).optional(),
 });
+const interestSchema = z.object({
+  interestId: z.string().uuid(),
+  clientToken: z.string().min(32).max(200),
+  locale: z.enum(['en', 'de', 'it', 'nl']).default('en'),
+  context: contextSchema,
+});
 
 export async function registerChatRoutes(app: FastifyInstance, deps: { db: Database; config: AppConfig }): Promise<void> {
   const { db, config } = deps;
+
+  app.post('/api/chat/interests', { config: { rateLimit: { max: 10, timeWindow: '1 hour' } } }, async (request, reply) => {
+    const parsed = interestSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: 'Interest notification unavailable.' });
+    const conversation = ensureConversation(db, parsed.data);
+    let telegramForwarded = wasInterestForwarded(db, parsed.data.interestId);
+    if (!telegramForwarded) {
+      try {
+        telegramForwarded = await forwardInterestNotification(db, config, conversation.conversationId, parsed.data.interestId, parsed.data.locale, parsed.data.context);
+      } catch (error) {
+        request.log.error({ err: error, conversationId: conversation.conversationId }, 'Telegram interest notification failed');
+      }
+    }
+    return reply.code(conversation.created ? 201 : 200).send({ ...conversation, telegramForwarded });
+  });
 
   app.post('/api/chat/conversations', { config: { rateLimit: { max: 10, timeWindow: '1 hour' } } }, async (request, reply) => {
     const parsed = createSchema.safeParse(request.body);

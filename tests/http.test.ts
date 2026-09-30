@@ -50,7 +50,9 @@ describe('public HTTP surface', () => {
     expect(englishAvailability.body).not.toContain('Recommended');
     expect(englishAvailability.body).not.toContain('No contact details required. Ask your question and receive Alex’s reply here.');
     expect(englishAvailability.body).toContain('Let’s make it happen');
-    expect((await app.inject({ method: 'GET', url: '/chat-widget.js' })).body).toContain("interest:'I’m interested in this week.'");
+    const chatWidget = (await app.inject({ method: 'GET', url: '/chat-widget.js' })).body;
+    expect(chatWidget).toContain('He usually replies in less than one minute.');
+    expect(chatWidget).toContain("fetch('/api/chat/interests'");
     expect(englishAvailability.body.indexOf('id="flowBack"')).toBeLessThan(englishAvailability.body.indexOf('class="flow-window"'));
     expect(englishAvailability.body).not.toContain('id="backToYears"');
     expect(englishAvailability.body).not.toContain('id="backToMonths"');
