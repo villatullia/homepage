@@ -53,8 +53,9 @@ describe('public HTTP surface', () => {
     const chatWidget = (await app.inject({ method: 'GET', url: '/chat-widget.js' })).body;
     expect(chatWidget).toContain('He usually replies in less than one minute.');
     expect(chatWidget).toContain('Thanks for your enquiry — I’ll be with you as soon as I can.');
+    expect(chatWidget).toContain('Hi, I’m Alex 👋 Have a question about Villa Tullia, availability, or Lake Garda? Ask me anything.');
+    expect(chatWidget).toContain("config.placement === 'availability' ? t.enquiryGreeting : t.homeGreeting");
     expect(chatWidget).toContain('If you don’t want to wait, leave your email and I’ll contact you there.');
-    expect(chatWidget).not.toContain('Hi, I’m Alex. Ask me anything');
     expect(chatWidget).toContain("fetch('/api/chat/interests'");
     expect(englishAvailability.body.indexOf('id="flowBack"')).toBeLessThan(englishAvailability.body.indexOf('class="flow-window"'));
     expect(englishAvailability.body).not.toContain('id="backToYears"');
