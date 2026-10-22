@@ -97,11 +97,10 @@
     .booking-assurance strong { color:var(--ink); }
     .booking-assurance-featured { border-left:4px solid var(--terracotta); background:#fff6f0; }
     .welcome-note { display:block; margin-top:7px; color:var(--forest); font-weight:700; }
-    .returning-prompt { position:fixed; z-index:30; left:21px; bottom:21px; width:min(410px,calc(100% - 42px)); padding:20px 48px 20px 20px; border-left:4px solid var(--terracotta); background:#fff; box-shadow:0 16px 48px rgba(9,32,28,.24); }.returning-prompt[hidden] { display:none; }.returning-prompt small,.returning-prompt strong { display:block; }.returning-prompt small { margin-bottom:3px; color:var(--terracotta); font-size:.65rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; }.returning-prompt strong { font:600 1.25rem/1.2 "Playfair Display",serif; }.returning-prompt p { margin:7px 0 14px; color:#5d6865; font-size:.8rem; line-height:1.5; }.returning-resume { min-height:38px; padding:0 13px; border:0; color:#fff; background:var(--forest); cursor:pointer; font:700 .67rem "DM Sans",sans-serif; letter-spacing:.07em; text-transform:uppercase; }.returning-close { position:absolute; top:10px; right:10px; display:grid; width:30px; height:30px; place-items:center; border:0; background:transparent; color:#65716d; cursor:pointer; font-size:1rem; }
     .floating { position:fixed; z-index:20; right:21px; bottom:21px; display:grid; width:52px; height:52px; place-items:center; border-radius:50%; color:#fff; background:#26b963; box-shadow:0 8px 25px rgba(0,0,0,.24); font-size:1.5rem; text-decoration:none; }
     body.is-enquiry-step .floating { display:none; }
     .amenities-open { display:flex; width:100%; align-items:center; justify-content:space-between; gap:16px; margin-top:12px; padding:12px 13px; border:1px solid var(--line); color:var(--forest); background:#fff; cursor:pointer; font:700 .68rem "DM Sans",sans-serif; letter-spacing:.09em; text-transform:uppercase; }.amenities-open:hover { border-color:var(--forest); background:#f1f7f3; }.amenities-open i { color:var(--terracotta); font-size:1rem; }.amenities-dialog { width:min(900px,calc(100% - 32px)); max-height:min(84vh,820px); padding:0; border:0; color:var(--ink); background:var(--cream); box-shadow:0 28px 80px rgba(9,32,28,.32); }.amenities-dialog::backdrop { background:rgba(9,32,28,.72); backdrop-filter:blur(4px); }.amenities-dialog-header { position:sticky; z-index:1; top:0; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:25px 30px 20px; border-bottom:1px solid var(--line); background:var(--cream); }.amenities-dialog-kicker { margin-bottom:7px; color:var(--terracotta); font-size:.65rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }.amenities-dialog-header h2 { margin:0; font:600 clamp(2rem,4vw,3rem)/1.05 "Playfair Display",serif; }.amenities-close { flex:0 0 auto; width:42px; height:42px; border:1px solid var(--line); border-radius:50%; color:var(--ink); background:#fff; cursor:pointer; font-size:1.35rem; }.all-amenities-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 26px; margin:0; padding:24px 30px 32px; list-style:none; color:#53625f; font-size:.86rem; }.all-amenities-list li { display:flex; align-items:center; gap:11px; min-width:0; padding:13px 0; border-bottom:1px solid var(--line); }.all-amenities-list i { flex:0 0 22px; color:var(--terracotta); font-size:1.05rem; text-align:center; }
-    @media (max-width:820px) { .amenities-dialog { width:calc(100% - 20px); max-height:90vh; }.amenities-dialog-header { padding:20px 18px 16px; }.all-amenities-list { grid-template-columns:1fr; padding:12px 20px 24px; }.returning-prompt { left:12px; bottom:12px; width:calc(100% - 24px); }.floating { right:15px; bottom:15px; }.returning-prompt:not([hidden])~.floating { display:none; } }
+    @media (max-width:820px) { .amenities-dialog { width:calc(100% - 20px); max-height:90vh; }.amenities-dialog-header { padding:20px 18px 16px; }.all-amenities-list { grid-template-columns:1fr; padding:12px 20px 24px; }.floating { right:15px; bottom:15px; } }
     @media (max-width:520px) { .stay-summary-grid { grid-template-columns:1fr; }.stay-summary-item + .stay-summary-item { border-left:0; border-top:1px solid var(--line); }.stay-summary-item { display:grid; grid-template-columns:minmax(90px,.75fr) 1.25fr; gap:3px 12px; align-items:center; padding:11px 14px; }.stay-summary-item span { grid-row:1 / span 2; margin:0; }.stay-summary-item small { margin:0; }.human-reassurance { grid-template-columns:54px 1fr; padding:12px; }.human-reassurance-photo { width:54px; height:54px; }.guest-proof { padding:12px 14px; } }
   </style>
 </head>
@@ -120,7 +119,7 @@
     <aside class="info-panel" id="bookingFlow">
       <div class="flow-progress"><div class="flow-progress-main"><span id="flowCount" class="flow-count">Step 1 of 4</span><button id="flowBack" class="flow-progress-back" type="button" hidden><i class="bi bi-arrow-left" aria-hidden="true"></i><span id="flowBackLabel">Change year</span></button></div><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></span></div>
       <div class="flow-window"><div id="flowTrack" class="flow-track">
-        <section class="flow-slide"><div class="flow-kicker">Step 1 · Choose a year</div><h2>Save €530–€913 per week.</h2><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="yearChoices" class="year-choices"></div></section>
+        <section class="flow-slide"><div class="flow-kicker">Step 1 · Choose a year</div><h2>Save €529.90–€912.90 per week.</h2><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="yearChoices" class="year-choices"></div></section>
         <section class="flow-slide"><div class="flow-kicker">Step 2 · Choose a month</div><h2>When would you like to stay?</h2><p class="slide-copy">Choose a month in our May-to-October season. We will then show you its available Saturday-to-Saturday weeks.</p><div id="monthChoices" class="month-choices"></div></section>
         <section class="flow-slide"><div class="flow-kicker">Step 3 · Pick a week</div><h2>Choose a green week.</h2><p class="slide-copy">Each green option is a complete seven-night stay.</p><div class="picker-card" aria-label="Villa Tullia availability"><div class="picker-head"><div><strong id="monthTitle">Availability</strong><span>Choose an available week to enquire</span></div><div class="month-control"><button id="previousMonth" type="button" aria-label="Previous month"><i class="bi bi-arrow-left"></i></button><button id="nextMonth" type="button" aria-label="Next month"><i class="bi bi-arrow-right"></i></button></div></div><div id="weeks" class="weeks"></div></div></section>
         <section class="flow-slide"><div class="flow-kicker">Step 4 · Your enquiry</div><h2>This is the week you chose.</h2><p class="slide-copy">Check the stay details below, then ask Villa Tullia to confirm availability.</p><div class="stay-summary" aria-live="polite"><div class="stay-summary-head"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div></div><div class="stay-summary-grid"><div class="stay-summary-item"><span>Length of stay</span><strong>7 nights</strong><small>Saturday to Saturday</small></div><div class="stay-summary-item"><span>Total price</span><strong id="selectionPrice" class="selection-price">—</strong><small>For the entire villa</small></div><div class="stay-summary-item"><span>Mandatory extras</span><strong>None</strong><small>No mandatory charges on arrival</small></div></div><p class="included-value"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span><strong>ALL INCLUSIVE</strong></span><button id="openAmenitiesFromEnquiry" class="included-amenities" type="button">See amenities <i class="bi bi-arrow-up-right"></i></button></p></div><div class="contact-primary"><h3>Let’s make it happen</h3><button class="enquiry-chat-button" type="button" data-villa-chat-open><i class="bi bi-chat-heart"></i> Let’s make it happen</button></div><details id="alternativeContacts" class="alternative-contacts"><summary>Email or WhatsApp instead</summary><div class="alternative-contacts-body"><form id="emailEnquiry" class="email-form">
@@ -139,7 +138,6 @@
       </div></div>
     </aside>
   </main>
-  <aside id="returningPrompt" class="returning-prompt" hidden aria-live="polite"><button id="returningPromptClose" class="returning-close" type="button" aria-label="Dismiss"><i class="bi bi-x-lg"></i></button><small>Welcome back</small><strong id="returningPromptTitle">Still planning your Lake Garda stay?</strong><p id="returningPromptCopy">See the current available weeks or ask us anything. Your enquiry is personal and non-binding.</p><button id="returningPromptResume" class="returning-resume" type="button">See current availability</button></aside>
   <dialog class="amenities-dialog" id="amenitiesDialog" aria-labelledby="amenitiesDialogTitle"><div class="amenities-dialog-header"><div><div class="amenities-dialog-kicker">Everything you need</div><h2 id="amenitiesDialogTitle">All amenities</h2></div><button class="amenities-close" type="button" aria-label="Close amenities"><i class="bi bi-x-lg"></i></button></div><ul class="all-amenities-list"><li><i class="bi bi-cup-hot"></i>Kitchen</li><li><i class="bi bi-droplet"></i>Bidet</li><li><i class="bi bi-water"></i>Washing machine</li><li><i class="bi bi-badge-wc"></i>Toilet</li><li><i class="bi bi-house-heart"></i>Sofa</li><li><i class="bi bi-fire"></i>Fireplace</li><li><i class="bi bi-droplet-half"></i>Bath or shower</li><li><i class="bi bi-grid-3x3-gap"></i>Hardwood or parquet floors</li><li><i class="bi bi-plug"></i>Socket near the bed</li><li><i class="bi bi-grid"></i>Tile/marble floor</li><li><i class="bi bi-laptop"></i>Desk</li><li><i class="bi bi-person-arms-up"></i>Children's high chair</li><li><i class="bi bi-lamp"></i>Seating area</li><li><i class="bi bi-door-open"></i>Private entrance</li><li><i class="bi bi-tv"></i>TV</li><li><i class="bi bi-snow2"></i>Refrigerator</li><li><i class="bi bi-thermometer-high"></i>Ironing facilities</li><li><i class="bi bi-cup-hot"></i>Tea/Coffee maker</li><li><i class="bi bi-triangle"></i>Iron</li><li><i class="bi bi-box"></i>Microwave</li><li><i class="bi bi-thermometer-sun"></i>Heating</li><li><i class="bi bi-wind"></i>Hairdryer</li><li><i class="bi bi-egg-fried"></i>Kitchenware</li><li><i class="bi bi-cup-straw"></i>Kitchenette</li><li><i class="bi bi-arrows-expand"></i>Extra long beds (&gt; 80 inches)</li><li><i class="bi bi-stack"></i>Towels and bed sheets</li><li><i class="bi bi-cup"></i>Electric kettle</li><li><i class="bi bi-tree"></i>Outdoor furniture</li><li><i class="bi bi-sun"></i>Outdoor dining area</li><li><i class="bi bi-door-closed"></i>Wardrobe or closet</li><li><i class="bi bi-box2"></i>Oven</li><li><i class="bi bi-fire"></i>Stovetop</li><li><i class="bi bi-bread-slice"></i>Toaster</li><li><i class="bi bi-people"></i>Dining area</li><li><i class="bi bi-layout-text-window"></i>Dining table</li><li><i class="bi bi-ladder"></i>Upper floors accessible by stairs only</li><li><i class="bi bi-house"></i>Detached</li><li><i class="bi bi-person-standing-dress"></i>Clothes rack</li><li><i class="bi bi-wind"></i>Drying rack for clothing</li><li><i class="bi bi-paperclip"></i>Toilet paper</li><li><i class="bi bi-moon-stars"></i>Sofa bed</li><li><i class="bi bi-shield-check"></i>Carbon monoxide detector</li></ul></dialog>
   <footer class="site-footer"><span>© 2026 Villa Tullia · Padenghe sul Garda</span><span class="footer-links"><a href="index.html">Villa home</a><a href="https://wa.me/393466733267" target="_blank" rel="noopener">WhatsApp</a></span></footer>
   <script>window.CRO_CONFIG={siteId:'villa-tullia',debug:location.hostname==='localhost'||location.hostname==='127.0.0.1'};</script>
@@ -173,7 +171,7 @@
       const today = new Date(); today.setHours(0, 0, 0, 0);
       const parseDate = (value) => new Date(`${value}T00:00:00`);
       const formatDate = (date, options = { day:'numeric', month:'long', year:'numeric' }) => new Intl.DateTimeFormat('en-GB', options).format(date);
-      const formatPrice = (price) => new Intl.NumberFormat('en-GB', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(price);
+      const formatPrice = (price) => new Intl.NumberFormat('en-GB', { style:'currency', currency:'EUR', minimumFractionDigits:0, maximumFractionDigits:2 }).format(price);
       const toIsoDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       // Villa Tullia's Saturday-to-Saturday season runs May through October. Show this and next season for direct enquiries.
       const seasonWeeks = [];
@@ -236,13 +234,6 @@
       const guestMessage = document.getElementById('guestMessage');
       const enquirySuccess = document.getElementById('enquirySuccess');
       const enquiryReference = document.getElementById('enquiryReference');
-      const returningPrompt = document.getElementById('returningPrompt');
-      const returningPromptTitle = document.getElementById('returningPromptTitle');
-      const returningPromptCopy = document.getElementById('returningPromptCopy');
-      const returningPromptResume = document.getElementById('returningPromptResume');
-      const returningPromptClose = document.getElementById('returningPromptClose');
-      let savedWeek;
-      try { savedWeek = JSON.parse(localStorage.getItem('villa_selected_week') || 'null'); } catch {}
       let bookingProgress;
       try { bookingProgress = JSON.parse(localStorage.getItem('villa_booking_progress') || 'null'); } catch {}
       let activeFlowStep = 0;
@@ -287,37 +278,6 @@
         cro.track('contact_step_reached');
         setFlowStep(3, true);
       };
-      const showReturningPrompt = () => {
-        if (!returningPrompt || !cro.isReturningVisitor) return;
-        try { if (sessionStorage.getItem('villa_returning_prompt_dismissed') || localStorage.getItem('villa_enquiry_completed')) return; } catch {}
-        const previousWeek = savedWeek?.checkIn ? inventory.find((week) => toIsoDate(week.start) === savedWeek.checkIn && week.status === 'available' && week.start >= today) : null;
-        const hasDateProgress = !previousWeek && bookingProgress?.stage === 'dates';
-        if (previousWeek) {
-          returningPromptTitle.textContent = `${formatDate(previousWeek.start)} – ${formatDate(previousWeek.end)}`;
-          returningPromptCopy.textContent = 'Your chosen week is ready. Continue to the short, non-binding enquiry form whenever you are ready.';
-          returningPromptResume.textContent = 'Continue your enquiry';
-        } else if (hasDateProgress) {
-          returningPromptTitle.textContent = 'You were choosing your dates.';
-          returningPromptCopy.textContent = 'Pick up where you left off and see the available weeks. Your enquiry remains non-binding.';
-          returningPromptResume.textContent = 'Continue choosing dates';
-        }
-        const promptState = previousWeek ? 'selected_week' : hasDateProgress ? 'choosing_dates' : 'no_progress';
-        window.setTimeout(() => { returningPrompt.hidden = false; cro.track('returning_prompt_shown', { placement:'availability', state:promptState }); }, 900);
-        returningPromptResume.onclick = () => {
-          returningPrompt.hidden = true;
-          cro.track('returning_prompt_clicked', { placement:'availability', action:previousWeek ? 'resume_week' : hasDateProgress ? 'resume_dates' : 'see_availability', state:promptState });
-          if (previousWeek) setSelectedWeek(previousWeek);
-          else if (hasDateProgress) {
-            const progressYear = Number(bookingProgress.year);
-            const progressMonth = Number(bookingProgress.month);
-            if (inventory.some((week) => week.start.getFullYear() === progressYear)) selectedYear = progressYear;
-            if (Number.isInteger(progressMonth) && progressMonth >= 1 && progressMonth <= 12) visibleMonth = new Date(selectedYear, progressMonth - 1, 1);
-            renderWeeks();
-            setFlowStep(Number.isInteger(progressMonth) ? 2 : 1, true);
-          } else { setFlowStep(0, true); bookingFlow.scrollIntoView({ behavior:'smooth', block:'start' }); }
-        };
-      };
-      returningPromptClose?.addEventListener('click', () => { returningPrompt.hidden = true; try { sessionStorage.setItem('villa_returning_prompt_dismissed','1'); } catch {} cro.track('returning_prompt_dismissed', { placement:'availability' }); });
       const renderYearChoices = () => {
         const years = [...new Set(inventory.map((week) => week.start.getFullYear()))];
         yearChoices.innerHTML = '';
@@ -424,7 +384,6 @@
           emailStatus.textContent = '';
           enquiryReference.textContent = data.reference;
           try { localStorage.setItem('villa_enquiry_completed','1'); localStorage.removeItem('villa_selected_week'); localStorage.removeItem('villa_booking_progress'); } catch {}
-          returningPrompt.hidden = true;
           emailForm.hidden = true;
           enquirySuccess.hidden = false;
           emailForm.reset();
@@ -444,9 +403,8 @@
           const softBlocks = Array.isArray(data.softPartnerBlockedRanges) ? data.softPartnerBlockedRanges : [];
           inventory = buildInventory(authoritativeBlocks, softBlocks, Array.isArray(data.localBlockedRanges) ? data.localBlockedRanges : [], Array.isArray(data.directRates) ? data.directRates : []);
           renderWeeks();
-          showReturningPrompt();
         })
-        .catch(() => { renderWeeks(); showReturningPrompt(); });
+        .catch(() => { renderWeeks(); });
     });
   </script>
   <script>window.VILLA_CHAT_CONFIG={locale:(document.documentElement.lang||'en').slice(0,2),placement:'availability',getContext:()=>{const week=document.getElementById('selectionDate');const price=document.getElementById('selectionPrice');return week&&!week.classList.contains('selection-empty')?{selectedWeek:week.textContent,price:price?.textContent||''}:{};}};</script>

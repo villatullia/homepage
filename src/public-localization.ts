@@ -86,13 +86,13 @@ const home: Record<PublicLocale, Array<[string, string]>> = {
 };
 
 home.nl.unshift(
-  ['See weekly prices from €2,826', 'Bekijk weekprijzen vanaf €2.826'],
-  ['Save €530–€913 per week', 'Bespaar €530–€913 per week'],
+  ['See weekly prices from €2,826.25', 'Bekijk weekprijzen vanaf €2.826,25'],
+  ['Save €529.90–€912.90 per week', 'Bespaar €529,90–€912,90 per week'],
   ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Vergeleken met de laagste prijzen van Villa Tullia op boekingsplatforms.'],
 );
 home.de.unshift(
-  ['See weekly prices from €2,826', 'Wochenpreise ab 2.826 € ansehen'],
-  ['Save €530–€913 per week', 'Sparen Sie 530–913 € pro Woche'],
+  ['See weekly prices from €2,826.25', 'Wochenpreise ab 2.826,25 € ansehen'],
+  ['Save €529.90–€912.90 per week', 'Sparen Sie 529,90–912,90 € pro Woche'],
   ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Verglichen mit den niedrigsten Preisen der Villa Tullia auf Buchungsplattformen.'],
   ['Ask on WhatsApp', 'Auf WhatsApp fragen'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Guten%20Tag%2C%20ich%20interessiere%20mich%20für%20die%20Villa%20Tullia.'],
@@ -102,8 +102,8 @@ home.de.unshift(
   ['The veranda', 'Die Veranda'], ['Pool days', 'Tage am Pool'], ['Living room', 'Wohnzimmer'], ['Long lunches', 'Lange Mittagessen'], ['Rest well', 'Erholsame Nächte'], ['Fresh starts', 'Frisch in den Tag'], ['Evening barbecue', 'Grillabend'], ['Private garden', 'Privater Garten'], ['For family time', 'Zeit mit der Familie'], ['Slow afternoons', 'Entspannte Nachmittage'], ['Inside Villa Tullia', 'In der Villa Tullia'], ['A place to unwind', 'Ein Ort zum Entspannen'], ['Kitchen details', 'Details der Küche'], ['A restful corner', 'Eine ruhige Ecke'], ['A quiet bedroom', 'Ein ruhiges Schlafzimmer'], ['Bathroom details', 'Details des Badezimmers'], ['A little comfort', 'Ein wenig Komfort'], ['Everything in its place', 'Alles an seinem Platz'], ['More room to settle in', 'Noch mehr Platz zum Wohlfühlen'], ['A tucked-away corner', 'Eine geschützte Ecke'], ['Villa details', 'Details der Villa'], ['Garden views', 'Blick in den Garten'], ['Small details', 'Liebevolle Details'], ['At home, even away', 'Auch im Urlaub wie zu Hause'], ['Room for family', 'Platz für die Familie'],
 );
 home.it.unshift(
-  ['See weekly prices from €2,826', 'Prezzi settimanali da 2.826 €'],
-  ['Save €530–€913 per week', 'Risparmia 530–913 € a settimana'],
+  ['See weekly prices from €2,826.25', 'Prezzi settimanali da 2.826,25 €'],
+  ['Save €529.90–€912.90 per week', 'Risparmia 529,90–912,90 € a settimana'],
   ['Compared with Villa Tullia’s lowest prices on booking platforms.', 'Rispetto ai prezzi più bassi di Villa Tullia sulle piattaforme di prenotazione.'],
   ['Ask on WhatsApp', 'Chiedi su WhatsApp'],
   ['Hello%2C%20I%20am%20interested%20in%20Villa%20Tullia.', 'Buongiorno%2C%20sono%20interessato%20a%20Villa%20Tullia.'],
@@ -130,6 +130,22 @@ home.it.unshift(
   ['See the latest availability, or ask us anything. Your enquiry is personal and non-binding.', 'Controlla la disponibilità aggiornata o chiedici qualsiasi cosa. La richiesta è personale e non vincolante.'],
   ['See current availability', 'Vedi la disponibilità attuale'], ['Continue your enquiry', 'Continua la richiesta'], ['Ask a question', 'Fai una domanda'],
   ['You were choosing your dates.', 'Stavi scegliendo le date.'], ['Pick up where you left off and see the available weeks. Your enquiry remains non-binding.', 'Riprendi da dove avevi lasciato e guarda le settimane disponibili. La richiesta resta non vincolante.'], ['Continue choosing dates', 'Continua a scegliere le date'],
+);
+
+home.nl.unshift(
+  ['For refreshing summer swims', 'Voor een verfrissende duik in de zomer'],
+  ['The pool is part of the residence and shared by its guests.', 'Het zwembad hoort bij het residentiecomplex en wordt door de gasten gedeeld.'],
+  ["Yes. Guests are welcome to enjoy the residence pool, as well as Villa Tullia's private garden.", 'Ja. Gasten kunnen genieten van het zwembad van het residentiecomplex en van de privétuin van Villa Tullia.'],
+);
+home.de.unshift(
+  ['For refreshing summer swims', 'Für eine erfrischende Abkühlung im Sommer'],
+  ['The pool is part of the residence and shared by its guests.', 'Der Pool gehört zur Residenz und wird von deren Gästen gemeinsam genutzt.'],
+  ["Yes. Guests are welcome to enjoy the residence pool, as well as Villa Tullia's private garden.", 'Ja. Gästen stehen der Pool der Residenz und der private Garten der Villa Tullia zur Verfügung.'],
+);
+home.it.unshift(
+  ['For refreshing summer swims', 'Per rinfrescanti bagni estivi'],
+  ['The pool is part of the residence and shared by its guests.', 'La piscina fa parte del residence ed è condivisa tra i suoi ospiti.'],
+  ["Yes. Guests are welcome to enjoy the residence pool, as well as Villa Tullia's private garden.", 'Sì. Gli ospiti possono godersi la piscina del residence e il giardino privato di Villa Tullia.'],
 );
 
 const availability: Record<PublicLocale, Array<[string, string]>> = {
@@ -173,7 +189,7 @@ availability.nl.unshift(
   ['Your stay at a glance.', 'Uw verblijf in één oogopslag.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Laat uw naam en e-mailadres achter. Wij bevestigen persoonlijk de beschikbaarheid en de volgende stappen.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 nachten · ${formatPrice(week.price)} direct totaal'], ['7 nights · Price confirmed personally', '7 nachten · Prijs persoonlijk bevestigd'],
   ['Send enquiry', 'Aanvraag versturen'], ['Contact us on WhatsApp', 'Neem contact op via WhatsApp'], ['>or<', '>of<'],
-  ['Save €530–€913 per week.', 'Bespaar €530–€913 per week.'],
+  ['Save €529.90–€912.90 per week.', 'Bespaar €529,90–€912,90 per week.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direct'], ['Save ${formatPrice(saving)}', 'Bespaar ${formatPrice(saving)}'],
 );
 availability.de.unshift(
@@ -197,7 +213,7 @@ availability.de.unshift(
   ['Your stay at a glance.', 'Ihr Aufenthalt auf einen Blick.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Hinterlassen Sie Ihren Namen und Ihre E-Mail-Adresse. Wir bestätigen die Verfügbarkeit und die nächsten Schritte persönlich.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 Nächte · ${formatPrice(week.price)} Direktpreis gesamt'], ['7 nights · Price confirmed personally', '7 Nächte · Preis wird persönlich bestätigt'],
   ['Send enquiry', 'Anfrage senden'], ['Contact us on WhatsApp', 'Kontakt über WhatsApp'], ['>or<', '>oder<'],
-  ['Save €530–€913 per week.', 'Sparen Sie 530–913 € pro Woche.'],
+  ['Save €529.90–€912.90 per week.', 'Sparen Sie 529,90–912,90 € pro Woche.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} direkt'], ['Save ${formatPrice(saving)}', '${formatPrice(saving)} sparen'],
   ['No commitment at this stage.', 'In diesem Schritt gehen Sie keine Verpflichtung ein.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Diese Anfrage ist unverbindlich. Eine Buchung wird erst verbindlich, wenn der Mietvertrag von Ihnen und Villa Tullia unterzeichnet wurde.'],
@@ -226,7 +242,7 @@ availability.it.unshift(
   ['Your stay at a glance.', 'Il tuo soggiorno in sintesi.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Lascia nome e indirizzo e-mail: confermeremo personalmente la disponibilità e i prossimi passi.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 notti · totale diretto ${formatPrice(week.price)}'], ['7 nights · Price confirmed personally', '7 notti · Prezzo confermato personalmente'],
   ['Send enquiry', 'Invia la richiesta'], ['Contact us on WhatsApp', 'Contattaci su WhatsApp'], ['>or<', '>oppure<'],
-  ['Save €530–€913 per week.', 'Risparmia 530–913 € a settimana.'],
+  ['Save €529.90–€912.90 per week.', 'Risparmia 529,90–912,90 € a settimana.'],
   ['${formatPrice(week.price)} direct', '${formatPrice(week.price)} diretto'], ['Save ${formatPrice(saving)}', 'Risparmia ${formatPrice(saving)}'],
   ['No commitment at this stage.', 'In questa fase non assumi alcun impegno.'],
   ['This enquiry is non-binding. A booking becomes binding only when the rental agreement has been signed by both you and Villa Tullia.', 'Questa richiesta non è vincolante. La prenotazione diventa vincolante solo quando il contratto di locazione è stato firmato sia da te sia da Villa Tullia.'],

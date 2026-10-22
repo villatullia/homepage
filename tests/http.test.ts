@@ -75,7 +75,7 @@ describe('public HTTP surface', () => {
     expect(germanAvailability.body).toContain('Für die gesamte Villa');
     expect(germanAvailability.body).toContain('Machen wir es möglich');
     expect(germanAvailability.body).toContain('Lieber E-Mail oder WhatsApp');
-    expect(germanAvailability.body).toContain('Sparen Sie 530–913 € pro Woche.');
+    expect(germanAvailability.body).toContain('Sparen Sie 529,90–912,90 € pro Woche.');
     expect(germanAvailability.body).toContain("'Woche ändern'");
     const italianAvailability = await app.inject({ method: 'GET', url: '/it/disponibilita/' });
     expect(italianAvailability.statusCode).toBe(200);
@@ -212,9 +212,9 @@ describe('public HTTP surface', () => {
     const rates = response.json().directRates as Array<{ start: string; end: string; weeklyPrice: number; bookingComPrice?: number; currency: string }>;
     expect(rates).toHaveLength(21);
     const previousPrices = [3675, 3675, 4113, 4375, 4375, 4375, 4638, 4900, 4900, 4900, 4900, 5075, 5338, 5338, 5075, 4638, 4113, 4113, 3675, 3238, 2975];
-    expect(rates.map((rate) => rate.weeklyPrice)).toEqual(previousPrices.map((price) => Math.round(price * 0.95)));
-    expect(rates[0]).toEqual({ start: '2027-05-15', end: '2027-05-22', weeklyPrice: 3491, bookingComPrice: 4134, currency: 'EUR' });
-    expect(rates.at(-1)).toEqual({ start: '2027-10-02', end: '2027-10-09', weeklyPrice: 2826, bookingComPrice: 3518, currency: 'EUR' });
+    expect(rates.map((rate) => rate.weeklyPrice)).toEqual(previousPrices.map((price) => Math.round(price * 95) / 100));
+    expect(rates[0]).toEqual({ start: '2027-05-15', end: '2027-05-22', weeklyPrice: 3491.25, bookingComPrice: 4134, currency: 'EUR' });
+    expect(rates.at(-1)).toEqual({ start: '2027-10-02', end: '2027-10-09', weeklyPrice: 2826.25, bookingComPrice: 3518, currency: 'EUR' });
   });
 
   it('silently discards honeypot submissions', async () => {
