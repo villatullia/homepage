@@ -36,7 +36,7 @@ describe('public HTTP surface', () => {
     const home = await app.inject({ method: 'GET', url: '/' });
     expect(home.statusCode).toBe(200);
     expect(home.body).toContain('data-villa-chat-open');
-    expect(home.body).toContain('/chat-widget.js?v=20261022-cro');
+    expect(home.body).toContain('/chat-widget.js?v=20261023-invite');
     expect((await app.inject({ method: 'GET', url: '/chat-widget.js' })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url: '/chat-widget.css' })).statusCode).toBe(200);
     expect((await app.inject({ method: 'GET', url: '/privacy.html' })).statusCode).toBe(200);

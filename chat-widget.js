@@ -8,6 +8,12 @@
   const config = window.VILLA_CHAT_CONFIG || {};
   const locale = ['en','de','it','nl'].includes(config.locale) ? config.locale : (document.documentElement.lang || 'en').slice(0,2);
   const t = copy[locale] || copy.en;
+  const invitations = {
+    en:['Have a question? Ask Alex here.','Dismiss chat invitation'],
+    de:['Eine Frage? Fragen Sie Alex hier.','Chat-Einladung schließen'],
+    it:['Hai una domanda? Chiedi ad Alex qui.','Chiudi invito alla chat'],
+    nl:['Een vraag? Stel die hier aan Alex.','Chatuitnodiging sluiten'],
+  };
   const greeting = config.placement === 'availability' ? t.enquiryGreeting : t.homeGreeting;
   const sessionKey = 'villa_chat_session';
   const pendingKey = 'villa_chat_pending_message_v2';
@@ -29,8 +35,13 @@
 
   const root = document.createElement('div');
   root.innerHTML = `<button class="vt-chat-launcher" type="button"><i class="bi bi-chat-heart"></i><span>${t.launcher}</span></button><section class="vt-chat-panel" aria-label="${t.title}" hidden><header class="vt-chat-head"><img class="vt-chat-photo" src="/imgs/Foto/alex-pellegrini.png" alt="Alex Pellegrini"><div><strong>${t.title}</strong><small>${t.subtitle}</small></div><button class="vt-chat-close" type="button" aria-label="Close chat"><i class="bi bi-x-lg"></i></button></header><div class="vt-chat-context" hidden><div><span>${t.selected}</span><strong></strong></div><b></b></div><div class="vt-chat-presence" hidden><i class="bi bi-clock"></i><span></span></div><div class="vt-chat-messages" aria-live="polite"></div><form class="vt-chat-composer"><div class="vt-chat-composer-row"><textarea aria-label="${t.placeholder}" placeholder="${t.placeholder}" maxlength="1000" required></textarea><button class="vt-chat-send" type="submit" aria-label="Send message"><i class="bi bi-send-fill"></i></button></div><p class="vt-chat-note">${t.note}</p><div class="vt-chat-delivery" hidden></div></form></section>`;
+  const [inviteText,dismissText] = invitations[locale] || invitations.en;
+  root.insertAdjacentHTML('afterbegin',`<div class="vt-chat-invite" hidden><button class="vt-chat-invite-open" type="button">${inviteText}</button><button class="vt-chat-invite-dismiss" type="button" aria-label="${dismissText}"><i class="bi bi-x-lg"></i></button></div>`);
   document.body.appendChild(root);
   const launcher = root.querySelector('.vt-chat-launcher');
+  const invitation = root.querySelector('.vt-chat-invite');
+  const invitationKey = 'villa_chat_invitation_seen_v1';
+  const hideInvitation = () => { invitation.hidden=true; try { sessionStorage.setItem(invitationKey,'1'); } catch {} };
   const panel = root.querySelector('.vt-chat-panel');
   const close = root.querySelector('.vt-chat-close');
   const contextBar = root.querySelector('.vt-chat-context');
@@ -89,9 +100,17 @@
     if (!session?.conversationId || document.hidden) return;
     try { const response=await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/messages`); if(response.status===404){session=null;localStorage.removeItem(sessionKey);history=[];render();return;} if(response.ok) receive((await response.json()).messages||[]); } catch {}
   };
-  const open = (nextContext={}) => { context={...context,...nextContext}; updateContextBar(); updatePresence(); panel.hidden=false; launcher.hidden=true; render(); void refresh(); clearInterval(polling); polling=window.setInterval(refresh,4000); window.setTimeout(()=>input.focus(),50); if(window.cro) cro.track('chat_opened',{placement:config.placement||'site'}); };
+  const open = (nextContext={}) => { hideInvitation(); context={...context,...nextContext}; updateContextBar(); updatePresence(); panel.hidden=false; launcher.hidden=true; render(); void refresh(); clearInterval(polling); polling=window.setInterval(refresh,4000); window.setTimeout(()=>input.focus(),50); if(window.cro) cro.track('chat_opened',{placement:config.placement||'site'}); };
   const closeChat = () => { panel.hidden=true; launcher.hidden=false; clearInterval(polling); };
   launcher.addEventListener('click',()=>open()); close.addEventListener('click',closeChat);
+  root.querySelector('.vt-chat-invite-open').addEventListener('click',()=>open());
+  root.querySelector('.vt-chat-invite-dismiss').addEventListener('click',hideInvitation);
+  let invitationSeen=false;
+  try { invitationSeen=Boolean(sessionStorage.getItem(invitationKey)); } catch {}
+  if (!session && !invitationSeen) window.setTimeout(() => {
+    if (!document.hidden && panel.hidden && !session) { invitation.hidden=false; hideInvitationSeen(); }
+  },20000);
+  function hideInvitationSeen() { try { sessionStorage.setItem(invitationKey,'1'); } catch {} }
   const notifyInterest = async () => {
     const messageContext=currentContext();
     if(config.placement!=='availability'||!messageContext.selectedWeek)return;
