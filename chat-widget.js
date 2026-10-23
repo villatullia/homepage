@@ -105,11 +105,12 @@
     const data=await response.json();
     if(!response.ok)throw new Error(data.error||'Interest notification unavailable');
     if(!session){session={conversationId:data.conversationId,token:data.token};saveSession();}
+    if(!data.telegramForwarded&&window.cro) cro.track('notification_delivery_failed',{channel:'telegram',kind:'interest'});
     if(data.telegramForwarded){try{localStorage.setItem(interestKey,notificationKey);localStorage.removeItem(pendingInterestKey);}catch{}}
   };
   document.querySelectorAll('[data-villa-chat-open]').forEach((trigger)=>trigger.addEventListener('click',()=>{
     open();
-    interestPromise=notifyInterest().catch(()=>{}).finally(()=>{interestPromise=null;});
+    interestPromise=notifyInterest().catch(()=>{if(window.cro) cro.track('notification_delivery_failed',{channel:'telegram',kind:'interest'});}).finally(()=>{interestPromise=null;});
   }));
   composer.addEventListener('submit',async(event)=>{
     event.preventDefault(); const message=input.value.trim(); if(!message||sendButton.disabled)return;
@@ -120,8 +121,8 @@
       const messageContext=currentContext();
       const response=session ? await authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/messages`,{method:'POST',body:JSON.stringify({message,clientMessageId:pendingMessage.clientMessageId,context:messageContext})}) : await fetch('/api/chat/conversations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,clientMessageId:pendingMessage.clientMessageId,clientToken:pendingMessage.clientToken,locale,context:messageContext})});
       const data=await response.json(); if(!response.ok)throw new Error(data.error||'Message could not be sent');
-      if(!session){session={conversationId:data.conversationId,token:data.token};saveSession();} clearPending(); history=data.messages||[];remember(history);initializedMessages=true;input.value='';delivery.innerHTML=`<i class="bi bi-check2-circle"></i> ${data.telegramForwarded?t.delivered:t.saved}`;delivery.hidden=false;render(); if(window.cro) cro.track('chat_message_sent',{placement:config.placement||'site',has_selected_week:Boolean(messageContext.selectedWeek)});
-    } catch(error){delivery.textContent=error instanceof TypeError?t.offline:error instanceof Error?error.message:'Message could not be sent';delivery.hidden=false;} finally{sendButton.disabled=false;}
+      if(!session){session={conversationId:data.conversationId,token:data.token};saveSession();} clearPending(); history=data.messages||[];remember(history);initializedMessages=true;input.value='';delivery.innerHTML=`<i class="bi bi-check2-circle"></i> ${data.telegramForwarded?t.delivered:t.saved}`;delivery.hidden=false;render(); if(window.cro) { cro.track('chat_message_sent',{placement:config.placement||'site',has_selected_week:Boolean(messageContext.selectedWeek)}); if(!data.telegramForwarded) cro.track('notification_delivery_failed',{channel:'telegram',kind:'message'}); }
+    } catch(error){if(window.cro) cro.track('chat_message_failed');delivery.textContent=error instanceof TypeError?t.offline:error instanceof Error?error.message:'Message could not be sent';delivery.hidden=false;} finally{sendButton.disabled=false;}
   });
   input.addEventListener('keydown',(event)=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();composer.requestSubmit();}});
   input.addEventListener('input',()=>{if(!session||!input.value.trim())return;const now=Date.now();if(now-lastTypingSignal<4000)return;lastTypingSignal=now;void authenticatedFetch(`/api/chat/conversations/${encodeURIComponent(session.conversationId)}/typing`,{method:'POST'}).catch(()=>{});});

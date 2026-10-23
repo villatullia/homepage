@@ -142,12 +142,13 @@ export async function registerPublicRoutes(app: FastifyInstance, deps: PublicDep
       }
       if (parsed.data.website) return reply.code(202).send({ ok: true });
       const enquiry = createEnquiry(db, parsed.data, { ipHash: sha256(request.ip) });
+      let notificationDelivered = false;
       try {
-        await email.sendEnquiryNotification(enquiry.id);
+        notificationDelivered = await email.sendEnquiryNotification(enquiry.id);
       } catch (error) {
         request.log.error({ err: error, enquiryId: enquiry.id }, 'Owner enquiry notification failed');
       }
-      return reply.code(201).send({ ok: true, reference: enquiry.reference });
+      return reply.code(201).send({ ok: true, reference: enquiry.reference, notificationDelivered });
     },
   );
 

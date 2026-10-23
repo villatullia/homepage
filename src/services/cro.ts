@@ -109,10 +109,10 @@ export function croDashboard(db: Database, siteId: string) {
   const ownerFilter = "UPPER(SUBSTR(visitor_id,1,8)) NOT IN ('41DD1AFC','1C7B359F')";
   const visitors = scalar(`SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter}`, siteId);
   const sessions = scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter}`, siteId);
-  const conversions = scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='enquiry_completed'`, siteId);
+  const conversions = scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name IN ('enquiry_completed','chat_message_sent')`, siteId);
   const stages = funnel.map((name) => ({
     name,
-    count:scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name=?`, siteId, name),
+    count:scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND (event_name=? OR (?='enquiry_completed' AND event_name='chat_message_sent'))`, siteId, name, name),
     visitors:scalar(`SELECT COUNT(DISTINCT visitor_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name=?`, siteId, name),
   }));
   const stageLabels:Record<string,string> = { page_view:'Website visit', availability_clicked:'Availability link clicked', availability_page_view:'Availability page reached', year_selected:'Year selected', month_selected:'Month selected', week_selected:'Week selected', contact_step_reached:'Contact options reached', enquiry_completed:'Enquiry completed' };
@@ -129,7 +129,7 @@ export function croDashboard(db: Database, siteId: string) {
       visitorDropoffRate:previous?.visitors ? Math.round(visitorDropoff * 1000 / previous.visitors) / 10 : 0,
     };
   });
-  const performance = (column:string) => db.prepare(`SELECT COALESCE(${column}, 'Direct / unknown') label, COUNT(DISTINCT session_id) sessions, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN session_id END) conversions FROM cro_events WHERE site_id=? AND ${ownerFilter} GROUP BY label ORDER BY sessions DESC`).all(siteId).map((row:any) => ({...row, rate:row.sessions ? Math.round(row.conversions*1000/row.sessions)/10 : 0}));
+  const performance = (column:string) => db.prepare(`SELECT COALESCE(${column}, 'Direct / unknown') label, COUNT(DISTINCT session_id) sessions, COUNT(DISTINCT CASE WHEN event_name IN ('enquiry_completed','chat_message_sent') THEN session_id END) conversions FROM cro_events WHERE site_id=? AND ${ownerFilter} GROUP BY label ORDER BY sessions DESC`).all(siteId).map((row:any) => ({...row, rate:row.sessions ? Math.round(row.conversions*1000/row.sessions)/10 : 0}));
   const devices = performance('device_type');
   const sources = performance("NULLIF(COALESCE(utm_source, referrer), '')");
   const durationRows = db.prepare(`SELECT session_id,
@@ -172,10 +172,10 @@ export function croDashboard(db: Database, siteId: string) {
       SELECT visitor_id, json_extract(properties_json,'$.section') section, MIN(occurred_at) seen_at
       FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name='section_viewed' GROUP BY visitor_id, section
     ) SELECT section, COUNT(*) visitors,
-      SUM(CASE WHEN EXISTS (SELECT 1 FROM cro_events c WHERE c.site_id=? AND c.visitor_id=exposures.visitor_id AND c.event_name='enquiry_completed' AND c.occurred_at>=exposures.seen_at) THEN 1 ELSE 0 END) conversions
+      SUM(CASE WHEN EXISTS (SELECT 1 FROM cro_events c WHERE c.site_id=? AND c.visitor_id=exposures.visitor_id AND c.event_name IN ('enquiry_completed','chat_message_sent') AND c.occurred_at>=exposures.seen_at) THEN 1 ELSE 0 END) conversions
       FROM exposures GROUP BY section ORDER BY visitors DESC`).all(siteId, siteId) as Array<{section:string;visitors:number;conversions:number}>).map(row=>({...row, reachRate:homepageVisitors ? Math.round(row.visitors*1000/homepageVisitors)/10 : 0, conversionRate:row.visitors ? Math.round(row.conversions*1000/row.visitors)/10 : 0})),
   };
-  const contextPerformance = (column:string) => (db.prepare(`SELECT COALESCE(${column}, 'Unknown') label, COUNT(DISTINCT visitor_id) visitors, COUNT(DISTINCT CASE WHEN event_name='enquiry_completed' THEN visitor_id END) conversions FROM cro_events WHERE site_id=? AND ${ownerFilter} GROUP BY label ORDER BY visitors DESC`).all(siteId) as Array<{label:string;visitors:number;conversions:number}>).map(row=>({...row, rate:row.visitors ? Math.round(row.conversions*1000/row.visitors)/10 : 0}));
+  const contextPerformance = (column:string) => (db.prepare(`SELECT COALESCE(${column}, 'Unknown') label, COUNT(DISTINCT visitor_id) visitors, COUNT(DISTINCT CASE WHEN event_name IN ('enquiry_completed','chat_message_sent') THEN visitor_id END) conversions FROM cro_events WHERE site_id=? AND ${ownerFilter} GROUP BY label ORDER BY visitors DESC`).all(siteId) as Array<{label:string;visitors:number;conversions:number}>).map(row=>({...row, rate:row.visitors ? Math.round(row.conversions*1000/row.visitors)/10 : 0}));
   const countryPerformance = contextPerformance('country_code').map(row => ({
     ...row,
     iso3:row.label === 'Unknown' ? undefined : countries.alpha2ToAlpha3(row.label),
@@ -197,6 +197,7 @@ export function croDashboard(db: Database, siteId: string) {
     gallery_opened:'Opened gallery', gallery_interacted:'Used gallery', reviews_viewed:'Viewed reviews',
     reviews_interacted:'Used reviews', section_viewed:'Viewed section', scroll_depth_reached:'Reached scroll depth',
     language_suggestion_shown:'Saw language suggestion', language_selected:'Changed language',
+    chat_opened:'Opened chat', chat_message_sent:'Sent chat message', notification_delivery_failed:'Notification delivery failed', email_form_failed:'Email submission failed', chat_message_failed:'Chat submission failed',
     returning_visit:'Returned to the website', returning_prompt_shown:'Saw welcome-back prompt',
     returning_prompt_clicked:'Used welcome-back prompt', returning_prompt_dismissed:'Dismissed welcome-back prompt',
   };
@@ -218,7 +219,7 @@ export function croDashboard(db: Database, siteId: string) {
     visitor.operatingSystem = row.operating_system ?? visitor.operatingSystem;
     visitor.language = row.language ?? visitor.language;
     visitor.device = row.device_type ?? visitor.device;
-    visitor.converted ||= row.event_name === 'enquiry_completed';
+    visitor.converted ||= ['enquiry_completed','chat_message_sent'].includes(row.event_name);
     let session = visitor.sessions.get(row.session_id);
     if (!session) {
       session = { id:row.session_id, firstSeen:row.occurred_at, lastSeen:row.occurred_at, events:[] };
@@ -248,6 +249,15 @@ export function croDashboard(db: Database, siteId: string) {
   const overall = sessions ? conversions*100/sessions : 0;
   for (const source of sources.filter((row:any)=>row.sessions>=5)) if (Math.abs(source.rate-overall)>=5) insights.push(`${source.label} conversion is unusually ${source.rate>overall?'high':'low'} at ${source.rate}%.`);
   if (!insights.length) insights.push('More traffic is needed before reliable automatic insights are available.');
-  const dashboard = { visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, averageVisitDurationSeconds, averageVisitDurationFormatted:formatDuration(averageVisitDurationSeconds), stayInterest, stages:stageRows, devices, sources, homepage, visitorContext, visitorJourneys, insights };
+  const contactActivity = [
+    ['chat_opened', 'Chat opened'], ['chat_message_sent', 'Chat message sent'],
+    ['enquiry_completed', 'Email enquiry received'], ['whatsapp_clicked', 'WhatsApp clicked'],
+    ['notification_delivery_failed', 'Notification delivery failed'], ['email_form_failed', 'Email submission failed'],
+    ['chat_message_failed', 'Chat submission failed'],
+  ].map(([eventName = '', label = '']) => ({ label,
+    sessions:scalar(`SELECT COUNT(DISTINCT session_id) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name=?`, siteId, eventName),
+    events:scalar(`SELECT COUNT(*) n FROM cro_events WHERE site_id=? AND ${ownerFilter} AND event_name=?`, siteId, eventName),
+  }));
+  const dashboard = { contactActivity, visitors, sessions, conversions, conversionRate:sessions ? Math.round(conversions*1000/sessions)/10 : 0, averageVisitDurationSeconds, averageVisitDurationFormatted:formatDuration(averageVisitDurationSeconds), stayInterest, stages:stageRows, devices, sources, homepage, visitorContext, visitorJourneys, insights };
   return { ...dashboard, optimizationPrompt:optimizationPrompt(dashboard) };
 }

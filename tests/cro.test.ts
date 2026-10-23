@@ -11,6 +11,22 @@ const id2='22222222-2222-4222-8222-222222222222';
 function event(eventName:string, visitorId=id1, sessionId=id2) { return croEventSchema.parse({ siteId:'villa-tullia', visitorId, sessionId, eventName, page:'/', referrer:'', deviceType:'desktop', properties:{} }); }
 
 describe('CRO tracking', () => {
+  it('counts historical chat and email as one conversion per session, but not opens or WhatsApp clicks', () => {
+    const context=createTestContext(); cleanup.push(context.close);
+    recordCroEvent(context.db,event('chat_opened'));
+    recordCroEvent(context.db,event('whatsapp_clicked'));
+    expect(croDashboard(context.db,'villa-tullia').conversions).toBe(0);
+    recordCroEvent(context.db,event('chat_message_sent'));
+    recordCroEvent(context.db,event('chat_message_sent'));
+    recordCroEvent(context.db,event('enquiry_completed'));
+    recordCroEvent(context.db,event('notification_delivery_failed'));
+    const result=croDashboard(context.db,'villa-tullia');
+    expect(result.conversions).toBe(1);
+    expect(result.stages.at(-1)).toMatchObject({count:1,visitors:1});
+    expect(result.visitorJourneys[0].converted).toBe(true);
+    expect(result.contactActivity.find(row=>row.label==='Chat message sent')).toMatchObject({sessions:1,events:2});
+    expect(result.contactActivity.find(row=>row.label==='Notification delivery failed')).toMatchObject({sessions:1,events:1});
+  });
   it('stores anonymous events and reports the funnel', () => {
     const context=createTestContext(); cleanup.push(context.close);
     for (const name of ['page_view','availability_clicked','availability_page_view','year_selected','month_selected','week_selected','contact_step_reached','enquiry_completed']) recordCroEvent(context.db,event(name));

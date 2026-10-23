@@ -251,6 +251,37 @@ availability.it.unshift(
   ['Book here directly and a welcome gift will be waiting for you on arrival.', 'Prenota qui direttamente e al tuo arrivo troverai un regalo di benvenuto.'],
 );
 
+availability.nl.unshift(
+  ["Ask about this week — no commitment","Vraag naar deze week — vrijblijvend"],
+  ["Chat with Alex","Chat met Alex"],
+  ["Your request is safely recorded. We will reply to you personally by email.","Uw aanvraag is veilig opgeslagen. Wij antwoorden persoonlijk per e-mail."],
+  [">Choose a year<",">Kies een jaar<"],
+  [">Choose a month<",">Kies een maand<"],
+  [">Pick a week<",">Kies een week<"],
+  [">Your enquiry<",">Uw aanvraag<"],
+  ["Step ${step + 1 - (skipYearStep ? 1 : 0)} of ${skipYearStep ? 3 : 4}","Stap ${step + 1 - (skipYearStep ? 1 : 0)} van ${skipYearStep ? 3 : 4}"]
+);
+availability.de.unshift(
+  ["Ask about this week — no commitment","Diese Woche unverbindlich anfragen"],
+  ["Chat with Alex","Mit Alex chatten"],
+  ["Your request is safely recorded. We will reply to you personally by email.","Ihre Anfrage ist sicher gespeichert. Wir antworten Ihnen persönlich per E-Mail."],
+  [">Choose a year<",">Jahr wählen<"],
+  [">Choose a month<",">Monat wählen<"],
+  [">Pick a week<",">Woche wählen<"],
+  [">Your enquiry<",">Ihre Anfrage<"],
+  ["Step ${step + 1 - (skipYearStep ? 1 : 0)} of ${skipYearStep ? 3 : 4}","Schritt ${step + 1 - (skipYearStep ? 1 : 0)} von ${skipYearStep ? 3 : 4}"]
+);
+availability.it.unshift(
+  ["Ask about this week — no commitment","Chiedi informazioni per questa settimana — senza impegno"],
+  ["Chat with Alex","Chatta con Alex"],
+  ["Your request is safely recorded. We will reply to you personally by email.","La richiesta è stata registrata. Ti risponderemo personalmente via e-mail."],
+  [">Choose a year<",">Scegli un anno<"],
+  [">Choose a month<",">Scegli un mese<"],
+  [">Pick a week<",">Scegli una settimana<"],
+  [">Your enquiry<",">La tua richiesta<"],
+  ["Step ${step + 1 - (skipYearStep ? 1 : 0)} of ${skipYearStep ? 3 : 4}","Passaggio ${step + 1 - (skipYearStep ? 1 : 0)} di ${skipYearStep ? 3 : 4}"]
+);
+
 const privacy: Record<PublicLocale, Array<[string, string]>> = {
   nl: [
     ['Return to the enquiry form', 'Terug naar het aanvraagformulier'], ['Version dated 15 August 2026', 'Versie van 15 augustus 2026'], ['Information we use', 'Informatie die we gebruiken'], ['Why we use it', 'Waarom we deze informatie gebruiken'], ['Anonymous website analytics', 'Anonieme websiteanalyse'], ['Who receives it', 'Wie ontvangt de informatie'], ['Retention and your rights', 'Bewaartermijn en uw rechten'], ['Contact', 'Contact'],
