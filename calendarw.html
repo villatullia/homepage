@@ -118,10 +118,9 @@
   </header>
   <main class="booking-area">
     <aside class="info-panel" id="bookingFlow">
-      <div class="flow-progress"><div class="flow-progress-main"><span id="flowCount" class="flow-count">Step 1 of 4</span><button id="flowBack" class="flow-progress-back" type="button" hidden><i class="bi bi-arrow-left" aria-hidden="true"></i><span id="flowBackLabel">Change year</span></button></div><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></span></div>
+      <div class="flow-progress"><div class="flow-progress-main"><span id="flowCount" class="flow-count">Step 1 of 3</span><button id="flowBack" class="flow-progress-back" type="button" hidden><i class="bi bi-arrow-left" aria-hidden="true"></i><span id="flowBackLabel">Change month</span></button></div><span id="flowDots" class="flow-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i></span></div>
       <div class="flow-window"><div id="flowTrack" class="flow-track">
-        <section class="flow-slide"><div class="flow-kicker">Choose a year</div><h2>Save €529.90–€912.90 per week.</h2><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="yearChoices" class="year-choices"></div></section>
-        <section class="flow-slide"><div class="flow-kicker">Choose a month</div><h2>When would you like to stay?</h2><p class="slide-copy">Choose a month in our May-to-October season. We will then show you its available Saturday-to-Saturday weeks.</p><div id="monthChoices" class="month-choices"></div></section>
+        <section class="flow-slide"><div class="flow-kicker">Choose a month</div><h2>When would you like to stay?</h2><p class="slide-copy">Choose a month in our May-to-October season. We will then show you its available Saturday-to-Saturday weeks.</p><p class="slide-copy">Save €529.90–€912.90 per week.</p><div class="booking-assurances"><div class="booking-assurance booking-assurance-featured"><i class="bi bi-stars" aria-hidden="true"></i><p><strong>Everything is included.</strong> Your quoted price covers the entire villa, bed linen, bath towels, utilities, final cleaning and all applicable taxes. There are no mandatory extras.<span class="welcome-note">Book here directly and a welcome gift will be waiting for you on arrival.</span></p></div></div><button class="amenities-open" id="openAmenities" type="button">See all villa amenities <i class="bi bi-arrow-up-right"></i></button><div id="monthChoices" class="month-choices"></div></section>
         <section class="flow-slide"><div class="flow-kicker">Pick a week</div><h2>Choose a green week.</h2><p class="slide-copy">Each green option is a complete seven-night stay.</p><div class="picker-card" aria-label="Villa Tullia availability"><div class="picker-head"><div><strong id="monthTitle">Availability</strong><span>Choose an available week to enquire</span></div><div class="month-control"><button id="previousMonth" type="button" aria-label="Previous month"><i class="bi bi-arrow-left"></i></button><button id="nextMonth" type="button" aria-label="Next month"><i class="bi bi-arrow-right"></i></button></div></div><div id="weeks" class="weeks"></div></div></section>
         <section class="flow-slide"><div class="flow-kicker">Your enquiry</div><h2>This is the week you chose.</h2><p class="slide-copy">Check the stay details below, then ask Villa Tullia to confirm availability.</p><div class="stay-summary" aria-live="polite"><div class="stay-summary-head"><span class="selection-label">Your selected week</span><div id="selectionDate" class="selection-date selection-empty">Choose an available week</div></div><div class="stay-summary-grid"><div class="stay-summary-item"><span>Length of stay</span><strong>7 nights</strong><small>Saturday to Saturday</small></div><div class="stay-summary-item"><span>Total price</span><strong id="selectionPrice" class="selection-price">—</strong><small>For the entire villa</small></div><div class="stay-summary-item"><span>Mandatory extras</span><strong>None</strong><small>No mandatory charges on arrival</small></div></div><p class="included-value"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span><strong>ALL INCLUSIVE</strong></span><button id="openAmenitiesFromEnquiry" class="included-amenities" type="button">See amenities <i class="bi bi-arrow-up-right"></i></button></p></div><div class="contact-primary"><h3>Ask about this week — no commitment</h3></div><div class="alternative-contacts-body"><form id="emailEnquiry" class="email-form">
         <input id="emailWeek" type="hidden" value="General enquiry">
@@ -218,7 +217,6 @@
       const flowWindow = document.querySelector('.flow-window');
       const flowCount = document.getElementById('flowCount');
       const flowDots = [...document.querySelectorAll('#flowDots i')];
-      const yearChoices = document.getElementById('yearChoices');
       const monthChoices = document.getElementById('monthChoices');
       const bookingFlow = document.getElementById('bookingFlow');
       const flowBack = document.getElementById('flowBack');
@@ -238,7 +236,6 @@
       let bookingProgress;
       try { bookingProgress = JSON.parse(localStorage.getItem('villa_booking_progress') || 'null'); } catch {}
       let activeFlowStep = 0;
-      let skipYearStep = false;
 
       const monthOffset = (amount) => new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + amount, 1);
       const scrollToFlow = () => {
@@ -250,15 +247,14 @@
       const setFlowStep = (step, shouldScroll = false) => {
         activeFlowStep = step;
         [...flowTrack.children].forEach((slide, index) => { slide.inert = index !== step; });
-        document.body.classList.toggle('is-enquiry-step', step === 3);
+        document.body.classList.toggle('is-enquiry-step', step === 2);
         flowTrack.style.transform = `translateX(-${step * 100}%)`;
-        flowCount.textContent = `Step ${step + 1 - (skipYearStep ? 1 : 0)} of ${skipYearStep ? 3 : 4}`;
-        const backLabels = ['', 'Change year', 'Change month', 'Change week'];
-        flowBack.hidden = step === (skipYearStep ? 1 : 0);
+        flowCount.textContent = `Step ${step + 1} of 3`;
+        const backLabels = ['', 'Change month', 'Change week'];
+        flowBack.hidden = step === 0;
         flowBackLabel.textContent = backLabels[step];
         flowBack.setAttribute('aria-label', backLabels[step]);
         flowDots.forEach((dot, index) => {
-          dot.hidden = skipYearStep && index === 0;
           dot.classList.toggle('is-active', index === step);
           dot.classList.toggle('is-done', index < step);
         });
@@ -280,40 +276,16 @@
         enquirySuccess.hidden = true;
         renderWeeks();
         cro.track('contact_step_reached');
-        setFlowStep(3, true);
-      };
-      const renderYearChoices = () => {
-        const years = [...new Set(inventory.map((week) => week.start.getFullYear()))];
-        yearChoices.innerHTML = '';
-        years.forEach((year) => {
-          const yearWeeks = inventory.filter((week) => week.start.getFullYear() === year);
-          const openCount = yearWeeks.filter((week) => week.status === 'available' && week.start >= today).length;
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = `year-choice${year === selectedYear ? ' is-current' : ''}`;
-          button.disabled = openCount === 0;
-          button.innerHTML = `<strong>${year}</strong><small>${openCount ? `${openCount} open ${openCount === 1 ? 'week' : 'weeks'}` : 'No open weeks'}</small>`;
-          button.addEventListener('click', () => {
-            selectedYear = year;
-            bookingProgress = { stage:'dates', year };
-            try { localStorage.setItem('villa_booking_progress', JSON.stringify(bookingProgress)); } catch {}
-            cro.track('year_selected', { year });
-            const firstOpenWeek = yearWeeks.find((week) => week.status === 'available' && week.start >= today);
-            visibleMonth = new Date(firstOpenWeek.start.getFullYear(), firstOpenWeek.start.getMonth(), 1);
-            renderWeeks();
-            setFlowStep(1);
-          });
-          yearChoices.appendChild(button);
-        });
+        setFlowStep(2, true);
       };
       const renderMonthChoices = () => {
         const months = new Map();
-        inventory.filter((week) => week.start.getFullYear() === selectedYear).forEach((week) => {
+        inventory.filter((week) => week.start >= today && week.status === 'available').forEach((week) => {
           const month = new Date(week.start.getFullYear(), week.start.getMonth(), 1);
           const key = `${month.getFullYear()}-${month.getMonth()}`;
           if (!months.has(key)) months.set(key, month);
         });
-        monthChoices.innerHTML = '';
+        monthChoices.innerHTML = months.size ? '' : '<p>No open weeks are currently listed.</p>';
         [...months.values()].forEach((month) => {
           const monthWeeks = inventory.filter((week) => week.start.getFullYear() === month.getFullYear() && week.start.getMonth() === month.getMonth());
           const openCount = monthWeeks.filter((week) => week.status === 'available' && week.start >= today).length;
@@ -323,12 +295,14 @@
           button.disabled = openCount === 0;
           button.innerHTML = `<strong>${formatDate(month, { month:'short', year:'numeric' })}</strong><small>${openCount ? `${openCount} open ${openCount === 1 ? 'week' : 'weeks'}` : 'No open weeks'}</small>`;
           button.addEventListener('click', () => {
+            selectedYear = month.getFullYear();
             visibleMonth = month;
+            cro.track('year_selected', { year:selectedYear, automatic:true });
             bookingProgress = { stage:'dates', year:month.getFullYear(), month:month.getMonth()+1 };
             try { localStorage.setItem('villa_booking_progress', JSON.stringify(bookingProgress)); } catch {}
             cro.track('month_selected', { year:month.getFullYear(), month:month.getMonth()+1 });
             renderWeeks();
-            setFlowStep(2);
+            setFlowStep(1);
           });
           monthChoices.appendChild(button);
         });
@@ -339,7 +313,6 @@
         monthTitle.textContent = formatDate(visibleMonth, { month:'long', year:'numeric' });
         previousButton.disabled = visibleMonth.getMonth() <= 4;
         nextButton.disabled = visibleMonth.getMonth() >= 9;
-        renderYearChoices();
         renderMonthChoices();
         const thisMonth = inventory.filter((week) => week.start.getFullYear() === visibleMonth.getFullYear() && week.start.getMonth() === visibleMonth.getMonth());
         if (!thisMonth.length) { weeksElement.innerHTML = '<p class="empty-month">There are no Saturday check-ins listed for this month.</p>'; fitFlow(); return; }
@@ -360,9 +333,9 @@
         });
         fitFlow();
       };
-      previousButton.addEventListener('click', () => { visibleMonth = monthOffset(-1); renderWeeks(); setFlowStep(2); });
+      previousButton.addEventListener('click', () => { visibleMonth = monthOffset(-1); renderWeeks(); setFlowStep(1); });
       nextButton.addEventListener('click', () => { visibleMonth = monthOffset(1); renderWeeks(); setFlowStep(2); });
-      flowBack.addEventListener('click', () => setFlowStep(Math.max(skipYearStep ? 1 : 0, activeFlowStep - 1)));
+      flowBack.addEventListener('click', () => setFlowStep(Math.max(0, activeFlowStep - 1)));
 
       window.addEventListener('resize', fitFlow);
       inquireButton.addEventListener('click', () => {
@@ -410,16 +383,13 @@
           const authoritativeBlocks = Array.isArray(data.authoritativePartnerBlockedRanges) ? data.authoritativePartnerBlockedRanges : (Array.isArray(data.partnerBlockedRanges) ? data.partnerBlockedRanges : []);
           const softBlocks = Array.isArray(data.softPartnerBlockedRanges) ? data.softPartnerBlockedRanges : [];
           inventory = buildInventory(authoritativeBlocks, softBlocks, Array.isArray(data.localBlockedRanges) ? data.localBlockedRanges : [], Array.isArray(data.directRates) ? data.directRates : []);
-          const openYears = [...new Set(inventory.filter(week => week.status === 'available' && week.start >= today).map(week => week.start.getFullYear()))];
-          skipYearStep = openYears.length === 1;
-          if (skipYearStep) {
-            selectedYear = openYears[0];
-            const firstWeek = inventory.find(week => week.start.getFullYear() === selectedYear && week.status === 'available' && week.start >= today);
+          const firstWeek = inventory.find(week => week.status === 'available' && week.start >= today);
+          if (firstWeek) {
+            selectedYear = firstWeek.start.getFullYear();
             visibleMonth = new Date(selectedYear, firstWeek.start.getMonth(), 1);
-            cro.track('year_selected', { year:selectedYear, automatic:true });
           }
           renderWeeks();
-          setFlowStep(skipYearStep ? 1 : 0);
+          setFlowStep(0);
         })
         .catch(() => { renderWeeks(); });
     });

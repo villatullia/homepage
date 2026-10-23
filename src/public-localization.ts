@@ -184,7 +184,7 @@ availability.nl.unshift(
   ['See the current available weeks or ask us anything. Your enquiry is personal and non-binding.', 'Bekijk de momenteel beschikbare weken of stel ons gerust een vraag. Uw aanvraag is persoonlijk en vrijblijvend.'], ['See current availability', 'Bekijk de actuele beschikbaarheid'],
   ['Your chosen week is ready. Continue to the short, non-binding enquiry form whenever you are ready.', 'Uw gekozen week staat klaar. Ga verder met het korte, vrijblijvende aanvraagformulier wanneer u wilt.'], ['Continue your enquiry', 'Ga verder met uw aanvraag'],
   ['You were choosing your dates.', 'U was uw data aan het kiezen.'], ['Pick up where you left off and see the available weeks. Your enquiry remains non-binding.', 'Ga verder waar u gebleven was en bekijk de beschikbare weken. Uw aanvraag blijft vrijblijvend.'], ['Continue choosing dates', 'Ga verder met het kiezen van data'],
-  ['Step 1 of 4', 'Stap 1 van 4'], ['Step ${step + 1} of 4', 'Stap ${step + 1} van 4'],
+  ['Step 1 of 3', 'Stap 1 van 3'], ['Step ${step + 1} of 4', 'Stap ${step + 1} van 4'],
   ['Step 1 · Choose a year', 'Stap 1 · Kies een jaar'], ['Step 3 · Pick a week', 'Stap 3 · Kies een week'], ['Step 4 · Your enquiry', 'Stap 4 · Uw aanvraag'],
   ['Your stay at a glance.', 'Uw verblijf in één oogopslag.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Laat uw naam en e-mailadres achter. Wij bevestigen persoonlijk de beschikbaarheid en de volgende stappen.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 nachten · ${formatPrice(week.price)} direct totaal'], ['7 nights · Price confirmed personally', '7 nachten · Prijs persoonlijk bevestigd'],
@@ -208,7 +208,7 @@ availability.de.unshift(
   ['See the current available weeks or ask us anything. Your enquiry is personal and non-binding.', 'Sehen Sie die aktuell verfügbaren Wochen oder fragen Sie uns einfach. Ihre Anfrage ist persönlich und unverbindlich.'], ['See current availability', 'Aktuelle Verfügbarkeit ansehen'],
   ['Your chosen week is ready. Continue to the short, non-binding enquiry form whenever you are ready.', 'Ihre gewählte Woche steht bereit. Fahren Sie mit dem kurzen, unverbindlichen Anfrageformular fort, wann immer Sie möchten.'], ['Continue your enquiry', 'Anfrage fortsetzen'],
   ['You were choosing your dates.', 'Sie waren dabei, Ihre Reisedaten auszuwählen.'], ['Pick up where you left off and see the available weeks. Your enquiry remains non-binding.', 'Machen Sie dort weiter, wo Sie aufgehört haben, und sehen Sie die verfügbaren Wochen. Ihre Anfrage bleibt unverbindlich.'], ['Continue choosing dates', 'Reisedaten weiter auswählen'],
-  ['Step 1 of 4', 'Schritt 1 von 4'], ['Step ${step + 1} of 4', 'Schritt ${step + 1} von 4'],
+  ['Step 1 of 3', 'Schritt 1 von 3'], ['Step ${step + 1} of 4', 'Schritt ${step + 1} von 4'],
   ['Step 1 · Choose a year', 'Schritt 1 · Jahr wählen'], ['Step 3 · Pick a week', 'Schritt 3 · Woche wählen'], ['Step 4 · Your enquiry', 'Schritt 4 · Ihre Anfrage'],
   ['Your stay at a glance.', 'Ihr Aufenthalt auf einen Blick.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Hinterlassen Sie Ihren Namen und Ihre E-Mail-Adresse. Wir bestätigen die Verfügbarkeit und die nächsten Schritte persönlich.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 Nächte · ${formatPrice(week.price)} Direktpreis gesamt'], ['7 nights · Price confirmed personally', '7 Nächte · Preis wird persönlich bestätigt'],
@@ -237,7 +237,7 @@ availability.it.unshift(
   ['See the current available weeks or ask us anything. Your enquiry is personal and non-binding.', 'Guarda le settimane attualmente disponibili o chiedici qualsiasi cosa. La richiesta è personale e non vincolante.'], ['See current availability', 'Vedi la disponibilità attuale'],
   ['Your chosen week is ready. Continue to the short, non-binding enquiry form whenever you are ready.', 'La settimana scelta è pronta. Quando vuoi, prosegui con il breve modulo di richiesta non vincolante.'], ['Continue your enquiry', 'Continua la richiesta'],
   ['You were choosing your dates.', 'Stavi scegliendo le date.'], ['Pick up where you left off and see the available weeks. Your enquiry remains non-binding.', 'Riprendi da dove avevi lasciato e guarda le settimane disponibili. La richiesta resta non vincolante.'], ['Continue choosing dates', 'Continua a scegliere le date'],
-  ['Step 1 of 4', 'Passaggio 1 di 4'], ['Step ${step + 1} of 4', 'Passaggio ${step + 1} di 4'],
+  ['Step 1 of 3', 'Passaggio 1 di 3'], ['Step ${step + 1} of 4', 'Passaggio ${step + 1} di 4'],
   ['Step 1 · Choose a year', 'Passaggio 1 · Scegli l’anno'], ['Step 3 · Pick a week', 'Passaggio 3 · Scegli la settimana'], ['Step 4 · Your enquiry', 'Passaggio 4 · La tua richiesta'],
   ['Your stay at a glance.', 'Il tuo soggiorno in sintesi.'], ['Leave your name and email and we will confirm availability and the next steps personally.', 'Lascia nome e indirizzo e-mail: confermeremo personalmente la disponibilità e i prossimi passi.'],
   ['7 nights · ${formatPrice(week.price)} direct total', '7 notti · totale diretto ${formatPrice(week.price)}'], ['7 nights · Price confirmed personally', '7 notti · Prezzo confermato personalmente'],
@@ -259,7 +259,7 @@ availability.nl.unshift(
   [">Choose a month<",">Kies een maand<"],
   [">Pick a week<",">Kies een week<"],
   [">Your enquiry<",">Uw aanvraag<"],
-  ["Step ${step + 1 - (skipYearStep ? 1 : 0)} of ${skipYearStep ? 3 : 4}","Stap ${step + 1 - (skipYearStep ? 1 : 0)} van ${skipYearStep ? 3 : 4}"]
+  ["Step ${step + 1} of 3","Stap ${step + 1} van 3"]
 );
 availability.de.unshift(
   ["Ask about this week — no commitment","Diese Woche unverbindlich anfragen"],
@@ -269,7 +269,7 @@ availability.de.unshift(
   [">Choose a month<",">Monat wählen<"],
   [">Pick a week<",">Woche wählen<"],
   [">Your enquiry<",">Ihre Anfrage<"],
-  ["Step ${step + 1 - (skipYearStep ? 1 : 0)} of ${skipYearStep ? 3 : 4}","Schritt ${step + 1 - (skipYearStep ? 1 : 0)} von ${skipYearStep ? 3 : 4}"]
+  ["Step ${step + 1} of 3","Schritt ${step + 1} von 3"]
 );
 availability.it.unshift(
   ["Ask about this week — no commitment","Chiedi informazioni per questa settimana — senza impegno"],
@@ -279,7 +279,7 @@ availability.it.unshift(
   [">Choose a month<",">Scegli un mese<"],
   [">Pick a week<",">Scegli una settimana<"],
   [">Your enquiry<",">La tua richiesta<"],
-  ["Step ${step + 1 - (skipYearStep ? 1 : 0)} of ${skipYearStep ? 3 : 4}","Passaggio ${step + 1 - (skipYearStep ? 1 : 0)} di ${skipYearStep ? 3 : 4}"]
+  ["Step ${step + 1} of 3","Passaggio ${step + 1} di 3"]
 );
 
 const privacy: Record<PublicLocale, Array<[string, string]>> = {
